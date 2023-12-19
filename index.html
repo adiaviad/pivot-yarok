@@ -104,16 +104,9 @@
                         "mode":"lines",
                         "type":"scatter",
                         "orientation":"v",
-                        "fill":"tozeroy"
-                    },
-                    {
-                        "y":[],
-                        "name":"avg",
-                        "mode":"lines",
-                        "type":"scatter",
-                        "orientation":"",
-                        "fill":"none"
-                        
+                        "fill":"tozeroy",
+                        "legendgroup": "group1",
+                        "color":"rgba(250, 142, 248, 1)" //pink
                     },
                     {
                         "y":[],
@@ -121,8 +114,22 @@
                         "mode":"",
                         "type":"bar",
                         "orientation":"v",
-                        "fill":""
+                        "fill":"tozerox",
+                        "legendgroup": "group2",
+                        "color":"rgba(14, 1, 102, 1)" //dark 
+                    },
+                    {
+                        "y":[],
+                        "name":"avg",
+                        "mode":"lines",
+                        "type":"",
+                        "orientation":"",
+                        "fill":"none",
+                        "legendgroup": "group3",
+                        "color":"rgba(143, 4, 4, 1)" //dark red 
+
                     }
+                  
                     
                 ]
             };
@@ -133,10 +140,10 @@
                 const benchmark=max-standardDeviation;
                 const avgrage=calculateAverage(dataSet.y)
                 statsData.data_sets[0].y.push(benchmark);
-                statsData.data_sets[1].y.push(avgrage);
-                
+                statsData.data_sets[2].y.push(avgrage);
+            
             }
-            statsData.data_sets[2].y=jsonData.data_sets[seleted_region].y;
+            statsData.data_sets[1].y=jsonData.data_sets[seleted_region].y;
 
             console.log("stats")
             console.log(statsData);
@@ -148,13 +155,18 @@
                 const trace = {
                     x: xValues,
                     y: dataset.y,
-                    mode: "markers", // Display markers and 
+                    mode: dataset.mode, // Display markers and 
                     type: dataset.type,
                     orientation: dataset.orientation,
                     fill:dataset.fill,
                     name: dataset.name, 
+                    fillcolor:dataset.color,
+                    marker: {
+                        color: dataset.color // Specify the color of the bars
+                    },
+                    legendgroup: dataset.legendgroup
                     //text: dataset.y, // Use the values in y array as text labels
-                    textposition: "top center" // Position the text above the markers
+                    //textposition: "top center" // Position the text above the markers
                 };
 
                 data.push(trace);
