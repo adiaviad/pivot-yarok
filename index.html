@@ -101,16 +101,27 @@
                     {
                         "y":[],
                         "name":"benchmark",
+                        "mode":"lines",
+                        "type":"scatter",
+                        "orientation":"v",
+                        "fill":"tozeroy"
+                    },
+                    {
+                        "y":[],
+                        "name":"avg",
+                        "mode":"lines",
+                        "type":"scatter",
+                        "orientation":"",
+                        "fill":"none"
+                        
+                    },
+                    {
+                        "y":[],
+                        "name":"selected region",
                         "mode":"",
-                        "type":""
-                    },
-                    {
-                        "y":[],
-                        "name":"avg"
-                    },
-                    {
-                        "y":[],
-                        "name":"selected region"
+                        "type":"bar",
+                        "orientation":"v",
+                        "fill":""
                     }
                     
                 ]
@@ -137,9 +148,12 @@
                 const trace = {
                     x: xValues,
                     y: dataset.y,
-                    mode: "markers", // Display markers and text
+                    mode: "markers", // Display markers and 
+                    type: dataset.type,
+                    orientation: dataset.orientation,
+                    fill:dataset.fill,
                     name: dataset.name, 
-                    text: dataset.y, // Use the values in y array as text labels
+                    //text: dataset.y, // Use the values in y array as text labels
                     textposition: "top center" // Position the text above the markers
                 };
 
