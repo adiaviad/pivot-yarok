@@ -1,0 +1,22 @@
+{
+    "x": ["1", "2", "3", "4", "5"],
+    "data_sets": [
+      {
+        "y": [2, 49, 44, 24, 15],
+        "names": ["Alpha", "Bravo", "Charlie", "Delta", "Echo"]
+      },
+      {
+        "y": [10, 20, 30, 40, 50],
+        "names": ["One", "Two", "Three", "Four", "Five"]
+      },
+      {
+        "y": [8, 12, 16, 20, 21],
+        "names": ["Apple", "Banana", "Cherry", "Date", "Elderberry"]
+      },
+      {
+        "y": [8, 3, 40, 30, 22],
+        "names": ["Apple", "Banana", "Cherry", "Date", "Elderberry"]
+      }
+    ]
+  }
+  

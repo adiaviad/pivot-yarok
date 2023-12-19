@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<body>
+<h2>WIP</h2>
+<h2>all data here is currently made up </h2>
+<div id="hon" style="width:100%;max-width:700px"></div>
+
+<button onclick="select_region()">enter region</button>
+<label for="myInput">Enter Text:</label>
+<input type="number" id="myInput" name="myInput">
+
+</body>
+</html>
+    <script>
+        let seleted_region=1;
+        function select_region(){
+            const inputElement = document.getElementById("myInput");
+            seleted_region = inputElement.value;
+            generateGraph();
+        }
+
+
+
+        function calculateAverage(numbers) {
+            if (numbers.length === 0) {
+                return 0; // Avoid division by zero for an empty array
+            }
+
+            const sum = numbers.reduce((acc, value) => acc + value, 0);
+            const average = sum / numbers.length;
+            return average;
+        }
+        const calculateStandardDeviation = (array) => {
+            const mean = array.reduce((acc, value) => acc + value, 0) / array.length;
+            const squaredDifferences = array.map((value) => Math.pow(value - mean, 2));
+            const variance = squaredDifferences.reduce((acc, value) => acc + value, 0) / array.length;
+            const standardDeviation = Math.sqrt(variance);
+            return standardDeviation;
+        };
+        // Function to fetch data from the file
+        async function fetchData() {
+            try {
+                const response = await fetch('data.json');
+                const jsonData = await response.json();
+                return jsonData;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        
+        async function generateGraph() {
+            const jsonData = {
+                "x": ["1", "2", "3", "4", "5"],
+                "data_sets": [
+                {
+                    "y": [2, 49, 44, 24, 15],
+                    "name":"region 1"
+                },
+                {
+                    "y": [10, 20, 30, 40, 50],
+                    "name":"region 2"
+                },
+                {
+                    "y": [8, 12, 16, 20, 24],
+                    "name":"region 3"
+                }
+                ]
+            };
+  
+
+            const xValues = jsonData.x;
+            const data = [];
+
+            //invert axis
+            const invertedData = {
+                "x": jsonData.x,
+                "data_sets": []
+            };
+
+            for (let i = 0; i < jsonData.x.length; i++) {
+            const invertedSet = {
+                "y": []
+            };
+
+            for (const dataSet of jsonData.data_sets) {
+                invertedSet.y.push(dataSet.y[i]);
+            }
+
+            invertedData.data_sets.push(invertedSet);
+            }
+
+            console.log(invertedData);
+
+            //todo: add the mode and type of each graph to the json
+            //store benchmark, avg and selected region values
+            const statsData = {
+                "x": invertedData.x,
+                "data_sets": [
+                    {
+                        "y":[],
+                        "name":"benchmark",
+                        "mode":"",
+                        "type":""
+                    },
+                    {
+                        "y":[],
+                        "name":"avg"
+                    },
+                    {
+                        "y":[],
+                        "name":"selected region"
+                    }
+                    
+                ]
+            };
+
+            for (const dataSet of invertedData.data_sets) {
+                const max = Math.max(...dataSet.y);
+                const standardDeviation = calculateStandardDeviation(dataSet.y);
+                const benchmark=max-standardDeviation;
+                const avgrage=calculateAverage(dataSet.y)
+                statsData.data_sets[0].y.push(benchmark);
+                statsData.data_sets[1].y.push(avgrage);
+                
+            }
+            statsData.data_sets[2].y=jsonData.data_sets[seleted_region].y;
+
+            console.log("stats")
+            console.log(statsData);
+            const datasets=statsData.data_sets;
+            //display to graph
+            for (let i = 0; i < datasets.length; i++) {
+                const dataset = datasets[i];
+                
+                const trace = {
+                    x: xValues,
+                    y: dataset.y,
+                    mode: "markers", // Display markers and text
+                    name: dataset.name, 
+                    text: dataset.y, // Use the values in y array as text labels
+                    textposition: "top center" // Position the text above the markers
+                };
+
+                data.push(trace);
+            }
+
+            const layout = {
+                title: "Graph with Multiple Data Sets",
+                xaxis: {
+                    title: "X Axis Label" // Add the name for the X axis
+                },
+                yaxis: {
+                    title: "Y Axis Label" // Add the name for the Y axis
+                }
+            };
+
+            Plotly.newPlot("hon", data, layout);
+        }
+
+        // Call the function to generate the graph
+        generateGraph();
+    </script>
