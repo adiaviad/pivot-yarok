@@ -8,7 +8,6 @@
 <div id="hon" style="width:100%;max-width:700px"></div>
 
 <button onclick="select_region()">enter region</button>
-<label for="myInput">Enter Text:</label>
 <input type="number" id="myInput" name="myInput">
 
 </body>
@@ -105,8 +104,9 @@
                         "type":"scatter",
                         "orientation":"v",
                         "fill":"tozeroy",
+                        "width":"",
                         "legendgroup": "group1",
-                        "color":"rgba(250, 142, 248, 1)" //pink
+                        "color":"rgba(250, 142, 248, 0.5)" //pink
                     },
                     {
                         "y":[],
@@ -115,6 +115,7 @@
                         "type":"bar",
                         "orientation":"v",
                         "fill":"tozerox",
+                        "width":"0.1",
                         "legendgroup": "group2",
                         "color":"rgba(14, 1, 102, 1)" //dark 
                     },
@@ -125,6 +126,7 @@
                         "type":"",
                         "orientation":"",
                         "fill":"none",
+                        "width":"",
                         "legendgroup": "group3",
                         "color":"rgba(143, 4, 4, 1)" //dark red 
 
@@ -160,6 +162,7 @@
                     orientation: dataset.orientation,
                     fill:dataset.fill,
                     name: dataset.name, 
+                    width:dataset.width,
                     fillcolor:dataset.color,
                     marker: {
                         color: dataset.color // Specify the color of the bars
