@@ -22,7 +22,7 @@
             seleted_region = inputElement.value;
             generateGraph();
             console.log("test_json",test_json);
-            
+
         }
 
 
@@ -192,7 +192,8 @@
         getResourceData()
             .then(jd=>{
                 test_json=jd;
-                console.log(jd);
+                console.log("promise from code.js",jd);
+                
         });
         generateGraph();
         
