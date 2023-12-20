@@ -6,190 +6,209 @@
 <script type="text/javascript" src="code.js"></script>
 <body>
 <h2>WIP</h2>
-<h2>all data here is currently made up </h2>
 <div id="hon" style="width:100%;max-width:700px"></div>
-
+<select id="hon res select"></select>
 <button onclick="select_region()">enter region</button>
 <input type="number" id="myInput" name="myInput">
 
 </body>
 </html>
-    <script>
-        let seleted_region=1;
-        let jsonData;
-        console.log("original",jsonData);
-        function select_region(){
-            const inputElement = document.getElementById("myInput");
-            seleted_region = inputElement.value;
-            generateGraph();
+<script>
+    
+    // Populate the dropdown with options from the array
+    function populateDropdownSelect(stringArray){
+        stringArray.forEach((string, index) => {
+            const option = document.createElement("option");
+            option.text = string;
+            option.value = index;
+            dropdown.add(option);
+        });
+    }
 
+
+
+    let seleted_region=1;
+    let jsonData;
+    const dropdown = document.getElementById("hon res select");
+   
+    console.log("original",jsonData);
+    function select_region(){
+        const inputElement = document.getElementById("myInput");
+        seleted_region = inputElement.value;
+        generateGraph();
+
+    }
+
+
+    function calculateMedian(arr) {
+        // Create a copy of the array to avoid modifying the original
+        const sortedArray = [...arr].sort((a, b) => a - b);
+
+        const length = sortedArray.length;
+
+        if (length % 2 === 0) {
+            // If the array has an even number of elements, return the average of the two middle values
+            const middle1 = sortedArray[length / 2 - 1];
+            const middle2 = sortedArray[length / 2];
+            return (middle1 + middle2) / 2;
+        } else {
+            // If the array has an odd number of elements, return the middle value
+            return sortedArray[Math.floor(length / 2)];
+        }
+        }
+    function calculateAverage(numbers) {
+        if (numbers.length === 0) {
+            return 0; // Avoid division by zero for an empty array
         }
 
+        const sum = numbers.reduce((acc, value) => acc + value, 0);
+        const average = sum / numbers.length;
+        return average;
+    }
+    const calculateStandardDeviation = (array) => {
+        const mean = array.reduce((acc, value) => acc + value, 0) / array.length;
+        const squaredDifferences = array.map((value) => Math.pow(value - mean, 2));
+        const variance = squaredDifferences.reduce((acc, value) => acc + value, 0) / array.length;
+        const standardDeviation = Math.sqrt(variance);
+        return standardDeviation;
+    };
 
-        function calculateMedian(arr) {
-            // Create a copy of the array to avoid modifying the original
-            const sortedArray = [...arr].sort((a, b) => a - b);
-
-            const length = sortedArray.length;
-
-            if (length % 2 === 0) {
-                // If the array has an even number of elements, return the average of the two middle values
-                const middle1 = sortedArray[length / 2 - 1];
-                const middle2 = sortedArray[length / 2];
-                return (middle1 + middle2) / 2;
-            } else {
-                // If the array has an odd number of elements, return the middle value
-                return sortedArray[Math.floor(length / 2)];
-            }
-            }
-        function calculateAverage(numbers) {
-            if (numbers.length === 0) {
-                return 0; // Avoid division by zero for an empty array
-            }
-
-            const sum = numbers.reduce((acc, value) => acc + value, 0);
-            const average = sum / numbers.length;
-            return average;
-        }
-        const calculateStandardDeviation = (array) => {
-            const mean = array.reduce((acc, value) => acc + value, 0) / array.length;
-            const squaredDifferences = array.map((value) => Math.pow(value - mean, 2));
-            const variance = squaredDifferences.reduce((acc, value) => acc + value, 0) / array.length;
-            const standardDeviation = Math.sqrt(variance);
-            return standardDeviation;
+    function invertDatasets(jsonToInvert){
+        const invertedData = {
+            "x": jsonToInvert.x,
+            "data_sets": []
         };
 
-        function invertDatasets(jsonToInvert){
-            const invertedData = {
-                "x": jsonToInvert.x,
-                "data_sets": []
+        for (let i = 0; i < jsonToInvert.x.length; i++) {
+            const invertedSet = {
+                "y": []
             };
 
-            for (let i = 0; i < jsonToInvert.x.length; i++) {
-                const invertedSet = {
-                    "y": []
-                };
-
-                for (const dataSet of jsonToInvert.data_sets) {
-                    invertedSet.y.push(dataSet.y[i]);
-                }
-
-                invertedData.data_sets.push(invertedSet);
+            for (const dataSet of jsonToInvert.data_sets) {
+                invertedSet.y.push(dataSet.y[i]);
             }
-            return invertedData;
+
+            invertedData.data_sets.push(invertedSet);
         }
-        function generateGraph() {
-           
+        return invertedData;
+    }
+    function generateGraph() {
+        
 
 
-            //invert axis
-            
-            const invertedData=invertDatasets(jsonData);
+        //invert axis
+        
+        const invertedData=invertDatasets(jsonData);
 
-            //todo: add the mode and type of each graph to the json
-            //store benchmark, avg and selected region values
-            const statsData = {
-                "x": invertedData.x,
-                "data_sets": [
-                    {
-                        "y":[],
-                        "name":"benchmark",
-                        "mode":"lines",
-                        "type":"scatter",
-                        "orientation":"v",
-                        "fill":"tozeroy",
-                        "width":"",
-                        "legendgroup": "group1",
-                        "color":"rgba(250, 142, 248, 0.5)" //pink
-                    },
-                    {
-                        "y":[],
-                        "name":"selected region",
-                        "mode":"",
-                        "type":"bar",
-                        "orientation":"v",
-                        "fill":"tozerox",
-                        "width":"0.1",
-                        "legendgroup": "group2",
-                        "color":"rgba(14, 1, 102, 1)" //dark 
-                    },
-                    {
-                        "y":[],
-                        "name":"avg",
-                        "mode":"lines",
-                        "type":"",
-                        "orientation":"",
-                        "fill":"none",
-                        "width":"",
-                        "legendgroup": "group3",
-                        "color":"rgba(143, 4, 4, 1)" //dark red 
-
-                    }
-                  
-                    
-                ]
-            };
-
-            for (const dataSet of invertedData.data_sets) {
-                const max = Math.max(...dataSet.y);
-                const standardDeviation = calculateStandardDeviation(dataSet.y);
-                const benchmark=max-standardDeviation;
-                const avgrage=calculateMedian(dataSet.y)
-                statsData.data_sets[0].y.push(benchmark);
-                statsData.data_sets[2].y.push(avgrage);
-            
-            }
-            //special code for selec
-            statsData.data_sets[1].y=jsonData.data_sets[seleted_region].y;
-            statsData.data_sets[1].name=jsonData.data_sets[seleted_region].name;
-            //display to graph
-            const data = [];
-            const datasets=statsData.data_sets;
-            const xValues = jsonData.x;
-
-            for (let i = 0; i < datasets.length; i++) {
-                const dataset = datasets[i];
-                
-                const trace = {
-                    x: xValues,
-                    y: dataset.y,
-                    mode: dataset.mode, // Display markers and 
-                    type: dataset.type,
-                    orientation: dataset.orientation,
-                    fill:dataset.fill,
-                    name: dataset.name, 
-                    width:dataset.width,
-                    fillcolor:dataset.color,
-                    marker: {
-                        color: dataset.color 
-                    },
-                    legendgroup: dataset.legendgroup
-                };
-
-                data.push(trace);
-            }
-
-            const layout = {
-                title: "Graph with Multiple Data Sets",
-                xaxis: {
-                    title: "X Axis Label" // Add the name for the X axis
+        //todo: add the mode and type of each graph to the json
+        //store benchmark, avg and selected region values
+        const statsData = {
+            "x": invertedData.x,
+            "data_sets": [
+                {
+                    "y":[],
+                    "name":"benchmark",
+                    "mode":"lines",
+                    "type":"scatter",
+                    "orientation":"v",
+                    "fill":"tozeroy",
+                    "width":"",
+                    "legendgroup": "group1",
+                    "color":"rgba(250, 142, 248, 0.5)" //pink
                 },
-                yaxis: {
-                    title: "Y Axis Label" // Add the name for the Y axis
+                {
+                    "y":[],
+                    "name":"selected region",
+                    "mode":"",
+                    "type":"bar",
+                    "orientation":"v",
+                    "fill":"tozerox",
+                    "width":"0.1",
+                    "legendgroup": "group2",
+                    "color":"rgba(14, 1, 102, 1)" //dark 
+                },
+                {
+                    "y":[],
+                    "name":"avg",
+                    "mode":"lines",
+                    "type":"",
+                    "orientation":"",
+                    "fill":"none",
+                    "width":"",
+                    "legendgroup": "group3",
+                    "color":"rgba(143, 4, 4, 1)" //dark red 
+
                 }
+                
+                
+            ]
+        };
+
+        for (const dataSet of invertedData.data_sets) {
+            const max = Math.max(...dataSet.y);
+            const standardDeviation = calculateStandardDeviation(dataSet.y);
+            const benchmark=max-standardDeviation;
+            const avgrage=calculateMedian(dataSet.y)
+            statsData.data_sets[0].y.push(benchmark);
+            statsData.data_sets[2].y.push(avgrage);
+        
+        }
+        //special code for selec
+        statsData.data_sets[1].y=jsonData.data_sets[seleted_region].y;
+        statsData.data_sets[1].name=jsonData.data_sets[seleted_region].name;
+        //display to graph
+        const data = [];
+        const datasets=statsData.data_sets;
+        const xValues = jsonData.x;
+
+        for (let i = 0; i < datasets.length; i++) {
+            const dataset = datasets[i];
+            
+            const trace = {
+                x: xValues,
+                y: dataset.y,
+                mode: dataset.mode, // Display markers and 
+                type: dataset.type,
+                orientation: dataset.orientation,
+                fill:dataset.fill,
+                name: dataset.name, 
+                width:dataset.width,
+                fillcolor:dataset.color,
+                marker: {
+                    color: dataset.color 
+                },
+                legendgroup: dataset.legendgroup
             };
 
-            Plotly.newPlot("hon", data, layout);
+            data.push(trace);
         }
 
-        // Call the function to generate the graph
-        getResourceData()
-            .then(jd=>{
-                jsonData=jd;
-                console.log("promise from code.js",jd);
-                generateGraph();
-        });
-        
-        
-    </script>
+        const layout = {
+            title: "Graph with Multiple Data Sets",
+            xaxis: {
+                title: "X Axis Label" // Add the name for the X axis
+            },
+            yaxis: {
+                title: "Y Axis Label" // Add the name for the Y axis
+            }
+        };
+
+        Plotly.newPlot("hon", data, layout);
+    }
+
+    // Call the function to generate the graph
+    getResourceData()
+        .then(jd=>{
+            jsonData=jd;
+            console.log("promise from code.js",jd);
+            generateGraph();
+            populateDropdownSelect(jsonData.provinces_names);
+    });
     
+    dropdown.addEventListener("change", function() {
+        const selectedIndex = this.value;
+        console.log("Selected Index:", selectedIndex);
+        seleted_region=selectedIndex;
+        generateGraph();
+    });
+</script>
