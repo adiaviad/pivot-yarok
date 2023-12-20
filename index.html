@@ -16,10 +16,13 @@
 </html>
     <script>
         let seleted_region=1;
+        let test_json;
         function select_region(){
             const inputElement = document.getElementById("myInput");
             seleted_region = inputElement.value;
             generateGraph();
+            console.log("test_json",test_json);
+            
         }
 
 
@@ -186,7 +189,11 @@
         }
 
         // Call the function to generate the graph
-        getResourceData();
+        getResourceData()
+            .then(jd=>{
+                test_json=jd;
+                console.log(jd);
+        });
         generateGraph();
         
     </script>
