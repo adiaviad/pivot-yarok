@@ -15,10 +15,13 @@ function getResourceData(){
             "x":[],
             "data_sets": []
         }
-        xValues=xslData[0].slice(1);
+        jsonData.x=xslData[0].slice(1);
+
         //start with the second line bc the first line is the names of recources
+
         for(let i =1;i<xslData.length;i++){
-            if(xslData[i].lenght<1){
+            console.log("i len",i,xslData[i].length)
+            if(xslData[i].length<1){
                 break; //after the info about provinces there is a break and then other irrelevent data. we break to not add that data to the json
             }
 
@@ -27,7 +30,6 @@ function getResourceData(){
                 "name":xslData[i][0]
             });
         }         
-        console.log("xsl begin",xslData);
         return jsonData;
     })
     .catch(error => console.error('Error fetching the Excel file:', error));
