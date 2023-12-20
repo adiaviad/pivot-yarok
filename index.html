@@ -38,18 +38,27 @@
             const standardDeviation = Math.sqrt(variance);
             return standardDeviation;
         };
-        // Function to fetch data from the file
-        async function fetchData() {
-            try {
-                const response = await fetch('data.json');
-                const jsonData = await response.json();
-                return jsonData;
-            } catch (error) {
-                console.error('Error fetching data:', error);
+
+        function invertDatasets(jsonToInvert){
+            const invertedData = {
+                "x": jsonToInvert.x,
+                "data_sets": []
+            };
+
+            for (let i = 0; i < jsonToInvert.x.length; i++) {
+                const invertedSet = {
+                    "y": []
+                };
+
+                for (const dataSet of jsonToInvert.data_sets) {
+                    invertedSet.y.push(dataSet.y[i]);
+                }
+
+                invertedData.data_sets.push(invertedSet);
             }
+            return invertedData;
         }
-        
-        async function generateGraph() {
+        function generateGraph() {
             const jsonData = {
                 "x": ["1", "2", "3", "4", "5"],
                 "data_sets": [
@@ -69,27 +78,10 @@
             };
   
 
-            const xValues = jsonData.x;
-            const data = [];
 
             //invert axis
-            const invertedData = {
-                "x": jsonData.x,
-                "data_sets": []
-            };
-
-            for (let i = 0; i < jsonData.x.length; i++) {
-            const invertedSet = {
-                "y": []
-            };
-
-            for (const dataSet of jsonData.data_sets) {
-                invertedSet.y.push(dataSet.y[i]);
-            }
-
-            invertedData.data_sets.push(invertedSet);
-            }
-
+            
+            const invertedData=invertDatasets(jsonData);
             console.log(invertedData);
 
             //todo: add the mode and type of each graph to the json
@@ -149,8 +141,11 @@
 
             console.log("stats")
             console.log(statsData);
-            const datasets=statsData.data_sets;
             //display to graph
+            const data = [];
+            const datasets=statsData.data_sets;
+            const xValues = jsonData.x;
+
             for (let i = 0; i < datasets.length; i++) {
                 const dataset = datasets[i];
                 
@@ -190,4 +185,8 @@
 
         // Call the function to generate the graph
         generateGraph();
+        
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+     <script type="text/javascript" src="code.js"></script>
