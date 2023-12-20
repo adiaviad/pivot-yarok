@@ -13,6 +13,7 @@ function getResourceData(){
         console.log("xsl begin",xslData);
         jsonData={
             "provinces_names":[],
+            "resource_name":sheetName.slice(5),
             "x":[],
             "data_sets": []
         }

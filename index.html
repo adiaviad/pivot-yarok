@@ -1,12 +1,14 @@
 
 <!DOCTYPE html>
 <html>
+    <meta charset="UTF-8">
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <script type="text/javascript" src="code.js"></script>
 <body>
 <h2>WIP</h2>
-<div id="hon" style="width:100%;max-width:700px"></div>
+<div id="hon res graph" style="width:100%;max-width:700px"></div>
+<div id="hon res benchmark diff" style="width:100%;max-width:700px"></div>
 <select id="hon res select"></select>
 
 
@@ -26,7 +28,7 @@
 
 
 
-    let seleted_region=1;
+    let seleted_region=0;
     let jsonData;
     const dropdown = document.getElementById("hon res select");
    
@@ -89,6 +91,7 @@
 
             invertedData.data_sets.push(invertedSet);
         }
+        console.log("invertDatasets",invertedData);
         return invertedData;
     }
     function generateGraph() {
@@ -107,7 +110,7 @@
                 {
                     "y":[],
                     "name":"benchmark",
-                    "mode":"lines",
+                    "mode":"lines+text",
                     "type":"scatter",
                     "orientation":"v",
                     "fill":"tozeroy",
@@ -118,18 +121,19 @@
                 {
                     "y":[],
                     "name":"selected region",
-                    "mode":"",
+                    "mode":"markers+text",
+                    "marker_size":12,
                     "type":"bar",
                     "orientation":"v",
                     "fill":"tozerox",
-                    "width":"0.1",
+                    "width":"0.4",
                     "legendgroup": "group2",
-                    "color":"rgba(14, 1, 102, 1)" //dark 
+                    "color":"rgba(14, 1, 102, 1)" //dark blue
                 },
                 {
                     "y":[],
-                    "name":"avg",
-                    "mode":"lines",
+                    "name":"חציון",
+                    "mode":"lines+text",
                     "type":"",
                     "orientation":"",
                     "fill":"none",
@@ -137,6 +141,17 @@
                     "legendgroup": "group3",
                     "color":"rgba(143, 4, 4, 1)" //dark red 
 
+                }, 
+                {
+                    "y":[],
+                    "name":"",
+                    "mode":"markers+text",
+                    "type":"bar",
+                    "orientation":"v",
+                    "fill":"tozerox",
+                    "width":"0.4",
+                    "legendgroup": "group2",
+                    "color":"rgba(14, 1, 102, 1)" //dark blue
                 }
                 
                 
@@ -146,20 +161,23 @@
         for (const dataSet of invertedData.data_sets) {
             const max = Math.max(...dataSet.y);
             const standardDeviation = calculateStandardDeviation(dataSet.y);
-            const benchmark=max-standardDeviation;
-            const avgrage=calculateMedian(dataSet.y)
-            statsData.data_sets[0].y.push(benchmark);
-            statsData.data_sets[2].y.push(avgrage);
+            const median=calculateMedian(dataSet.y)
+            const average=calculateAverage(dataSet.y);
+            const benchmark=average+standardDeviation;
+            statsData.data_sets[0].y.push(benchmark.toFixed(1));
+            statsData.data_sets[2].y.push(median.toFixed(1));
+            const selectedDiffFromBench=((1-(dataSet.y[seleted_region]/benchmark))*100);
+            statsData.data_sets[3].y.push(selectedDiffFromBench.toFixed(0));
         
         }
         //special code for selec
-        statsData.data_sets[1].y=jsonData.data_sets[seleted_region].y;
+        statsData.data_sets[1].y=jsonData.data_sets[seleted_region].y.map(num=>num.toFixed(1));
         statsData.data_sets[1].name=jsonData.data_sets[seleted_region].name;
+        console.log("stats data", statsData);
         //display to graph
-        const data = [];
+        const resData = [];
         const datasets=statsData.data_sets;
         const xValues = jsonData.x;
-
         for (let i = 0; i < datasets.length; i++) {
             const dataset = datasets[i];
             
@@ -174,25 +192,78 @@
                 width:dataset.width,
                 fillcolor:dataset.color,
                 marker: {
-                    color: dataset.color 
+                    color: dataset.color,
                 },
-                legendgroup: dataset.legendgroup
+                legendgroup: dataset.legendgroup,
+                text:dataset.y,
+                textposition: 'none',
+                textfont: {
+                    size: 1,//not visible
+                },
+                insidetextanchor: 'start',
             };
-
-            data.push(trace);
-        }
-
-        const layout = {
-            title: "Graph with Multiple Data Sets",
-            xaxis: {
-                title: "X Axis Label" // Add the name for the X axis
-            },
-            yaxis: {
-                title: "Y Axis Label" // Add the name for the Y axis
+            if(i==3){
+                trace.text=dataset.y.map(n=>n+"%");
+                console.log("trace 3",trace);
             }
-        };
 
-        Plotly.newPlot("hon", data, layout);
+            resData.push(trace);
+        }
+        const resAnnotations=[];
+        const benchDiffAnnotations=[]
+        for (let i = 0; i < statsData.x.length; i++) {
+            //benchmark annotaions
+            resAnnotations.push({
+                x: i+0.2, // X-coordinate of the bar
+                y: resData[0].y[i], // Y-coordinate of the bar
+                xref: 'x',
+                yref: 'y',
+                text: resData[0].text[i], // Text for the annotation
+                showarrow: false,
+                font: {
+                    size: 16,  // Set the font size
+                    color: 'black'  // Set the font color
+                },
+            });
+            //bar annotations
+            resAnnotations.push({
+                x: i, // X-coordinate of the bar
+                y: resData[1].y[i]*0.9, // Y-coordinate of the bar
+                xref: 'x',
+                yref: 'y',
+                text: resData[1].text[i], // Text for the annotation
+                showarrow: false,
+                font: {
+                    size: 16,  // Set the font size
+                    color: 'white'  // Set the font color
+                },
+            });
+            //
+            benchDiffAnnotations.push({
+                x: i, // X-coordinate of the bar
+                y: resData[3].y[i]*0.9, // Y-coordinate of the bar
+                xref: 'x',
+                yref: 'y',
+                text: resData[3].text[i], // Text for the annotation
+                showarrow: false,
+                font: {
+                    size: 16,  // Set the font size
+                    color: 'white'  // Set the font color
+                },
+            });
+        }
+        const resLayout = {
+            title: "משאב "+jsonData.resource_name,
+            annotations:resAnnotations
+        };
+        const diffLayout={
+            title:"פער באחוזים מה-Benchmark",
+            annotations:benchDiffAnnotations
+
+        }
+        Plotly.newPlot("hon res graph", resData.slice(0,3), resLayout);
+        Plotly.newPlot("hon res benchmark diff", resData.slice(3,4), diffLayout);
+        console.log("resdata[3]",[resData[3]]);
     }
 
     // Call the function to generate the graph
