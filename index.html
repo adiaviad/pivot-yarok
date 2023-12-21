@@ -7,8 +7,21 @@
 <script type="text/javascript" src="code.js"></script>
 <body>
 <h2>WIP</h2>
-<div id="hon res graph" style="width:100%;max-width:700px"></div>
-<div id="hon res benchmark diff" style="width:100%;max-width:700px"></div>
+<table id="hon res table">
+    <tr>
+        <td>
+            <div id="hon res graph" style="width:100%;max-width:700px"></div>
+        </td>
+        <td>
+            <div id="hon res benchmark diff" style="width:100%;max-width:700px"></div>
+        </td>
+    </tr>
+</table>
+<table id="madad al table">
+    <tbody>
+
+    </tbody>
+</table>
 <select id="hon res select"></select>
 
 
@@ -29,10 +42,8 @@
 
 
     let seleted_region=0;
-    let jsonData;
     const dropdown = document.getElementById("hon res select");
    
-    console.log("original",jsonData);
     function select_region(){
         const inputElement = document.getElementById("myInput");
         seleted_region = inputElement.value;
@@ -94,7 +105,10 @@
         console.log("invertDatasets",invertedData);
         return invertedData;
     }
-    function generateGraph() {
+
+
+
+    function generateGraph(jsonData) {
         
 
 
@@ -214,7 +228,7 @@
         for (let i = 0; i < statsData.x.length; i++) {
             //benchmark annotaions
             resAnnotations.push({
-                x: i+0.2, // X-coordinate of the bar
+                x: i+0.33, // X-coordinate of the bar
                 y: resData[0].y[i], // Y-coordinate of the bar
                 xref: 'x',
                 yref: 'y',
@@ -257,7 +271,7 @@
             annotations:resAnnotations
         };
         const diffLayout={
-            title:"פער באחוזים מה-Benchmark",
+            title:"Benchmark פער באחוזים מה",
             annotations:benchDiffAnnotations
 
         }
@@ -269,10 +283,10 @@
     // Call the function to generate the graph
     getResourceData()
         .then(jd=>{
-            jsonData=jd;
             console.log("promise from code.js",jd);
-            generateGraph();
-            populateDropdownSelect(jsonData.provinces_names);
+            console.log("promise from code.js, profile",jd);
+            generateGraph(jd);
+            populateDropdownSelect(jd.provinces_names);
     });
     
     dropdown.addEventListener("change", function() {
