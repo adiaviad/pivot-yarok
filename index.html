@@ -18,9 +18,6 @@
     </tr>
 </table>
 <table id="madad al table">
-    <tbody>
-
-    </tbody>
 </table>
 <select id="hon res select"></select>
 
@@ -28,7 +25,6 @@
 </body>
 </html>
 <script>
-    
     // Populate the dropdown with options from the array
     function populateDropdownSelect(stringArray){
         stringArray.forEach((string, index) => {
@@ -279,15 +275,54 @@
         Plotly.newPlot("hon res benchmark diff", resData.slice(3,4), diffLayout);
         // console.log("resdata[3]",[resData[3]]);
     }
+
+
+    function generateSuperMeasureTable(superMeasure) {
+        console.log("table data in",superMeasure);
+        const columnHeadersArray = superMeasure.measurements_names;
+        const rowHeadersArray = superMeasure.provinces_names;
+        const measureCollumns = superMeasure.measurements;
+        const table = document.getElementById('madad al table');
+        columnHeadersArray.push("שם רשות");
+        console.log("table",columnHeadersArray,rowHeadersArray,measureCollumns);
+        // Create the header row with column headers
+        const headerRow = table.insertRow();
+        headerRow.insertCell(); // Empty cell for the corner
+        for (let colHeader of columnHeadersArray) {
+            const th = document.createElement('th');
+            th.appendChild(document.createTextNode(colHeader));
+            headerRow.appendChild(th);
+        }
+
+        // Populate the table with data
+        for (let rowIndex = 0; rowIndex < rowHeadersArray.length; rowIndex++) {
+            const row = table.insertRow();
+            
+         
+            // Add data cells
+            for (let colIndex = 0; colIndex < measureCollumns.length; colIndex++) {
+                const cell = row.insertCell();
+                cell.appendChild(document.createTextNode(measureCollumns[colIndex][rowIndex]));
+            }
+            // Add row header cell
+            const rowHeaderCell = row.insertCell();
+            rowHeaderCell.appendChild(document.createTextNode(rowHeadersArray[rowIndex]));
+
+        }
+    }
+
     let resJson;
+    let superMeasureData;
     // Call the function to generate the graph
     getResourceData()
         .then(jd=>{
             console.log("promise from code.js",jd);
             console.log("promise from code.js, profile",jd.res_profline);
             resJson=jd.res_profline;
+            superMeasureData=jd.super_measurements;
             generateGraph(resJson);
             populateDropdownSelect(resJson.provinces_names);
+            generateSuperMeasureTable(superMeasureData[0]);
     });
     
     dropdown.addEventListener("change", function() {

@@ -110,8 +110,8 @@ function getResourceData(){
             ]
         };
         const provinces_names=[];
-        for(let i=0;i<resData.length;i++){
-            if(measureData[i].length<1){
+        for(let i=1;i<resData.length;i++){
+            if(resData[i].length<1){
                 break;
             }
             provinces_names.push(resData[i][0]);
