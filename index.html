@@ -75,8 +75,8 @@
 
         // Function to interpolate color based on percentile
         function interpolateColor(percentile) {
-            const minColor = [255, 0, 0]; // Red
-            const maxColor = [0, 255, 0]; // Green
+            const minColor = [200, 0, 0]; // Red
+            const maxColor = [0, 200, 0]; // Green
 
             const r = Math.round(minColor[0] + (maxColor[0] - minColor[0]) * percentile);
             const g = Math.round(minColor[1] + (maxColor[1] - minColor[1]) * percentile);
