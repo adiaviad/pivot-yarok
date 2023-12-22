@@ -63,13 +63,14 @@ function createSuperMeasurement(measureData,name,provinces_names){
 
     result.measurements_names=measureData[startOfProvinces-1].slice(rangeStart,rangeEnd);
     result.measurements_names.push("שם רשות");
-    console.log("mesurement names",result.measurements_names,measureData[startOfProvinces-1]);
+    console.log("mesurement names",result.measurements_names);
 
-    console.log("startOfProvinces",startOfProvinces);
+    console.log("startOfProvinces",startOfProvinces,getDefinedIndexes(measureData.map(row=>row[0])));
     //start at the fourth line bc the first three have attributes names
     for(let j=rangeStart;j<rangeEnd;j++){
         const collumn=[];
         for(let i=startOfProvinces;i<measureData.length;i++){
+            console.log("i,j",i,j);
             if(measureData[i].length<1){
                 break;
             }
@@ -77,7 +78,7 @@ function createSuperMeasurement(measureData,name,provinces_names){
         }
         result.measurements.push(collumn); 
     }
-
+    console.log("end of supermeasure gen");
     return result;
 }
 
@@ -92,11 +93,8 @@ function getResourceData(){
         //the third sheet is the one with "משאב הון"
         const resName = workbook.SheetNames[2];
         const resSheet = workbook.Sheets[resName];
-        const measurementName=workbook.SheetNames[1];
-        const measurementsSheet=workbook.Sheets[measurementName];
         
-        const resData = XLSX.utils.sheet_to_json(resSheet, { header: 1 });
-        const measureData = XLSX.utils.sheet_to_json(measurementsSheet, { header: 1 });
+        const measurementsNames=filterStringsStartingWith(workbook.SheetNames,"מדד");
 
         let jsonData = {
             "res_profline": {},
@@ -110,6 +108,9 @@ function getResourceData(){
                 // }
             ]
         };
+        const resData = XLSX.utils.sheet_to_json(resSheet, { header: 1 });
+        console.log("measuresdsnames",measurementsNames);
+
         const provinces_names=[];
         for(let i=1;i<resData.length;i++){
             if(resData[i].length<1){
@@ -119,7 +120,16 @@ function getResourceData(){
         }
         console.log("json data begin",jsonData);
         jsonData.res_profline=createResProfile(resData,resName,provinces_names);
-        jsonData.super_measurements.push(createSuperMeasurement(measureData,measurementName,provinces_names));
+
+        for(const mName of measurementsNames){
+            console.log("mname",mName);
+            const measureSheet=XLSX.utils.sheet_to_json(workbook.Sheets[mName], {header:1 });
+            console.log("measureSHeet",measureSheet);
+            jsonData.super_measurements.push(createSuperMeasurement(measureSheet,mName,provinces_names));
+        }
+
+
+        console.log("json data before return",jsonData);
         return jsonData;
     })
     .catch(error => console.error('Error fetching the Excel file:', error));

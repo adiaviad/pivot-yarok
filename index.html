@@ -7,11 +7,17 @@
 <script type="text/javascript" src="code.js"></script>
 <style>
     .madad{
-        width: 45%;
+        width: 100%;
         border: 1px solid;
         border-collapse: collapse;
         justify-content: center;
         align-items: center;
+        margin-left: auto;
+        margin-right: auto;
+        
+    }
+    mamad_tables_holder tr{
+        margin-bottom: 100px;
     }
     table.madad td{
         text-align: center;
@@ -44,8 +50,7 @@
         </td>
     </tr>
 </table>
-<table id="madad al table" class="madad" >
-</table>
+<div id="madad_al_table_container"></div>
 <select id="hon res select"></select>
 
 
@@ -329,14 +334,15 @@
     }
 
 
-    function generateSuperMeasureTable(superMeasure) {
+    function generateSuperMeasureSubTable(superMeasure,containerID) {
         console.log("table data in",superMeasure);
         const columnHeadersArray = superMeasure.measurements_names;
         const rowHeadersArray = superMeasure.provinces_names;
         const measureCollumns = superMeasure.measurements;
-        const table = document.getElementById('madad al table');
-        table.innerHTML="";
-       
+        const table = document.createElement("table");
+        table.classList.add("madad");
+        table.style.maxWidth=(columnHeadersArray.length*150)+"px";
+
         const collumnColorsArray=[];
         for(let i =0;i<measureCollumns.length;i++){
             collumnColorsArray.push(createColorArray(measureCollumns[i]));
@@ -367,14 +373,28 @@
             const rowheaderCell=row.insertCell();
             trh.appendChild(document.createTextNode(rowHeadersArray[rowIndex]));
             rowheaderCell.appendChild(trh);
-            console.log("row I, region",rowIndex,selected_region);
             if(rowIndex==selected_region){
                 rowheaderCell.style.backgroundColor="rgb(4, 113, 214)";
             }
 
         }
+        const tableCOntainer=document.getElementById(containerID);
+        tableCOntainer.appendChild(table);
+        tableCOntainer.appendChild(document.createElement("br"));
+        // const new_row =document.getElementById(tableID).insertRow();
+        // new_row.appendChild(table);
+        // new_row.classList.add("mamad_tables_holder");
+       
     }
 
+    function generateSuperMeasureTables(superMeasureData){
+        const id='madad_al_table_container'
+        const container=document.getElementById(id);
+        container.innerHTML="";
+        for(let i =0; i<superMeasureData.length;i++){
+            generateSuperMeasureSubTable(superMeasureData[i],id);
+        }
+    }
     let resJson;
     let superMeasureData;
     // Call the function to generate the graph
@@ -386,7 +406,8 @@
             superMeasureData=jd.super_measurements;
             generateGraph(resJson);
             populateDropdownSelect(resJson.provinces_names);
-            generateSuperMeasureTable(superMeasureData[0]);
+            generateSuperMeasureTables(superMeasureData);
+
     });
     
     dropdown.addEventListener("change", function() {
@@ -394,7 +415,7 @@
         console.log("Selected Index:", selectedIndex);
         selected_region=selectedIndex;
         generateGraph(resJson);
-        generateSuperMeasureTable(superMeasureData[0]);
+        generateSuperMeasureTables(superMeasureData);
 
     });
 </script>
