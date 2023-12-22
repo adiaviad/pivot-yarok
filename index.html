@@ -5,6 +5,33 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <script type="text/javascript" src="code.js"></script>
+<style>
+    .madad{
+        width: 45%;
+        border: 1px solid;
+        border-collapse: collapse;
+        justify-content: center;
+        align-items: center;
+    }
+    table.madad td{
+        text-align: center;
+        border: 1px solid;
+    }
+    table.madad tr{
+        border: 1px solid;
+        
+    }
+    table.madad th{
+        border: 1px solid;
+        background-color: rgb(6, 53, 128);
+    }
+    trh{
+        margin: 0%;
+        padding: 0%;
+        text-align: left;
+    }
+</style>
+
 <body>
 <h2>WIP</h2>
 <table id="hon res table">
@@ -17,7 +44,7 @@
         </td>
     </tr>
 </table>
-<table id="madad al table">
+<table id="madad al table" class="madad" >
 </table>
 <select id="hon res select"></select>
 
@@ -25,6 +52,9 @@
 </body>
 </html>
 <script>
+    let selected_region=0;
+
+
     // Populate the dropdown with options from the array
     function populateDropdownSelect(stringArray){
         stringArray.forEach((string, index) => {
@@ -34,15 +64,37 @@
             dropdown.add(option);
         });
     }
+    function createColorArray(numbers) {
+        // Sort the array to find percentiles
+        const sortedNumbers = [...numbers].sort((a, b) => a - b);
+
+        // Function to interpolate color based on percentile
+        function interpolateColor(percentile) {
+            const minColor = [255, 0, 0]; // Red
+            const maxColor = [0, 255, 0]; // Green
+
+            const r = Math.round(minColor[0] + (maxColor[0] - minColor[0]) * percentile);
+            const g = Math.round(minColor[1] + (maxColor[1] - minColor[1]) * percentile);
+            const b = Math.round(minColor[2] + (maxColor[2] - minColor[2]) * percentile);
+
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        // Map each number to its corresponding color
+        const colorArray = numbers.map((num) => {
+            const percentile = (sortedNumbers.indexOf(num) + 1) / sortedNumbers.length;
+            return interpolateColor(percentile);
+        });
+
+        return colorArray;
+    }
 
 
-
-    let seleted_region=0;
     const dropdown = document.getElementById("hon res select");
    
     function select_region(){
         const inputElement = document.getElementById("myInput");
-        seleted_region = inputElement.value;
+        selected_region = inputElement.value;
         generateGraph();
 
     }
@@ -176,13 +228,13 @@
             const benchmark=average+standardDeviation;
             statsData.data_sets[0].y.push(benchmark.toFixed(1));
             statsData.data_sets[2].y.push(median.toFixed(1));
-            const selectedDiffFromBench=((1-(dataSet.y[seleted_region]/benchmark))*100);
+            const selectedDiffFromBench=((1-(dataSet.y[selected_region]/benchmark))*100);
             statsData.data_sets[3].y.push(selectedDiffFromBench.toFixed(0));
         
         }
         //special code for selec
-        statsData.data_sets[1].y=jsonData.data_sets[seleted_region].y.map(num=>num.toFixed(1));
-        statsData.data_sets[1].name=jsonData.data_sets[seleted_region].name;
+        statsData.data_sets[1].y=jsonData.data_sets[selected_region].y.map(num=>num.toFixed(1));
+        statsData.data_sets[1].name=jsonData.data_sets[selected_region].name;
         // console.log("stats data", statsData);
         //display to graph
         const resData = [];
@@ -283,11 +335,16 @@
         const rowHeadersArray = superMeasure.provinces_names;
         const measureCollumns = superMeasure.measurements;
         const table = document.getElementById('madad al table');
-        columnHeadersArray.push("שם רשות");
+        table.innerHTML="";
+       
+        const collumnColorsArray=[];
+        for(let i =0;i<measureCollumns.length;i++){
+            collumnColorsArray.push(createColorArray(measureCollumns[i]));
+        }
         console.log("table",columnHeadersArray,rowHeadersArray,measureCollumns);
         // Create the header row with column headers
         const headerRow = table.insertRow();
-        headerRow.insertCell(); // Empty cell for the corner
+        
         for (let colHeader of columnHeadersArray) {
             const th = document.createElement('th');
             th.appendChild(document.createTextNode(colHeader));
@@ -303,10 +360,17 @@
             for (let colIndex = 0; colIndex < measureCollumns.length; colIndex++) {
                 const cell = row.insertCell();
                 cell.appendChild(document.createTextNode(measureCollumns[colIndex][rowIndex]));
+                cell.style.backgroundColor=collumnColorsArray[colIndex][rowIndex];
             }
             // Add row header cell
-            const rowHeaderCell = row.insertCell();
-            rowHeaderCell.appendChild(document.createTextNode(rowHeadersArray[rowIndex]));
+            const trh=document.createElement('trh');
+            const rowheaderCell=row.insertCell();
+            trh.appendChild(document.createTextNode(rowHeadersArray[rowIndex]));
+            rowheaderCell.appendChild(trh);
+            console.log("row I, region",rowIndex,selected_region);
+            if(rowIndex==selected_region){
+                rowheaderCell.style.backgroundColor="rgb(4, 113, 214)";
+            }
 
         }
     }
@@ -328,7 +392,9 @@
     dropdown.addEventListener("change", function() {
         const selectedIndex = this.value;
         console.log("Selected Index:", selectedIndex);
-        seleted_region=selectedIndex;
+        selected_region=selectedIndex;
         generateGraph(resJson);
+        generateSuperMeasureTable(superMeasureData[0]);
+
     });
 </script>

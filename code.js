@@ -62,6 +62,7 @@ function createSuperMeasurement(measureData,name,provinces_names){
     console.log("measurement ranges",measurementsRanges);
 
     result.measurements_names=measureData[startOfProvinces-1].slice(rangeStart,rangeEnd);
+    result.measurements_names.push("שם רשות");
     console.log("mesurement names",result.measurements_names,measureData[startOfProvinces-1]);
 
     console.log("startOfProvinces",startOfProvinces);
