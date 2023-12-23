@@ -26,7 +26,6 @@
     }
     table.madad tr{
         border: 1px solid;
-        
     }
     table.madad th{
         border: 1px solid;
@@ -37,10 +36,33 @@
         padding: 0%;
         text-align: left;
     }
+    hon_graphic{
+        width:100%;
+        max-width:700px"
+    }
+    .super_measure_title{
+        color: crimson;
+        justify-content: center;
+        text-align: center;
+    }
+    .madad_container{
+        justify-content: center;
+        align-items: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .table-title{
+        font-size: 1.5em;
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+        background-color: #05fc11;
+    }
 </style>
 
 <body>
 <h2>WIP</h2>
+<div id="graphics"></div>
 <table id="hon res table">
     <tr>
         <td>
@@ -74,11 +96,15 @@
     function select_region(){
         const inputElement = document.getElementById("myInput");
         selected_region = inputElement.value;
-        generateGraph();
+        
 
     }
     let resJson;
     let superMeasureData;
+    // const honResGraphContainer=document.getElementById("hon res graph");
+    // const honResBenchContainer=document.getElementById("hon res benchmark diff");
+    // const containerMadad=document.getElementById('madad_al_table_container');
+    const graphicsContainer=document.getElementById("graphics");
     // Call the function to generate the graph
     getResourceData('hon_planning_and_dev.xlsx')
         .then(jd=>{
@@ -86,18 +112,17 @@
             console.log("promise from code.js, profile",jd.res_profline);
             resJson=jd.res_profline;
             superMeasureData=jd.super_measurements;
-            generateGraph(resJson);
             populateDropdownSelect(resJson.provinces_names);
-            generateSuperMeasureTables(superMeasureData);
+            generateGraphics(jd,graphicsContainer);
+            
+            dropdown.addEventListener("change", function() {
+                const selectedIndex = this.value;
+                console.log("Selected Index:", selectedIndex);
+                selected_region=selectedIndex;
+                generateGraphics(jd,graphicsContainer);
+            });
 
     });
     
-    dropdown.addEventListener("change", function() {
-        const selectedIndex = this.value;
-        console.log("Selected Index:", selectedIndex);
-        selected_region=selectedIndex;
-        generateGraph(resJson);
-        generateSuperMeasureTables(superMeasureData);
-
-    });
+    
 </script>

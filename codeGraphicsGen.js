@@ -80,7 +80,7 @@ function invertDatasets(jsonToInvert){
 
 
 
-function generateGraph(jsonData) {
+function generateGraph(jsonData,containerGraph, containerBench) {
 
     //invert axis
     
@@ -245,14 +245,15 @@ function generateGraph(jsonData) {
         annotations:benchDiffAnnotations
 
     }
-    Plotly.newPlot("hon res graph", resData.slice(0,3), resLayout);
-    Plotly.newPlot("hon res benchmark diff", resData.slice(3,4), diffLayout);
+    Plotly.newPlot(containerGraph, resData.slice(0,3), resLayout);
+    Plotly.newPlot(containerBench, resData.slice(3,4), diffLayout);
     // console.log("resdata[3]",[resData[3]]);
 }
 
 
-function generateSuperMeasureSubTable(superMeasure,containerID) {
+function generateSuperMeasureSubTable(superMeasure,container) {
     console.log("table data in",superMeasure);
+    const superMeasureName=superMeasure.super_measure_name;
     const columnHeadersArray = superMeasure.measurements_names;
     const rowHeadersArray = superMeasure.provinces_names;
     const measureCollumns = superMeasure.measurements;
@@ -295,20 +296,45 @@ function generateSuperMeasureSubTable(superMeasure,containerID) {
         }
 
     }
-    const tableCOntainer=document.getElementById(containerID);
-    tableCOntainer.appendChild(table);
-    tableCOntainer.appendChild(document.createElement("br"));
+    
+    const title=document.createElement("p");
+    title.classList.add("super_measure_title");
+    title.textContent=superMeasureName;
+    title.classList.add("table-title");
+
+    container.appendChild(title);
+    container.appendChild(table);
+    container.appendChild(document.createElement("br"));
     // const new_row =document.getElementById(tableID).insertRow();
     // new_row.appendChild(table);
     // new_row.classList.add("mamad_tables_holder");
     
 }
 
-function generateSuperMeasureTables(superMeasureData){
-    const id='madad_al_table_container'
-    const container=document.getElementById(id);
+function generateSuperMeasureTables(superMeasureData,container){
     container.innerHTML="";
     for(let i =0; i<superMeasureData.length;i++){
-        generateSuperMeasureSubTable(superMeasureData[i],id);
+        generateSuperMeasureSubTable(superMeasureData[i],container);
     }
+}
+
+function generateGraphics(honData,container){
+    container.innerHTML=""
+    const honTable =document.createElement("table");
+    const honRow=honTable.insertRow();
+    const honResGraphContainer=honRow.insertCell();
+    const honResBenchContainer=honRow.insertCell();
+    honResBenchContainer.classList.add("hon_graphic");
+    honResGraphContainer.classList.add("hon_graphic");
+    container.appendChild(honTable);
+
+    const containerMadad= document.createElement("div");
+    containerMadad.classList.add("madad_container")
+
+    container.appendChild(containerMadad);
+    const resJson=honData.res_profline;
+    const superMeasureData=honData.super_measurements;
+
+    generateGraph(resJson,honResGraphContainer,honResBenchContainer);
+    generateSuperMeasureTables(superMeasureData,containerMadad);
 }
