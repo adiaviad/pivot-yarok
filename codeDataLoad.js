@@ -59,18 +59,14 @@ function createSuperMeasurement(measureData,name,provinces_names){
     const measurementsRanges=getDefinedIndexes(measureData[0]);
     const rangeStart=measurementsRanges[1];
     const rangeEnd=measurementsRanges[2];
-    console.log("measurement ranges",measurementsRanges);
 
     result.measurements_names=measureData[startOfProvinces-1].slice(rangeStart,rangeEnd);
     result.measurements_names.push("שם רשות");
-    console.log("mesurement names",result.measurements_names);
 
-    console.log("startOfProvinces",startOfProvinces,getDefinedIndexes(measureData.map(row=>row[0])));
     //start at the fourth line bc the first three have attributes names
     for(let j=rangeStart;j<rangeEnd;j++){
         const collumn=[];
         for(let i=startOfProvinces;i<measureData.length;i++){
-            console.log("i,j",i,j);
             if(measureData[i].length<1){
                 break;
             }
@@ -78,7 +74,6 @@ function createSuperMeasurement(measureData,name,provinces_names){
         }
         result.measurements.push(collumn); 
     }
-    console.log("end of supermeasure gen");
     return result;
 }
 
@@ -110,7 +105,6 @@ function getResourceData(XLSXName){
             ]
         };
         const resData = XLSX.utils.sheet_to_json(resSheet, { header: 1 });
-        console.log("measuresdsnames",measurementsNames);
 
         const provinces_names=[];
         for(let i=1;i<resData.length;i++){
@@ -119,13 +113,10 @@ function getResourceData(XLSXName){
             }
             provinces_names.push(resData[i][0]);
         }
-        console.log("json data begin",jsonData);
         jsonData.res_profline=createResProfile(resData,resName,provinces_names);
 
         for(const mName of measurementsNames){
-            console.log("mname",mName);
             const measureSheet=XLSX.utils.sheet_to_json(workbook.Sheets[mName], {header:1 });
-            console.log("measureSHeet",measureSheet);
             jsonData.super_measurements.push(createSuperMeasurement(measureSheet,mName,provinces_names));
         }
 

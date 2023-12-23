@@ -1,12 +1,18 @@
 
 function createColorArray(numbers) {
     // Sort the array to find percentiles
-    const sortedNumbers = [...numbers].sort((a, b) => a - b);
-
+    let sortedNumbers = [...numbers].sort((a, b) => a - b);
+    sortedNumbers=Array.from(new Set(sortedNumbers)); 
+    const maxNumber=Math.max(...numbers);
+    const minNumber=Math.min(...numbers);
+    const diffMaxMin=maxNumber-minNumber;
+    if(diffMaxMin<=0){
+        diffMaxMin=1;
+    }
     // Function to interpolate color based on percentile
     function interpolateColor(percentile) {
-        const minColor = [200, 0, 0]; // Red
-        const maxColor = [0, 200, 0]; // Green
+        const minColor = [247, 25, 28]; // Red
+        const maxColor = [38, 191, 79]; // Green
 
         const r = Math.round(minColor[0] + (maxColor[0] - minColor[0]) * percentile);
         const g = Math.round(minColor[1] + (maxColor[1] - minColor[1]) * percentile);
@@ -18,6 +24,9 @@ function createColorArray(numbers) {
     // Map each number to its corresponding color
     const colorArray = numbers.map((num) => {
         const percentile = (sortedNumbers.indexOf(num) + 1) / sortedNumbers.length;
+        if(num==10){
+            console.log("sorted array, precintile, current vlaue  ",sortedNumbers,percentile,num);
+        }
         return interpolateColor(percentile);
     });
 
@@ -74,7 +83,6 @@ function invertDatasets(jsonToInvert){
 
         invertedData.data_sets.push(invertedSet);
     }
-    console.log("invertDatasets",invertedData);
     return invertedData;
 }
 
@@ -252,7 +260,6 @@ function generateGraph(jsonData,containerGraph, containerBench) {
 
 
 function generateSuperMeasureSubTable(superMeasure,container) {
-    console.log("table data in",superMeasure);
     const superMeasureName=superMeasure.super_measure_name;
     const columnHeadersArray = superMeasure.measurements_names;
     const rowHeadersArray = superMeasure.provinces_names;
@@ -265,7 +272,7 @@ function generateSuperMeasureSubTable(superMeasure,container) {
     for(let i =0;i<measureCollumns.length;i++){
         collumnColorsArray.push(createColorArray(measureCollumns[i]));
     }
-    console.log("table",columnHeadersArray,rowHeadersArray,measureCollumns);
+    // console.log("table",columnHeadersArray,rowHeadersArray,measureCollumns);
     // Create the header row with column headers
     const headerRow = table.insertRow();
     
