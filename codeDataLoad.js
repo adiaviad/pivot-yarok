@@ -85,13 +85,14 @@ function createSuperMeasurement(measureData,name,provinces_names){
 
 
 
-function getResourceData(){
-    return fetch('hon_planning_and_dev.xlsx')
+function getResourceData(XLSXName){
+    return fetch(XLSXName)
     .then(response => response.arrayBuffer())
     .then(data => {
         const workbook = XLSX.read(data, { type: 'array' });
         //the third sheet is the one with "משאב הון"
-        const resName = workbook.SheetNames[2];
+
+        const resName = filterStringsStartingWith(workbook.SheetNames,"משאב")[0];
         const resSheet = workbook.Sheets[resName];
         
         const measurementsNames=filterStringsStartingWith(workbook.SheetNames,"מדד");
