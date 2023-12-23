@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-<script type="text/javascript" src="code.js"></script>
+<script type="text/javascript" src="codeDataLoad.js"></script>
 <style>
     .madad{
         width: 100%;
@@ -398,7 +398,7 @@
     let resJson;
     let superMeasureData;
     // Call the function to generate the graph
-    getResourceData()
+    getResourceData('hon_planning_and_dev.xlsx')
         .then(jd=>{
             console.log("promise from code.js",jd);
             console.log("promise from code.js, profile",jd.res_profline);
