@@ -300,7 +300,6 @@ function generateSuperMeasureSubTable(superMeasure,container) {
     const title=document.createElement("p");
     title.classList.add("super_measure_title");
     title.textContent=superMeasureName;
-    title.classList.add("table-title");
 
     container.appendChild(title);
     container.appendChild(table);
@@ -326,10 +325,11 @@ function generateGraphics(honData,container){
     const honResBenchContainer=honRow.insertCell();
     honResBenchContainer.classList.add("hon_graphic");
     honResGraphContainer.classList.add("hon_graphic");
+    honTable.classList.add("hon_table");
     container.appendChild(honTable);
 
     const containerMadad= document.createElement("div");
-    containerMadad.classList.add("madad_container")
+    containerMadad.classList.add("centered")
 
     container.appendChild(containerMadad);
     const resJson=honData.res_profline;
