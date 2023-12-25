@@ -144,9 +144,7 @@ function generateGraph(jsonData,containerGraph, containerBench) {
                 "width":"0.4",
                 "legendgroup": "group2",
                 "color":"rgba(14, 1, 102, 1)" //dark blue
-            }
-            
-            
+            }          
         ]
     };
 
