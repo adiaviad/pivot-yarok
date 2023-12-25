@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script type="text/javascript" src="../server/codeDataLoad.js"></script>
+    <script type="text/javascript" src="js/codeGraphicsGen.js"></script>
+
+    <body>
+        <h2>WIP</h2>
+        <select id="hon res select" class="selector"></select>
+        <div id="graphicsContainer" class="centered"></div>
+
+    </body>
+</html>
+<script>
+    var selected_region=0;
+    const dropdown = document.getElementById("hon res select");
+
+    // Populate the dropdown with options from the array
+    function populateDropdownSelect(stringArray){
+        stringArray.forEach((string, index) => {
+            const option = document.createElement("option");
+            option.text = string;
+            option.value = index;
+            dropdown.add(option);
+        });
+    }
+   
+    function select_region(){
+        const inputElement = document.getElementById("myInput");
+        selected_region = inputElement.value;
+        
+
+    }
+    let resJson;
+    let superMeasureData;
+    // const honResGraphContainer=document.getElementById("hon res graph");
+    // const honResBenchContainer=document.getElementById("hon res benchmark diff");
+    // const containerMadad=document.getElementById('madad_al_table_container');
+    const graphicsContainer=document.getElementById("graphicsContainer");
+    function generateGraphicsFor(xslxName){
+        const xlsxGraphicContainer=document.createElement("div");
+        xlsxGraphicContainer.classList.add("centered");
+        xlsxGraphicContainer.classList.add("xlsxGraphicContainer")
+        graphicsContainer.appendChild(xlsxGraphicContainer);
+
+        getResourceData(xslxName)
+            .then(jd=>{
+                console.log("promise from code.js",jd);
+                console.log("promise from code.js, profile",jd.res_profline);
+                resJson=jd.res_profline;
+                superMeasureData=jd.super_measurements;
+                populateDropdownSelect(resJson.provinces_names);
+                generateGraphics(jd,xlsxGraphicContainer);
+                
+                dropdown.addEventListener("change", function() {
+                    const selectedIndex = this.value;
+                    console.log("Selected Index:", selectedIndex);
+                    selected_region=selectedIndex;
+                    generateGraphics(jd,xlsxGraphicContainer);
+                });
+
+        });
+    }
+    generateGraphicsFor("hon_planning_and_dev.xlsx");
+    generateGraphicsFor("hon_planning_and_dev.xlsx");
+    
+</script>
