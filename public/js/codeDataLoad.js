@@ -80,49 +80,54 @@ function createSuperMeasurement(measureData,name,provinces_names){
 
 
 
-function getResourceData(XLSXName){
-    return fetch(XLSXName)
-    .then(response => response.arrayBuffer())
-    .then(data => {
-        const workbook = XLSX.read(data, { type: 'array' });
-        //the third sheet is the one with "משאב הון"
-
-        const resName = filterStringsStartingWith(workbook.SheetNames,"משאב")[0];
-        const resSheet = workbook.Sheets[resName];
-        
-        const measurementsNames=filterStringsStartingWith(workbook.SheetNames,"מדד");
-
-        let jsonData = {
-            "res_profline": {},
-            "super_measurements":[
-                // example:
-                // {
-                //     "super_measure_name":"",
-                //     "provinces_names":[],   
-                //     "measurements_names":[],
-                //     "measurements":[[]]// array of collumns (collumn is an array)
-                // }
-            ]
-        };
-        const resData = XLSX.utils.sheet_to_json(resSheet, { header: 1 });
-
-        const provinces_names=[];
-        for(let i=1;i<resData.length;i++){
-            if(resData[i].length<1){
-                break;
+function covertTableToJson(table){
+    
+    //the third sheet is the one with "משאב הון"
+    const tableSlices={
+        "planning_and_dev":{
+            "hon":{
+                name:"משאב פיתוח ותכנון",
+                slice:{
+                    end:
+                }
             }
-            provinces_names.push(resData[i][0]);
         }
-        jsonData.res_profline=createResProfile(resData,resName,provinces_names);
+    }
+    const res = filterStringsStartingWith(workbook.SheetNames,"משאב")[0];
+    const resSheet = workbook.Sheets[resName];
+    
+    const measurementsNames=filterStringsStartingWith(workbook.SheetNames,"מדד");
 
-        for(const mName of measurementsNames){
-            const measureSheet=XLSX.utils.sheet_to_json(workbook.Sheets[mName], {header:1 });
-            jsonData.super_measurements.push(createSuperMeasurement(measureSheet,mName,provinces_names));
+    let jsonData = {
+        "res_profline": {},
+        "super_measurements":[
+            // example:
+            // {
+            //     "super_measure_name":"",
+            //     "provinces_names":[],   
+            //     "measurements_names":[],
+            //     "measurements":[[]]// array of collumns (collumn is an array)
+            // }
+        ]
+    };
+    const resData = XLSX.utils.sheet_to_json(resSheet, { header: 1 });
+
+    const provinces_names=[];
+    for(let i=1;i<resData.length;i++){
+        if(resData[i].length<1){
+            break;
         }
+        provinces_names.push(resData[i][0]);
+    }
+    jsonData.res_profline=createResProfile(resData,resName,provinces_names);
+
+    for(const mName of measurementsNames){
+        const measureSheet=XLSX.utils.sheet_to_json(workbook.Sheets[mName], {header:1 });
+        jsonData.super_measurements.push(createSuperMeasurement(measureSheet,mName,provinces_names));
+    }
 
 
-        console.log("json data before return",jsonData);
-        return jsonData;
-    })
-    .catch(error => console.error('Error fetching the Excel file:', error));
+    console.log("json data before return",table);
+    return json;
+
 }

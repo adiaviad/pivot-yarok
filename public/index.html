@@ -63,13 +63,13 @@
 
         });
     }
-    generateGraphicsFor("hon_planning_and_dev.xlsx");
+    // generateGraphicsFor("hon_planning_and_dev.xlsx");
     // generateGraphicsFor("hon_planning_and_dev.xlsx");
 
     // Your client-side JavaScript code here
     fetch('/api/getData')
     .then(response => response.json())
-    .then(data => console.log("from table in index",data))
+    .then(data => covertTableToJson(data))
     .catch(error => console.error('Error fetching data:', error));
 
 </script>

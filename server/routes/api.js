@@ -9,7 +9,9 @@ router.get('/getData', (req, res) => {
       res.status(500).send('Internal Server Error');
       return;
     }
+    console.log("query json", results);
     res.json(results);
+    
   });
 });
 
