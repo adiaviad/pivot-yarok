@@ -6,6 +6,15 @@ app.use(express.static('public'));
 app.use('/api', apiRoutes);
 
 const PORT = 3000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+// Handle shutdown gracefully
+process.on('SIGINT', () => {
+  console.log('\nServer is shutting down...');
+  server.close(() => {
+    console.log('Server shut down gracefully.');
+    process.exit(0);
+  });
 });
