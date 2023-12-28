@@ -5,7 +5,8 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-    <script type="text/javascript" src="../server/codeDataLoad.js"></script>
+    <!-- <script type="text/javascript" src="../server/codeDataLoad.js"></script> -->
+    <!-- <script type="text/javascript" src="../server/db.js"></script> -->
     <script type="text/javascript" src="js/codeGraphicsGen.js"></script>
 
     <body>
@@ -50,7 +51,6 @@
         getResourceData(xslxName)
             .then(jd=>{
                 console.log("promise from code.js",jd);
-                console.log("promise from code.js, profile",jd.res_profline);
                 resJson=jd.res_profline;
                 superMeasureData=jd.super_measurements;
                 populateDropdownSelect(resJson.provinces_names);
@@ -58,14 +58,19 @@
                 
                 dropdown.addEventListener("change", function() {
                     const selectedIndex = this.value;
-                    console.log("Selected Index:", selectedIndex);
                     selected_region=selectedIndex;
                     generateGraphics(jd,xlsxGraphicContainer);
                 });
 
         });
     }
-    generateGraphicsFor("hon_planning_and_dev.xlsx");
-    generateGraphicsFor("hon_planning_and_dev.xlsx");
-    
+    // generateGraphicsFor("hon_planning_and_dev.xlsx");
+    // generateGraphicsFor("hon_planning_and_dev.xlsx");
+
+    // Your client-side JavaScript code here
+    fetch('/api/getData')
+    .then(response => response.json())
+    .then(data => console.log("from table in index",data))
+    .catch(error => console.error('Error fetching data:', error));
+
 </script>

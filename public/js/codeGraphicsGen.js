@@ -24,9 +24,6 @@ function createColorArray(numbers) {
     // Map each number to its corresponding color
     const colorArray = numbers.map((num) => {
         const percentile = (sortedNumbers.indexOf(num) + 1) / sortedNumbers.length;
-        if(num==10){
-            console.log("sorted array, precintile, current vlaue  ",sortedNumbers,percentile,num);
-        }
         return interpolateColor(percentile);
     });
 
