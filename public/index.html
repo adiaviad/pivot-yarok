@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-    <script type="text/javascript" src="../server/codeDataLoad.js"></script>
+    <script type="text/javascript" src="js/codeDataLoad.js"></script>
     <script type="text/javascript" src="js/codeGraphicsGen.js"></script>
 
     <body>
@@ -41,31 +41,34 @@
     // const honResBenchContainer=document.getElementById("hon res benchmark diff");
     // const containerMadad=document.getElementById('madad_al_table_container');
     const graphicsContainer=document.getElementById("graphicsContainer");
-    function generateGraphicsFor(xslxName){
+    function generateGraphicsFor(jd){
         const xlsxGraphicContainer=document.createElement("div");
         xlsxGraphicContainer.classList.add("centered");
         xlsxGraphicContainer.classList.add("xlsxGraphicContainer")
         graphicsContainer.appendChild(xlsxGraphicContainer);
 
-        getResourceData(xslxName)
-            .then(jd=>{
-                console.log("promise from code.js",jd);
-                console.log("promise from code.js, profile",jd.res_profline);
-                resJson=jd.res_profline;
-                superMeasureData=jd.super_measurements;
-                populateDropdownSelect(resJson.provinces_names);
-                generateGraphics(jd,xlsxGraphicContainer);
-                
-                dropdown.addEventListener("change", function() {
-                    const selectedIndex = this.value;
-                    console.log("Selected Index:", selectedIndex);
-                    selected_region=selectedIndex;
-                    generateGraphics(jd,xlsxGraphicContainer);
-                });
 
+        console.log("promise from code.js",jd);
+        resJson=jd.res_profline;
+        superMeasureData=jd.super_measurements;
+        populateDropdownSelect(resJson.provinces_names);
+        generateGraphics(jd,xlsxGraphicContainer);
+        
+        dropdown.addEventListener("change", function() {
+            const selectedIndex = this.value;
+            selected_region=selectedIndex;
+            generateGraphics(jd,xlsxGraphicContainer);
         });
+
+
     }
-    generateGraphicsFor("hon_planning_and_dev.xlsx");
-    generateGraphicsFor("hon_planning_and_dev.xlsx");
-    
+    // generateGraphicsFor("hon_planning_and_dev.xlsx");
+    // generateGraphicsFor("hon_planning_and_dev.xlsx");
+
+    // Your client-side JavaScript code here
+    fetch('/api/getData')
+    .then(response => response.json())
+    .then(data => generateGraphicsFor(covertTableToJson(data)))
+    .catch(error => console.error('Error fetching data:', error));
+
 </script>

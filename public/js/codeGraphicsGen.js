@@ -24,9 +24,6 @@ function createColorArray(numbers) {
     // Map each number to its corresponding color
     const colorArray = numbers.map((num) => {
         const percentile = (sortedNumbers.indexOf(num) + 1) / sortedNumbers.length;
-        if(num==10){
-            console.log("sorted array, precintile, current vlaue  ",sortedNumbers,percentile,num);
-        }
         return interpolateColor(percentile);
     });
 
@@ -154,6 +151,7 @@ function generateGraph(jsonData,containerGraph, containerBench) {
         const median=calculateMedian(dataSet.y)
         const average=calculateAverage(dataSet.y);
         const benchmark=average+standardDeviation;
+        
         statsData.data_sets[0].y.push(benchmark.toFixed(1));
         statsData.data_sets[2].y.push(median.toFixed(1));
         const selectedDiffFromBench=((1-(dataSet.y[selected_region]/benchmark))*100);
