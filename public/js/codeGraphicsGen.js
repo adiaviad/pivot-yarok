@@ -151,6 +151,7 @@ function generateGraph(jsonData,containerGraph, containerBench) {
         const median=calculateMedian(dataSet.y)
         const average=calculateAverage(dataSet.y);
         const benchmark=average+standardDeviation;
+        
         statsData.data_sets[0].y.push(benchmark.toFixed(1));
         statsData.data_sets[2].y.push(median.toFixed(1));
         const selectedDiffFromBench=((1-(dataSet.y[selected_region]/benchmark))*100);
