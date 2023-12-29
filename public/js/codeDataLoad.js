@@ -95,14 +95,14 @@ function covertTableToJson(table){
                 {
                     name:"מדד על תכנון",
                     slice:{
-                        start:1,
+                        start:11,
                         end:14
                     }
                 },
                 {
                     name:"מדד על פיתוח",
                     slice:{
-                        start:18,
+                        start:36,
                         end:40
                     }
                 },
