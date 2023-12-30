@@ -33,7 +33,7 @@ function createResProfile(resDataRowsValues, name,provinces_names,XLabels){
     const result={
         "provinces_names": provinces_names,
         "resource_name": name,
-        "x": XLabels,
+        "x": XLabels.map(name =>fixName(name)),
         "data_sets": []
     }
     //start with the second line bc the first line is the names of recources
@@ -51,7 +51,7 @@ function createSuperMeasurement(measureDataRowsValues,name,provinces_names,measu
     result={
         "super_measure_name":name,
         "provinces_names":provinces_names,   
-        "measurements_names":measurements_names,
+        "measurements_names":measurements_names.map(name=>fixName(name)),
         "measurements":[]//array of collumns
     };
 
@@ -66,7 +66,9 @@ function createSuperMeasurement(measureDataRowsValues,name,provinces_names,measu
 
     return result;
 }
-
+function fixName(name){
+    return name.replace("b", ' (').replace("b", ') ').replace("d","-").replace(/_/g, ' ');
+}
 
 
 
