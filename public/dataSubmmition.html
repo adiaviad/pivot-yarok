@@ -10,12 +10,22 @@
 <body>
     <input type="file" id="csvFileInput" accept=".csv">
     <button onclick="readCSV()">Read CSV</button>
-    
-</body>
 
+</body>
+<script>
+</script>
 
 <script>
-    fetch('api/getColumnNames').then(response => response.json()).then(data=>console.log("collumns names", data.map(row=>row["COLUMN_NAME"]))) //was for testing
+    fetch('api/getColumnNames').then(response => response.json()).then(data=>{
+        // console.log("collumns names", data.map(row=>row["COLUMN_NAME"]));
+        let s="";
+        for(let i=0;i<data.length;i++){
+            s+=data[i]["COLUMN_NAME"]+",";
+        }
+        console.log(s);
+    }
+    ); //was for testing
+    
 
     function processData(csvData) {
         // Process the CSV data as needed
@@ -24,7 +34,45 @@
            alert('the file cannot have more than 1 line');
            return
         }
-        console.log("row",csvData[0]);
+        csvRow=csvData[0];
+        console.log("csv first row", csvRow);
+        let allCollumns={};
+        fetch('api/getColumnNames').then(response => response.json()).then(data=>{
+            for(let i=0;i<data.length;i++){
+                const columnName = data[i]["COLUMN_NAME"];
+                allCollumns[columnName]=csvRow[i];
+            }
+            
+            const d =JSON.stringify(allCollumns); 
+            console.log("stringfy",d);
+            
+            fetch('api/insertData', {
+                method: 'POST',
+                body: d,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+               
+            })
+            .then(response => {
+                if (!response.ok) {
+                    console.log("repose",response);
+                throw new Error('Network response was not ok');
+                }
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert("נתונים הוזנו בהצלחה")
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error)
+            });
+        });
+
+
+
+
     }
     function readCSV() {
         const fileInput = document.getElementById('csvFileInput');
