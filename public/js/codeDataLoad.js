@@ -73,16 +73,10 @@ function fixName(name){
 
 
 function covertTableToJson(table){
-    console.log(table);
-    console.log(table[0]);
-    console.log("keys",Object.keys( table[0]));
-    console.log("values",Object.values( table[0]));
-    // console.log(Object.keys(table[0]).map(key=>table[0][key]));
+    console.log("table to json",table);
     const firstKey=Object.keys(table[0])[0];
 
-    console.log("first key",firstKey);
     const provinces_names=table.map(row=>row[firstKey]);
-    console.log("provinces names",provinces_names);
 
     //the third sheet is the one with "משאב הון"
     const resourceSlices=
@@ -113,18 +107,13 @@ function covertTableToJson(table){
         },
     ];
 
-    // console.log("resourceSlices[0].supermeasure[0] ",resourceSlices[0].super_measures[0]);
     const resRows=sliceTableToValues(table,resourceSlices[0].slice);
     const resKeys=sliceTableToKeys(table,resourceSlices[0].slice);
-    // console.log("res rows ",resRows);
-    console.log("res keys ",resKeys);
     const planningRows=sliceTableToValues(table,resourceSlices[0].super_measures[0].slice);
     const planningKeys=sliceTableToKeys(table,resourceSlices[0].super_measures[0].slice);
-    // console.log("planning rows: ", planningRows);
     const devRows=sliceTableToValues(table,resourceSlices[0].super_measures[1].slice);
     const devKeys=sliceTableToKeys(table,resourceSlices[0].super_measures[1].slice);
 
-    // console.log("dev rows: ", devRows);
     let jsonData = {
         "res_profline": {},
         "super_measurements":[

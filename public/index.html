@@ -51,22 +51,22 @@
     // const containerMadad=document.getElementById('madad_al_table_container');
     const graphicsContainer=document.getElementById("graphicsContainer");
     function generateGraphicsFor(jd){
-        const xlsxGraphicContainer=document.createElement("div");
-        xlsxGraphicContainer.classList.add("centered");
-        xlsxGraphicContainer.classList.add("xlsxGraphicContainer")
-        graphicsContainer.appendChild(xlsxGraphicContainer);
+        const graphicContainer=document.createElement("div");
+        graphicContainer.classList.add("centered");
+        graphicContainer.classList.add("graphicContainer")
+        graphicsContainer.appendChild(graphicContainer);
 
 
         console.log("promise from code.js",jd);
         resJson=jd.res_profline;
         superMeasureData=jd.super_measurements;
         populateDropdownSelect(resJson.provinces_names);
-        generateGraphics(jd,xlsxGraphicContainer);
+        generateGraphics(jd,graphicContainer);
         
         dropdown.addEventListener("change", function() {
             const selectedIndex = this.value;
             selected_region=selectedIndex;
-            generateGraphics(jd,xlsxGraphicContainer);
+            generateGraphics(jd,graphicContainer);
         });
 
 
@@ -78,5 +78,4 @@
     .then(data => generateGraphicsFor(covertTableToJson(data)))
     .catch(error => console.error('Error fetching data:', error));
 
-    
 </script>
