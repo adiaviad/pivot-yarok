@@ -1,3 +1,12 @@
+function averageOf(numbers) {
+    if (numbers.length === 0) {
+        return 0; // Avoid division by zero for an empty array
+    }
+
+    const sum = numbers.reduce((acc, value) => acc + value, 0);
+    const average = sum / numbers.length;
+    return average;
+}
 function sliceTableToValues(table,s){
     return table.map(row=>Object.values(row).slice(s.start,s.end+1));
 }
@@ -52,7 +61,8 @@ function createSuperMeasurement(measureDataRowsValues,name,provinces_names,measu
         "super_measure_name":name,
         "provinces_names":provinces_names,   
         "measurements_names":measurements_names.map(name=>fixName(name)),
-        "measurements":[]//array of collumns
+        "measurements":[],//array of collumns
+        "normalized_measurements":[]
     };
 
 
@@ -61,6 +71,7 @@ function createSuperMeasurement(measureDataRowsValues,name,provinces_names,measu
     for(let i=0;i<measurements_names.length;i++){
         const collumn=measureDataRowsValues.map(row=> parseFloat(row[i]));
         result.measurements.push(collumn); 
+        result.normalized_measurements.push(normalizeNumbers(collumn,10));
     }
     result.measurements_names.push("שם רשות");
 
@@ -70,23 +81,65 @@ function fixName(name){
     return name.replace("b", ' (').replace("b", ') ').replace("d","-").replace(/_/g, ' ');
 }
 
+function getResourceLabels(superMeasures){
+    let labels=superMeasures.map(measure=>measure.name);
+    labels.push("ממוצע");
+    return labels;
+}
+function normalizeNumbers(numbers,mul){
+    const maxValue = Math.max(...numbers);
+    const normalizedNumbers= numbers.map(num=>(mul*num)/maxValue);
+    return normalizedNumbers;
+}
+function createHonProfile(resSlice,table,provinces_names){
+    const resKeys=getResourceLabels(resSlice.super_measures);
+    let resRows =[];
 
+    let honProfile = {
+        "res_profline": {},
+        "super_measurements":[
+            // example:
+            // {
+            //     "super_measure_name":"",
+            //     "provinces_names":[],   
+            //     "measurements_names":[],
+            //     "measurements":[[]],// array of collumns (collumn is an array)
+            //     "normalized_measurements": [[]]     
+            // }
+        ]
+    };
+    for  (let i =0; i<resSlice.super_measures.length;i++){
+        const rows=sliceTableToValues(table,resSlice.super_measures[i].slice);
+        const keys=sliceTableToKeys(table,resSlice.super_measures[i].slice);
+        honProfile.super_measurements.push(createSuperMeasurement(rows,resSlice.super_measures[i].name,provinces_names,keys));
+    }
+    for (let i =0; i<provinces_names.length;i++ ){
+        resRows.push(honProfile.super_measurements.
+            map(sm=>averageOf(sm.normalized_measurements.
+                map(coll=>coll[i]))))
+    }
+
+    resRows.forEach(row=>row.push(averageOf(row)))
+    
+    honProfile.res_profline=createResProfile(resRows,resSlice.name,provinces_names,resKeys);
+
+
+    return honProfile;
+
+}
 
 function covertTableToJson(table){
     console.log("table to json",table);
     const firstKey=Object.keys(table[0])[0];
 
     const provinces_names=table.map(row=>row[firstKey]);
-
+    const honProfiles=[]
     //the third sheet is the one with "משאב הון"
     const resourceSlices=
     [ 
         {
             name:"משאב פיתוח ותכנון",
-            slice:{
-                start:15,
-                end:17
-            },
+            
             super_measures:[
                 {
                     name:"מדד על תכנון",
@@ -98,43 +151,18 @@ function covertTableToJson(table){
                 {
                     name:"מדד על פיתוח",
                     slice:{
-                        start:36,
-                        end:40
+                        start:33,
+                        end:37
                     }
                 },
             
             ]
         },
     ];
-
-    const resRows=sliceTableToValues(table,resourceSlices[0].slice);
-    const resKeys=sliceTableToKeys(table,resourceSlices[0].slice);
-    const planningRows=sliceTableToValues(table,resourceSlices[0].super_measures[0].slice);
-    const planningKeys=sliceTableToKeys(table,resourceSlices[0].super_measures[0].slice);
-    const devRows=sliceTableToValues(table,resourceSlices[0].super_measures[1].slice);
-    const devKeys=sliceTableToKeys(table,resourceSlices[0].super_measures[1].slice);
-
-    let jsonData = {
-        "res_profline": {},
-        "super_measurements":[
-            // example:
-            // {
-            //     "super_measure_name":"",
-            //     "provinces_names":[],   
-            //     "measurements_names":[],
-            //     "measurements":[[]]// array of collumns (collumn is an array)
-            // }
-        ]
-    };
-    jsonData.res_profline=createResProfile(resRows,resourceSlices[0].name,provinces_names,resKeys);
-    for  (let i =0; i<resourceSlices[0].super_measures.length;i++){
-        const rows=sliceTableToValues(table,resourceSlices[0].super_measures[i].slice);
-        const keys=sliceTableToKeys(table,resourceSlices[0].super_measures[i].slice);
-        jsonData.super_measurements.push(createSuperMeasurement(rows,resourceSlices[0].super_measures[i].name,provinces_names,keys));
-    }
-  
-
-    console.log("json data before return",jsonData);
-    return jsonData;
-
+    resourceSlices.forEach(slice=>{
+        honProfiles.push(createHonProfile(slice,table,provinces_names));
+    });
+    
+    return honProfiles[0];
+    
 }

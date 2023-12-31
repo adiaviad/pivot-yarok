@@ -30,11 +30,13 @@ router.get('/getColumnNames', (req, res) => {
   });
 });
 
-
+function validateInsertData(req){
+  return true;
+}
 router.post('/insertData', (req, res) => {
   const { ...columns } = req.body;
   // Check if all required fields are provided
-  if (Object.values(columns).length!=41) {
+  if (!validateInsertData(req)) {
     res.status(400).send('Bad Request: All required fields are not provided.');
     return;
   }
