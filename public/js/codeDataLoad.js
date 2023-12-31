@@ -113,20 +113,17 @@ function createHonProfile(resSlice,table,provinces_names){
         const keys=sliceTableToKeys(table,resSlice.super_measures[i].slice);
         honProfile.super_measurements.push(createSuperMeasurement(rows,resSlice.super_measures[i].name,provinces_names,keys));
     }
-    console.log("super of hon profile",honProfile);
     for (let i =0; i<provinces_names.length;i++ ){
         resRows.push(honProfile.super_measurements.
             map(sm=>averageOf(sm.normalized_measurements.
                 map(coll=>coll[i]))))
     }
-    console.log("hon profile before avrage",honProfile);
 
     resRows.forEach(row=>row.push(averageOf(row)))
     
     honProfile.res_profline=createResProfile(resRows,resSlice.name,provinces_names,resKeys);
 
 
-    console.log("honprofile",honProfile);
     return honProfile;
 
 }
@@ -154,8 +151,8 @@ function covertTableToJson(table){
                 {
                     name:"מדד על פיתוח",
                     slice:{
-                        start:36,
-                        end:40
+                        start:33,
+                        end:37
                     }
                 },
             
