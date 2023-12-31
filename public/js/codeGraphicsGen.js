@@ -356,7 +356,7 @@ function generateGraphicsFor(container,jd,firstSelection){
 
     const dropdown=document.createElement("select");
     dropdown.classList.add("selector");
-
+    
     const graphicContainer=document.createElement("div");
     graphicContainer.classList.add("centered");
     graphicContainer.classList.add("graphicContainer");
@@ -371,6 +371,7 @@ function generateGraphicsFor(container,jd,firstSelection){
     
     populateDropdownSelect(dropdown,resJson.provinces_names);
     generateGraphics(jd,graphicContainer,selected_region);
+    dropdown.selectedIndex=selected_region;
     
     dropdown.addEventListener("change", function() {
         const selectedIndex = this.value;

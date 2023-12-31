@@ -58,12 +58,25 @@
         console.log(s);
     }
     ); //was for testing
-    
-    function previewData(csvData){
-        console.log("csv in preview",csvData);
+    function validateCSV(csvData){
         if (csvData.length>1){
            alert('the file cannot have more than 1 line');
-           return;
+           return false;
+        }
+        if(Object.keys(csvData[0]).length!=41){
+            alert('wrong number of measures');
+            return false;
+        }
+
+
+        return true;
+    }
+
+
+    function previewData(csvData){
+        console.log("csv in preview",csvData);
+        if(!validateCSV(csvData)){
+            return;
         }
         const csvRow=csvData[0];
         const newTableRow={};
