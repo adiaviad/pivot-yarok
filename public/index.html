@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="style.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script type="text/javascript" src="js/codeDataLoad.js"></script>
@@ -11,7 +11,7 @@
     <body>
         <h2>WIP</h2>
         <button onclick="redirectToSubmit()">לעומד הכנסת מידע</button>
-        <select id="hon res select" class="selector"></select>
+        
         <div id="graphicsContainer" class="centered"></div>
 
     </body>
@@ -26,56 +26,23 @@
 
 
 <script>
-    var selected_region=0;
-    const dropdown = document.getElementById("hon res select");
+    
+    // const dropdown = document.getElementById("hon_res_select");
     // Populate the dropdown with options from the array
-    function populateDropdownSelect(stringArray){
-        stringArray.forEach((string, index) => {
-            const option = document.createElement("option");
-            option.text = string;
-            option.value = index;
-            dropdown.add(option);
-        });
-    }
    
-    function select_region(){
-        const inputElement = document.getElementById("myInput");
-        selected_region = inputElement.value;
-        
-
-    }
+  
     let resJson;
     let superMeasureData;
     // const honResGraphContainer=document.getElementById("hon res graph");
     // const honResBenchContainer=document.getElementById("hon res benchmark diff");
     // const containerMadad=document.getElementById('madad_al_table_container');
     const graphicsContainer=document.getElementById("graphicsContainer");
-    function generateGraphicsFor(jd){
-        const graphicContainer=document.createElement("div");
-        graphicContainer.classList.add("centered");
-        graphicContainer.classList.add("graphicContainer")
-        graphicsContainer.appendChild(graphicContainer);
-
-
-        console.log("promise from code.js",jd);
-        resJson=jd.res_profline;
-        superMeasureData=jd.super_measurements;
-        populateDropdownSelect(resJson.provinces_names);
-        generateGraphics(jd,graphicContainer);
-        
-        dropdown.addEventListener("change", function() {
-            const selectedIndex = this.value;
-            selected_region=selectedIndex;
-            generateGraphics(jd,graphicContainer);
-        });
-
-
-    }
+   
     
     // Your client-side JavaScript code here
     fetch('/api/getData')
     .then(response => response.json())
-    .then(data => generateGraphicsFor(covertTableToJson(data)))
+    .then(data => generateGraphicsFor(graphicsContainer,covertTableToJson(data),0))
     .catch(error => console.error('Error fetching data:', error));
 
 </script>

@@ -82,10 +82,18 @@ function invertDatasets(jsonToInvert){
     }
     return invertedData;
 }
+function populateDropdownSelect(dropdown,stringArray){
+    stringArray.forEach((string, index) => {
+        const option = document.createElement("option");
+        option.text = string;
+        option.value = index;
+        dropdown.add(option);
+    });
+}
 
 
 
-function generateGraph(jsonData,containerGraph, containerBench) {
+function generateGraph(jsonData,containerGraph, containerBench,selected_region) {
 
     //invert axis
     
@@ -255,7 +263,7 @@ function generateGraph(jsonData,containerGraph, containerBench) {
 }
 
 
-function generateSuperMeasureSubTable(superMeasure,container) {
+function generateSuperMeasureSubTable(superMeasure,container,selected_region) {
     const superMeasureName=superMeasure.super_measure_name;
     const columnHeadersArray = superMeasure.measurements_names;
     const rowHeadersArray = superMeasure.provinces_names;
@@ -313,14 +321,14 @@ function generateSuperMeasureSubTable(superMeasure,container) {
     
 }
 
-function generateSuperMeasureTables(superMeasureData,container){
+function generateSuperMeasureTables(superMeasureData,container,selected_region){
     container.innerHTML="";
     for(let i =0; i<superMeasureData.length;i++){
-        generateSuperMeasureSubTable(superMeasureData[i],container);
+        generateSuperMeasureSubTable(superMeasureData[i],container,selected_region);
     }
 }
 
-function generateGraphics(honData,container){
+function generateGraphics(honData,container,selected_region){
     container.innerHTML=""
     const honTable =document.createElement("table");
     const honRow=honTable.insertRow();
@@ -338,6 +346,37 @@ function generateGraphics(honData,container){
     const resJson=honData.res_profline;
     const superMeasureData=honData.super_measurements;
 
-    generateGraph(resJson,honResGraphContainer,honResBenchContainer);
-    generateSuperMeasureTables(superMeasureData,containerMadad);
+    generateGraph(resJson,honResGraphContainer,honResBenchContainer,selected_region);
+    generateSuperMeasureTables(superMeasureData,containerMadad,selected_region);
+}
+function generateGraphicsFor(container,jd,firstSelection){
+    let selected_region=firstSelection;
+    let resJson=jd.res_profline;
+    let superMeasureData=jd.super_measurements;
+
+    const dropdown=document.createElement("select");
+    dropdown.classList.add("selector");
+
+    const graphicContainer=document.createElement("div");
+    graphicContainer.classList.add("centered");
+    graphicContainer.classList.add("graphicContainer");
+
+    container.appendChild(dropdown);
+    container.appendChild(graphicContainer);
+
+
+
+
+    console.log("promise from code.js",jd);
+    
+    populateDropdownSelect(dropdown,resJson.provinces_names);
+    generateGraphics(jd,graphicContainer,selected_region);
+    
+    dropdown.addEventListener("change", function() {
+        const selectedIndex = this.value;
+        selected_region=selectedIndex;
+        generateGraphics(jd,graphicContainer,selected_region);
+    });
+
+
 }
