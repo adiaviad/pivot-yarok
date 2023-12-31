@@ -220,6 +220,7 @@ function generatePlots(jsonData,containerGraph, containerBench,selected_region) 
                 size: 16,  // Set the font size
                 color: 'black'  // Set the font color
             },
+           
         });
         //bar annotations
         resAnnotations.push({
@@ -233,6 +234,7 @@ function generatePlots(jsonData,containerGraph, containerBench,selected_region) 
                 size: 16,  // Set the font size
                 color: 'white'  // Set the font color
             },
+            
         });
         //
         benchDiffAnnotations.push({
@@ -246,15 +248,21 @@ function generatePlots(jsonData,containerGraph, containerBench,selected_region) 
                 size: 16,  // Set the font size
                 color: 'white'  // Set the font color
             },
+            
         });
     }
     const resLayout = {
         title: jsonData.resource_name,
-        annotations:resAnnotations
+        annotations:resAnnotations,
+        // plot_bgcolor: '#00f000',
+        // paper_bgcolor:'#00f000'
+        
     };
     const diffLayout={
         title:"Benchmark פער באחוזים מה",
-        annotations:benchDiffAnnotations
+        annotations:benchDiffAnnotations,
+        // plot_bgcolor: '#00f000',
+        // paper_bgcolor:'#00f000'
 
     }
     Plotly.newPlot(containerGraph, resData.slice(0,3), resLayout);
