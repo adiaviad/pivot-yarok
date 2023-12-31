@@ -58,6 +58,12 @@
         console.log(s);
     }
     ); //was for testing
+
+
+
+    function calculateSuperMeasures(measures){
+        
+    }
     function validateCSV(csvData){
         if (csvData.length>1){
            alert('the file cannot have more than 1 line');
@@ -75,9 +81,7 @@
 
     function previewData(csvData){
         console.log("csv in preview",csvData);
-        if(!validateCSV(csvData)){
-            return;
-        }
+       
         const csvRow=csvData[0];
         const newTableRow={};
         
@@ -87,7 +91,6 @@
         fetch('/api/getData')
         .then(response => response.json())
         .then(data => {
-            console.log("data before row added",data);
 
             const columnKeys=Object.keys(data[0]);
             for(let i=0;i<columnKeys.length;i++){
@@ -111,10 +114,7 @@
     function processData(csvData) {
     // Process the CSV data as needed
         // For example, log each row to the console
-        if (csvData.length>1){
-           alert('the file cannot have more than 1 line');
-           return
-        }
+       
         csvRow=csvData[0];
         console.log("csv first row", csvRow);
         let allCollumns={};
@@ -172,7 +172,9 @@
                     complete: function (result) {
                         // Result.data is an array of arrays containing the CSV values
                         console.log("reading csv",result.data);
-                        
+                        if(!validateCSV(result.data)){
+                            return;
+                        }
                         // Process the CSV data as needed
                         funcProcess(result.data);
                     },
