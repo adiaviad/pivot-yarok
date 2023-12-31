@@ -93,7 +93,7 @@ function populateDropdownSelect(dropdown,stringArray){
 
 
 
-function generateGraph(jsonData,containerGraph, containerBench,selected_region) {
+function generatePlots(jsonData,containerGraph, containerBench,selected_region) {
 
     //invert axis
     
@@ -327,8 +327,8 @@ function generateSuperMeasureTables(superMeasureData,container,selected_region){
         generateSuperMeasureSubTable(superMeasureData[i],container,selected_region);
     }
 }
-
-function generateGraphics(honData,container,selected_region){
+//עבור משאב הון יחיד
+function generateGraphicsForHon(honData,container,selected_region){
     container.innerHTML=""
     const honTable =document.createElement("table");
     const honRow=honTable.insertRow();
@@ -346,9 +346,10 @@ function generateGraphics(honData,container,selected_region){
     const resJson=honData.res_profline;
     const superMeasureData=honData.super_measurements;
 
-    generateGraph(resJson,honResGraphContainer,honResBenchContainer,selected_region);
+    generatePlots(resJson,honResGraphContainer,honResBenchContainer,selected_region);
     generateSuperMeasureTables(superMeasureData,containerMadad,selected_region);
 }
+
 function generateGraphicsFor(container,jd,firstSelection){
     let selected_region=firstSelection;
     let resJson=jd.res_profline;
@@ -370,13 +371,13 @@ function generateGraphicsFor(container,jd,firstSelection){
     console.log("promise from code.js",jd);
     
     populateDropdownSelect(dropdown,resJson.provinces_names);
-    generateGraphics(jd,graphicContainer,selected_region);
+    generateGraphicsForHon(jd,graphicContainer,selected_region);
     dropdown.selectedIndex=selected_region;
     
     dropdown.addEventListener("change", function() {
         const selectedIndex = this.value;
         selected_region=selectedIndex;
-        generateGraphics(jd,graphicContainer,selected_region);
+        generateGraphicsForHon(jd,graphicContainer,selected_region);
     });
 
 
