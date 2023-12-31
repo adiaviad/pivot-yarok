@@ -61,18 +61,63 @@
 
 
 
-    function calculateSuperMeasures(measures){
-        
+    function calculateSuperMeasures(csvData){
+        const blueprints=[
+            {
+                name:"planning",
+                range:{
+                    start:1,
+                    end:10
+                },
+                calculation:m=>{
+                    const superm=[];
+                    superm.push(m[0]);
+                    superm.push(10*m[1]);
+                    superm.push(m[3]*10000/m[6]);
+                    superm.push(1000*(m[7]/m[4]+m[8]/m[5]+m[9]/m[6])/3);
+                    return superm;
+                }
+            },
+            {
+                name:"planning",
+                range:{
+                    start:11,
+                    end:28
+                },
+                calculation:m=>{
+                    const superm=[];
+                    superm.push((m[3]/m[0]+m[7]/m[1]+m[11]/m[2])/3*1000000);
+                    superm.push(((m[4]/m[0]+m[8]/m[1]+m[12]/m[2])/3)*1000);
+                    superm.push(((m[5]/m[0]+m[9]/m[1]+m[13]/m[2])/3)*1000000);
+                    superm.push(((m[6]/m[0]+m[10]/m[1]+m[14]/m[2])/3)*1000);
+                    superm.push(((m[17]/m[2]+m[16]/m[1]+m[15]/m[0])/3)*1000);
+                    return superm;
+                }
+            }
+        ];
+        console.log(csvData);
+        const all_measures=csvData[0];
+        console.log("all_measure",all_measures);
+        let newRow=[all_measures[0]];
+        blueprints.forEach(bp=>{
+            measures=all_measures.slice(bp.range.start,bp.range.end+1)
+            newRow =newRow.concat(measures);
+            newRow=newRow.concat(bp.calculation(measures));
+            console.log("calcs",bp.calculation(measures));
+            console.log("here in for each bp",measures);
+        });
+        console.log("new row after calculation",newRow);
+        return newRow;
     }
     function validateCSV(csvData){
         if (csvData.length>1){
            alert('the file cannot have more than 1 line');
            return false;
         }
-        if(Object.keys(csvData[0]).length!=41){
-            alert('wrong number of measures');
-            return false;
-        }
+        // if(Object.keys(csvData[0]).length!=38){
+        //     alert('wrong number of measures');
+        //     return false;
+        // }
 
 
         return true;
@@ -82,7 +127,7 @@
     function previewData(csvData){
         console.log("csv in preview",csvData);
        
-        const csvRow=csvData[0];
+        const csvRow=csvData;
         const newTableRow={};
         
         console.log("newTableRow",newTableRow);
@@ -115,7 +160,7 @@
     // Process the CSV data as needed
         // For example, log each row to the console
        
-        csvRow=csvData[0];
+        csvRow=csvData;
         console.log("csv first row", csvRow);
         let allCollumns={};
         fetch('api/getColumnNames').then(response => response.json()).then(data=>{
@@ -176,7 +221,7 @@
                             return;
                         }
                         // Process the CSV data as needed
-                        funcProcess(result.data);
+                        funcProcess(calculateSuperMeasures(result.data));
                     },
                     header: false, // Set to true if the first row contains column headers
                     dynamicTyping: true, // Automatically convert strings to numbers or booleans
