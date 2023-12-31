@@ -50,7 +50,7 @@
 
 <script>
     fetch('api/getColumnNames').then(response => response.json()).then(data=>{
-        // console.log("collumns names", data.map(row=>row["COLUMN_NAME"]));
+        console.log("collumns names", Object.keys(data[0]));
         let s="";
         for(let i=0;i<data.length;i++){
             s+=data[i]["COLUMN_NAME"]+",";
@@ -109,21 +109,24 @@
     }
 
     function processData(csvData) {
-        // Process the CSV data as needed
+    // Process the CSV data as needed
         // For example, log each row to the console
         if (csvData.length>1){
            alert('the file cannot have more than 1 line');
-           return;
+           return
         }
         csvRow=csvData[0];
         console.log("csv first row", csvRow);
         let allCollumns={};
         fetch('api/getColumnNames').then(response => response.json()).then(data=>{
-            for(let i=0;i<data.length;i++){
-                const columnName = data[i]["COLUMN_NAME"];
-                allCollumns[columnName]=csvRow[i];
+            const Keys=Object.keys(data[0]);
+            for(let i=0;i<Keys.length;i++){
+                const columnName = Keys[i];
+                let value =csvRow[i];
+                allCollumns[columnName]=value;
+                console.log(columnName,value);
             }
-            
+            console.log("all columns",allCollumns);
             const d =JSON.stringify(allCollumns); 
             console.log("stringfy",d);
             
@@ -144,7 +147,6 @@
             .then(data => {
                 console.log('Success:', data);
                 alert("נתונים הוזנו בהצלחה")
-                toMainPage();
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -169,7 +171,7 @@
                 Papa.parse(csvContent, {
                     complete: function (result) {
                         // Result.data is an array of arrays containing the CSV values
-                        console.log(result.data);
+                        console.log("reading csv",result.data);
                         
                         // Process the CSV data as needed
                         funcProcess(result.data);

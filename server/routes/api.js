@@ -18,9 +18,7 @@ router.get('/getColumnNames', (req, res) => {
   // const tableName = 'table1'; // Replace with your actual table name
 
   // Query to get column names for the specified table
-  const query = `SELECT COLUMN_NAME
-                 FROM INFORMATION_SCHEMA.COLUMNS
-                 WHERE TABLE_NAME = '${tableName}'`;
+  const query = `SELECT * FROM ` +tableName+ ` LIMIT 1;`;
 
   db.query(query, (error, results) => {
     if (error) {
