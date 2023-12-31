@@ -5,7 +5,7 @@ function createColorArray(numbers) {
     sortedNumbers=Array.from(new Set(sortedNumbers)); 
     const maxNumber=Math.max(...numbers);
     const minNumber=Math.min(...numbers);
-    const diffMaxMin=maxNumber-minNumber;
+    let diffMaxMin=maxNumber-minNumber;
     if(diffMaxMin<=0){
         diffMaxMin=1;
     }
@@ -359,9 +359,9 @@ function generateGraphicsForHon(honData,container,selected_region){
 }
 
 function generateGraphicsFor(container,jd,firstSelection){
+    container.innerHTML="";
     let selected_region=firstSelection;
-    let resJson=jd.res_profline;
-    let superMeasureData=jd.super_measurements;
+    let provinces_names=jd[0].res_profline.provinces_names;
 
     const dropdown=document.createElement("select");
     dropdown.classList.add("selector");
@@ -378,14 +378,17 @@ function generateGraphicsFor(container,jd,firstSelection){
 
     console.log("promise from code.js",jd);
     
-    populateDropdownSelect(dropdown,resJson.provinces_names);
-    generateGraphicsForHon(jd,graphicContainer,selected_region);
+    populateDropdownSelect(dropdown,provinces_names);
+    // for( let i=0;i<jd.length;i++){
+        // generateGraphicsForHon(jd,graphicContainer,selected_region);
+    // }
+    jd.forEach(honProfile=>generateGraphicsForHon(honProfile,graphicContainer,selected_region));
     dropdown.selectedIndex=selected_region;
     
     dropdown.addEventListener("change", function() {
         const selectedIndex = this.value;
         selected_region=selectedIndex;
-        generateGraphicsForHon(jd,graphicContainer,selected_region);
+        jd.forEach(honProfile=>generateGraphicsForHon(honProfile,graphicContainer,selected_region));
     });
 
 

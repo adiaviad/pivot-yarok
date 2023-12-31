@@ -10,8 +10,8 @@
 
     <body>
         <h2>WIP</h2>
-        <button onclick="redirectToSubmit()">לעומד הכנסת מידע</button>
-        
+        <button onclick="redirectToSubmit()" class="selector">לעומד הכנסת מידע</button>
+        <div id='checkbox-container' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
         <div id="graphicsContainer" class="centered"></div>
 
     </body>
@@ -21,28 +21,65 @@
       // Replace 'target.html' with the actual file name or path of the HTML page you want to redirect to
       window.location.href = 'dataSubmmition.html';
     }
+    function updateSelectedCheckboxes() {
+        const selectedCheckboxes = [];
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+        
+        checkboxes.forEach(checkbox => selectedCheckboxes.push(checkbox.id));
+        
+        sortedIDs=selectedCheckboxes.sort((a, b) => a - b);
+
+        console.log(sortedIDs);
+        return sortedIDs;
+
+    }
+    function createCheckboxes(names,func) {
+        const checkboxContainer = document.getElementById('checkbox-container');
+        console.log("names",names);
+        for (let i=0;i<names.length;i++){
+            const name =names[i];
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = name;
+            checkbox.id = i;
+            checkbox.classList.add("checkbox");
+            
+
+            const label = document.createElement('label');
+            label.htmlFor = name;
+            label.appendChild(document.createTextNode(name));
+            const inputContainter=document.createElement('c');
+            inputContainter.appendChild(checkbox);
+            inputContainter.appendChild(label);
+            checkboxContainer.appendChild(inputContainter);
+            
+
+            // Attach change event listener to each checkbox
+            checkbox.addEventListener('change', func);
+        }
+    }
 
 </script>
 
 
 <script>
     
-    // const dropdown = document.getElementById("hon_res_select");
-    // Populate the dropdown with options from the array
-   
-  
-    let resJson;
-    let superMeasureData;
-    // const honResGraphContainer=document.getElementById("hon res graph");
-    // const honResBenchContainer=document.getElementById("hon res benchmark diff");
-    // const containerMadad=document.getElementById('madad_al_table_container');
     const graphicsContainer=document.getElementById("graphicsContainer");
-   
-    
     // Your client-side JavaScript code here
     fetch('/api/getData')
     .then(response => response.json())
-    .then(data => generateGraphicsFor(graphicsContainer,covertTableToJson(data),0))
+    .then(data => {
+        jd=covertTableToJson(data);
+        let provinces_names=jd[0].res_profline.provinces_names;
+        createCheckboxes(provinces_names,()=>{
+            const slectedIDs= updateSelectedCheckboxes();
+            const newData= sortedIDs.map(ID=>data[ID]);
+            if(newData.length>2){
+                generateGraphicsFor(graphicsContainer,covertTableToJson(newData),0);
+            }
+        });
+        generateGraphicsFor(graphicsContainer,jd,0);
+    })
     .catch(error => console.error('Error fetching data:', error));
 
 </script>

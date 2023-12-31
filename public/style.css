@@ -70,3 +70,13 @@ trh{
     margin-bottom: 10%;
     border-top:10px solid black;
 }
+.checkbox_container{
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: row-reverse; /* Reverse the direction to make it right-aligned */
+    align-items: center;
+}
+.checkbox{
+    margin-left: 10px;
+    
+}

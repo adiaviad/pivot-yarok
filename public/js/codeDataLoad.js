@@ -162,7 +162,9 @@ function covertTableToJson(table){
     resourceSlices.forEach(slice=>{
         honProfiles.push(createHonProfile(slice,table,provinces_names));
     });
-    
-    return honProfiles[0];
+    console.log("first prof", honProfiles[0]);
+    console.log("profiles", honProfiles);
+
+    return honProfiles;
     
 }
