@@ -3,6 +3,7 @@ const app = express();
 const apiRoutes = require('./routes/api');
 
 app.use(express.static('public'));
+app.use(express.json());
 app.use('/api', apiRoutes);
 
 const PORT = 3000;
