@@ -10,6 +10,7 @@
 
     <body>
         <h2>WIP</h2>
+        <h2 id="loading" class="loading" style="display: nono; align-self: center;">טוען</h2>
         <button onclick="redirectToSubmit()" class="selector">לעומד הכנסת מידע</button>
         <div id='checkbox-container' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
         <div id="graphicsContainer" class="centered"></div>
@@ -17,15 +18,20 @@
     </body>
 </html>
 <script>
+    function loadingPopup(text,timeout_ms){
+        const l=document.getElementById("loading");
+        l.style.display='flex';
+        setTimeout(()=> {l.style.display='none';},timeout_ms);
+    }
     function redirectToSubmit() {
       // Replace 'target.html' with the actual file name or path of the HTML page you want to redirect to
       window.location.href = 'dataSubmmition.html';
     }
-    function updateSelectedCheckboxes() {
+    function updateSelectedCheckboxes(group) {
         const selectedCheckboxes = [];
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-        
-        checkboxes.forEach(checkbox => selectedCheckboxes.push(checkbox.id));
+        const checkboxes = document.querySelectorAll(`.${group} input[type="checkbox"]:checked`);
+
+        checkboxes.forEach(checkbox => selectedCheckboxes.push(checkbox.value));
         
         sortedIDs=selectedCheckboxes.sort((a, b) => a - b);
 
@@ -33,15 +39,16 @@
         return sortedIDs;
 
     }
-    function createCheckboxes(names,func) {
+    function createCheckboxes(names,group,func) {
         const checkboxContainer = document.getElementById('checkbox-container');
+        checkboxContainer.classList.add(group);
         console.log("names",names);
         for (let i=0;i<names.length;i++){
             const name =names[i];
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.value = name;
-            checkbox.id = i;
+            checkbox.value = i;
+            checkbox.id = '${group}-${name}';
             checkbox.classList.add("checkbox");
             
 
@@ -71,10 +78,11 @@
     .then(data => {
         jd=covertTableToJson(data);
         let provinces_names=jd[0].res_profline.provinces_names;
-        createCheckboxes(provinces_names,()=>{
-            const slectedIDs= updateSelectedCheckboxes();
+        createCheckboxes(provinces_names,"provinces",()=>{
+            const slectedIDs= updateSelectedCheckboxes("provinces");
             const newData= sortedIDs.map(ID=>data[ID]);
             if(newData.length>2){
+                loadingPopup('טוען ',500);
                 generateGraphicsFor(graphicsContainer,covertTableToJson(newData),0);
             }
         });
