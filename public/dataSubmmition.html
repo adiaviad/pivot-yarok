@@ -140,7 +140,12 @@
             const columnKeys=Object.keys(data[0]);
             for(let i=0;i<columnKeys.length;i++){
                 const columnName = columnKeys[i];
-                newTableRow[columnName]=csvRow[i].toString();
+                if(i==0){
+                    newTableRow[columnName]=csvRow[i].toString();
+                }
+                else {
+                    newTableRow[columnName]=csvRow[i].toFixed(2).toString();
+                }
             }
             console.log("newTableRow after input",newTableRow);
 
