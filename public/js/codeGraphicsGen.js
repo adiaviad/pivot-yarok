@@ -5,7 +5,7 @@ function createColorArray(numbers) {
     sortedNumbers=Array.from(new Set(sortedNumbers)); 
     const maxNumber=Math.max(...numbers);
     const minNumber=Math.min(...numbers);
-    const diffMaxMin=maxNumber-minNumber;
+    let diffMaxMin=maxNumber-minNumber;
     if(diffMaxMin<=0){
         diffMaxMin=1;
     }
@@ -336,8 +336,12 @@ function generateSuperMeasureTables(superMeasureData,container,selected_region){
     }
 }
 //עבור משאב הון יחיד
-function generateGraphicsForHon(honData,container,selected_region){
+function generateGraphicsForHon(honData,container,selected_region,updateFilters){
     container.innerHTML=""
+    const displayFilter= document.createElement("div");
+    displayFilter.classList.add("displayFilter");
+    container.appendChild(displayFilter);
+
     const honTable =document.createElement("table");
     const honRow=honTable.insertRow();
     const honResGraphContainer=honRow.insertCell();
@@ -356,12 +360,13 @@ function generateGraphicsForHon(honData,container,selected_region){
 
     generatePlots(resJson,honResGraphContainer,honResBenchContainer,selected_region);
     generateSuperMeasureTables(superMeasureData,containerMadad,selected_region);
+    updateFilters();
 }
 
-function generateGraphicsFor(container,jd,firstSelection){
+function generateGraphicsFor(container,jd,firstSelection,updateFilters){
+    container.innerHTML="";
     let selected_region=firstSelection;
-    let resJson=jd.res_profline;
-    let superMeasureData=jd.super_measurements;
+    let provinces_names=jd[0].res_profline.provinces_names;
 
     const dropdown=document.createElement("select");
     dropdown.classList.add("selector");
@@ -378,14 +383,16 @@ function generateGraphicsFor(container,jd,firstSelection){
 
     console.log("promise from code.js",jd);
     
-    populateDropdownSelect(dropdown,resJson.provinces_names);
-    generateGraphicsForHon(jd,graphicContainer,selected_region);
+    populateDropdownSelect(dropdown,provinces_names);
+   
+    jd.forEach(honProfile=>generateGraphicsForHon(honProfile,graphicContainer,selected_region,updateFilters));
     dropdown.selectedIndex=selected_region;
     
     dropdown.addEventListener("change", function() {
         const selectedIndex = this.value;
         selected_region=selectedIndex;
-        generateGraphicsForHon(jd,graphicContainer,selected_region);
+        jd.forEach(honProfile=>generateGraphicsForHon(honProfile,graphicContainer,selected_region,updateFilters));
+        
     });
 
 

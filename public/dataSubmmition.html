@@ -149,7 +149,7 @@
             const selected_region=data.length-1;
             const previewContainer=document.getElementById("previewGraphicsContainer");
 
-            generateGraphicsFor(previewContainer,covertTableToJson(data),selected_region);
+            generateGraphicsFor(previewContainer,covertTableToJson(data),selected_region,()=>0);
         })
         .catch(error => console.error('Error fetching data:', error));
 
