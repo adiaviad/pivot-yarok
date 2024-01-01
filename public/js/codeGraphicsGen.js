@@ -252,7 +252,7 @@ function generatePlots(jsonData,containerGraph, containerBench,selected_region) 
         });
     }
     const bgcolor = 'rgba(220, 220, 220,1)';
-    const bodycolor= 'rgba(142, 255, 132,1)';
+    const bodycolor= 'rgb(195, 255, 190)';
     console.log("bodycolor",bodycolor);
     const resLayout = {
         title: jsonData.resource_name,
