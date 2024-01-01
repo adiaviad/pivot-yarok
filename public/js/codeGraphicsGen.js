@@ -336,8 +336,12 @@ function generateSuperMeasureTables(superMeasureData,container,selected_region){
     }
 }
 //עבור משאב הון יחיד
-function generateGraphicsForHon(honData,container,selected_region){
+function generateGraphicsForHon(honData,container,selected_region,updateFilters){
     container.innerHTML=""
+    const displayFilter= document.createElement("div");
+    displayFilter.classList.add("displayFilter");
+    container.appendChild(displayFilter);
+
     const honTable =document.createElement("table");
     const honRow=honTable.insertRow();
     const honResGraphContainer=honRow.insertCell();
@@ -356,9 +360,10 @@ function generateGraphicsForHon(honData,container,selected_region){
 
     generatePlots(resJson,honResGraphContainer,honResBenchContainer,selected_region);
     generateSuperMeasureTables(superMeasureData,containerMadad,selected_region);
+    updateFilters();
 }
 
-function generateGraphicsFor(container,jd,firstSelection){
+function generateGraphicsFor(container,jd,firstSelection,updateFilters){
     container.innerHTML="";
     let selected_region=firstSelection;
     let provinces_names=jd[0].res_profline.provinces_names;
@@ -379,16 +384,15 @@ function generateGraphicsFor(container,jd,firstSelection){
     console.log("promise from code.js",jd);
     
     populateDropdownSelect(dropdown,provinces_names);
-    // for( let i=0;i<jd.length;i++){
-        // generateGraphicsForHon(jd,graphicContainer,selected_region);
-    // }
-    jd.forEach(honProfile=>generateGraphicsForHon(honProfile,graphicContainer,selected_region));
+   
+    jd.forEach(honProfile=>generateGraphicsForHon(honProfile,graphicContainer,selected_region,updateFilters));
     dropdown.selectedIndex=selected_region;
     
     dropdown.addEventListener("change", function() {
         const selectedIndex = this.value;
         selected_region=selectedIndex;
-        jd.forEach(honProfile=>generateGraphicsForHon(honProfile,graphicContainer,selected_region));
+        jd.forEach(honProfile=>generateGraphicsForHon(honProfile,graphicContainer,selected_region,updateFilters));
+        
     });
 
 

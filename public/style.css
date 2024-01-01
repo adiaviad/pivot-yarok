@@ -21,6 +21,8 @@ table.madad tr{
 table.madad th{
     border: 1px solid;
     background-color: rgb(6, 53, 128);
+    color:azure;
+    border-color: black;
 }
 trh{
     margin: 0%;
@@ -78,5 +80,14 @@ trh{
 }
 .checkbox{
     margin-left: 10px;
-    
+}
+.displayFilter{
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    font-size: 1.1em;
+    height: auto;
+    text-align: center;
 }

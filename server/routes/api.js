@@ -53,7 +53,6 @@ router.post('/insertData', (req, res) => {
   // Binding values to placeholders dynamically
   const values = Object.values(columns);
 
-  // Using parameterized query to prevent SQL injection
   db.query(query, values, (error, results) => {
     if (error) {
       console.error('Error executing query:', error);
