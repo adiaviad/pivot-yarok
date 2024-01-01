@@ -251,18 +251,21 @@ function generatePlots(jsonData,containerGraph, containerBench,selected_region) 
             
         });
     }
+    const bgcolor = 'rgba(220, 220, 220,1)';
+    const bodycolor= 'rgba(142, 255, 132,1)';
+    console.log("bodycolor",bodycolor);
     const resLayout = {
         title: jsonData.resource_name,
         annotations:resAnnotations,
-        // plot_bgcolor: '#00f000',
-        // paper_bgcolor:'#00f000'
+        plot_bgcolor: bgcolor,
+        paper_bgcolor:bodycolor
         
     };
     const diffLayout={
         title:"Benchmark פער באחוזים מה",
         annotations:benchDiffAnnotations,
-        // plot_bgcolor: '#00f000',
-        // paper_bgcolor:'#00f000'
+        plot_bgcolor: bgcolor,
+        paper_bgcolor:bodycolor
 
     }
     Plotly.newPlot(containerGraph, resData.slice(0,3), resLayout);

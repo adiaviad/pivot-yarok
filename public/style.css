@@ -1,3 +1,7 @@
+ 
+body{
+    background-color: rgb(142, 255, 132);
+} 
 .madad{
     width: 100%;
     border: 1px solid;
@@ -24,21 +28,39 @@ table.madad th{
     color:azure;
     border-color: black;
 }
+tbody{
+    background-color: '#00f000';
+}
 trh{
     margin: 0%;
     padding: 0%;
     text-align: left;
+    background-color: white;
 }
 .hon_table{
     margin-left: auto;
     margin-right: auto;
+    background-color: '#00f000';
+    padding: 0%;
 }
-
+.hon_table tbody{
+    padding: 0%;
+    background-color: '#00f000';
+}
+.hon_table tr{
+    padding: 0%;
+    background-color: '#00f000';
+}
+.hon_table td{
+    padding:0%;
+    background-color: '#00f000';
+}
 .hon_graphic{
     width:50%;
     max-width:700px;
     margin-left: auto;
     margin-right: auto;
+    padding: 0%;
 
 }
 .super_measure_title{
@@ -70,6 +92,8 @@ trh{
 }
 .graphicContainer{
     margin-bottom: 10%;
+    padding: 0%;
+    
     border-top:10px solid black;
 }
 .checkbox_container{
@@ -91,3 +115,4 @@ trh{
     height: auto;
     text-align: center;
 }
+
