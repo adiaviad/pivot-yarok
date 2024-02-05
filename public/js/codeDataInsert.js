@@ -39,19 +39,28 @@ function previewData(csvData){
 }
 
 function processData(csvData) {
+    const userPassword=document.getElementById("passwordInput").value;
+    console.log("password",userPassword);
     csvRow=csvData;
     console.log("csv first row", csvRow);
     let allCollumns={};
     fetch('api/getColumnNames').then(response => response.json()).then(data=>{
         const Keys=Object.keys(data[0]);
+        if(csvRow.length!=Keys.length){
+            alert("מספר נתונים במסמך לא תואם את מספרים הנתונים הדרושים "+ Keys.length);
+            return;
+        }
         for(let i=0;i<Keys.length;i++){
             const columnName = Keys[i];
             let value =csvRow[i];
             allCollumns[columnName]=value;
             console.log(columnName,value);
         }
+
         console.log("all columns",allCollumns);
-        const d =JSON.stringify(allCollumns); 
+       
+        const dataAndUserinfo={"data":allCollumns,"userInfo":{"pass":userPassword}};
+        const d =JSON.stringify(dataAndUserinfo); 
         console.log("stringfy",d);
         
         fetch('api/insertData', {
@@ -63,9 +72,17 @@ function processData(csvData) {
             
         })
         .then(response => {
+            console.log(response);
             if (!response.ok) {
                 console.log("repose",response);
-            throw new Error('Network response was not ok');
+                switch( response.status){
+                    case 401:
+                        throw new Error("password does not match");
+                    case 422:
+                        throw new Error("number of parameters in the input does not match the database");
+                    default:
+                        throw new Error("internal server error");
+                }
             }
         })
         .then(data => {
