@@ -92,7 +92,7 @@
     
     const graphicsContainer=document.getElementById("graphicsContainer");
     // Your client-side JavaScript code here
-    fetch('/api/getData')
+    fetch('/api/getData/2021')
     .then(response => response.json())
     .then(data => {
         jd=covertTableToJson(data);

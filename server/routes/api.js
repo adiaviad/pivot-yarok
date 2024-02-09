@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db/db');
-const tableName='tabl1';
-router.get('/getData', (req, res) => {
-  db.query('SELECT * FROM '+tableName, (error, results) => {
+const tableName='table';
+router.get('/getData/:year', (req, res) => {
+  db.query('SELECT * FROM '+tableName+req.params.year, (error, results) => {
     if (error) {
       console.error('Error executing query:', error);
       res.status(500).send('Internal Server Error');
@@ -14,11 +14,10 @@ router.get('/getData', (req, res) => {
   });
 });
 
-router.get('/getColumnNames', (req, res) => {
-  // const tableName = 'table1'; // Replace with your actual table name
+router.get('/getColumnNames/:year', (req, res) => {
 
   // Query to get column names for the specified table
-  const query = `SELECT * FROM ` +tableName+ ` LIMIT 1;`;
+  const query = `SELECT * FROM ` +tableName+req.params.year+ ` LIMIT 1;`;
 
   db.query(query, (error, results) => {
     if (error) {
@@ -30,15 +29,15 @@ router.get('/getColumnNames', (req, res) => {
   });
 });
 
-function validateInsertData(columns,pass,errFunc,successFunc){
+function validateInsertData(year,columns,pass,errFunc,successFunc){
   if (pass !=="iamapassword"){
     console.log("recieved password",pass);
     errFunc({ok:false,error:"password doesn't match",code:401});
     return false;
   }
   else {
-    const query = `SELECT * FROM ` +tableName+ ` LIMIT 1;`;
-
+    const query = `SELECT * FROM ` +tableName+year+ ` LIMIT 1;`;
+    console.log("quary", query);
     db.query(query, (error, results) => {
       if (error) {
         console.error('Error executing query:', error);
@@ -51,9 +50,11 @@ function validateInsertData(columns,pass,errFunc,successFunc){
       console.log("DB columns",DBcolumnNumber);
       console.log("user columns",inputColumnsNumber);
       if ( inputColumnsNumber==DBcolumnNumber){
+        console.log("was successful ")
         successFunc();
       }
       else{
+        console.log("there was an error")
         errFunc({ok:false,error:"number of parameters doesn't match with database",code:422})
       }
       
@@ -62,12 +63,13 @@ function validateInsertData(columns,pass,errFunc,successFunc){
 
   
 }
-router.post('/insertData', (req, res) => {
+router.post('/insertData/:year', (req, res) => {
   const { ...columns } = req.body.data;
   const password=req.body.userInfo.pass;
+  const year=req.params.year;
 
   // Check if all required fields are provided
- validateInsertData(columns,password,
+ validateInsertData(year,columns,password,
     err=>{
       res.status(err.code).send();
     },
@@ -77,7 +79,7 @@ router.post('/insertData', (req, res) => {
       const placeholders = Object.keys(columns).fill('?').join(', ');
 
       const query = `
-        INSERT INTO tabl1 (${columnsList})
+        INSERT INTO ${tableName+year} (${columnsList})
         VALUES (${placeholders})
       `;
 
@@ -86,7 +88,12 @@ router.post('/insertData', (req, res) => {
       db.query(query, values, (error, results) => {
         if (error) {
           console.error('Error executing query:', error);
-          res.status(500).send('Internal Server Error');
+          if (error.code=="ER_DUP_ENTRY"){
+            res.status(409).send("duplicate record");
+          }
+          else{
+            res.status(500).send('Internal Server Error');
+          }
           return;
         }
         console.log("Data inserted successfully:", results);

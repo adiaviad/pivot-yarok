@@ -15,7 +15,7 @@ function validateCSV(csvData){
 function previewData(csvData){
     const csvRow=csvData;
     const newTableRow={};
-    fetch('/api/getData')
+    fetch('/api/getData/2021')
     .then(response => response.json())
     .then(data => {
         const columnKeys=Object.keys(data[0]);
@@ -44,7 +44,7 @@ function processData(csvData) {
     csvRow=csvData;
     console.log("csv first row", csvRow);
     let allCollumns={};
-    fetch('api/getColumnNames').then(response => response.json()).then(data=>{
+    fetch('api/getColumnNames/2021').then(response => response.json()).then(data=>{
         const Keys=Object.keys(data[0]);
         if(csvRow.length!=Keys.length){
             alert("מספר נתונים במסמך לא תואם את מספרים הנתונים הדרושים "+ Keys.length);
@@ -63,7 +63,7 @@ function processData(csvData) {
         const d =JSON.stringify(dataAndUserinfo); 
         console.log("stringfy",d);
         
-        fetch('api/insertData', {
+        fetch('api/insertData/2021', {
             method: 'POST',
             body: d,
             headers: {
@@ -77,11 +77,13 @@ function processData(csvData) {
                 console.log("repose",response);
                 switch( response.status){
                     case 401:
-                        throw new Error("password does not match");
+                        throw new Error("הסיסמא לא נכונה");
                     case 422:
-                        throw new Error("number of parameters in the input does not match the database");
+                        throw new Error("הוכנס מספר לא צפוי של נתונים");
+                    case 409:
+                        throw new Error("נתונים עבור הרשות כבר הוזנו השנה")
                     default:
-                        throw new Error("internal server error");
+                        throw new Error("בעית שרת לא ידועה");
                 }
             }
         })
