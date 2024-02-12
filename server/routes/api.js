@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db/db');
 const tableName='table';
+db.clo
 router.get('/getData/:year', (req, res) => {
   db.query('SELECT * FROM '+tableName+req.params.year, (error, results) => {
     if (error) {
@@ -13,9 +14,23 @@ router.get('/getData/:year', (req, res) => {
     
   });
 });
-
+router.get("/allyears",(req,res)=>{
+  const query  = `SELECT * FROM years;`
+  db.query(query,(error,results)=>{
+    if(error){
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.json(results);
+  })
+});
 router.get('/getColumnNames/:year', (req, res) => {
 
+  if(!isFinite(req.params.year)){
+    res.send(422);
+    return;
+  }
   // Query to get column names for the specified table
   const query = `SELECT * FROM ` +tableName+req.params.year+ ` LIMIT 1;`;
 
@@ -36,7 +51,8 @@ function validateInsertData(year,columns,pass,errFunc,successFunc){
     return false;
   }
   else {
-    const query = `SELECT * FROM ` +tableName+year+ ` LIMIT 1;`;
+    //2021 is the first table in the db is i know it has data. the rest might not have
+    const query = `SELECT * FROM ` +tableName+2021+ ` LIMIT 1;`;
     console.log("quary", query);
     db.query(query, (error, results) => {
       if (error) {
@@ -44,6 +60,7 @@ function validateInsertData(year,columns,pass,errFunc,successFunc){
         errFunc({ok:false,error:"internal error",code:500})
         return false;
       }
+      console.log(results);
       console.log("validate insert data",Object.keys(results[0]));
       DBcolumnNumber=Object.keys(results[0]).length;
       inputColumnsNumber=Object.keys(columns).length;
@@ -63,6 +80,7 @@ function validateInsertData(year,columns,pass,errFunc,successFunc){
 
   
 }
+
 router.post('/insertData/:year', (req, res) => {
   const { ...columns } = req.body.data;
   const password=req.body.userInfo.pass;
@@ -97,13 +115,40 @@ router.post('/insertData/:year', (req, res) => {
           return;
         }
         console.log("Data inserted successfully:", results);
+        db.query(`INSERT INTO years (year) VALUES (${year});`, (error, results) =>{
+          if(error){
+            console.log("error years",error);
+          }
+          else{
+            console.log("results years",year);
+          }
+        });
         res.status(200).send('Data inserted successfully.');
       });
     }
   )
    
 });
+function createNewTable(year){
+const originalTableName = 'table2021';
+// New table name
+const newTableName = 'table'+year;//todo: validate year is a nunmber
 
+// Retrieve column names and types from the original table
+db.query(`SHOW COLUMNS FROM ${originalTableName}`,(error,rows) => {
+    // Extract column names and types
+    const columns = rows.map(row => `${row.Field} ${row.Type}`).join(', ');
+
+    // Create a new table with the same structure
+    return db.execute(`CREATE TABLE ${newTableName} (${columns})`,(error)=>
+    {
+      if (error){
+        console.log(error);
+      }
+    }
+    );
+  });
+}
 
 
 

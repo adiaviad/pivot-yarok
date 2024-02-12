@@ -12,6 +12,14 @@
         <h2>WIP</h2>
         <h2 id="loading" class="loading" style="display: none; align-self: center;"></h2>
         <button onclick="redirectToSubmit()" class="selector">לעומד הכנסת מידע</button>
+        
+        <table class="right">
+            <tr class="right">
+                <td class="right"><input type="number" id="yearinput" value="2021"></input></td>
+                <td class="right"><button onclick="reselect()">בחר שנה</button></td>
+
+            </tr>
+        </table>
         <div id='checkbox-container' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
         <div id="graphicsContainer" class="centered"></div>
 
@@ -35,9 +43,10 @@
         checkboxes.forEach(checkbox => selectedProvinces.push(checkbox.id));
         
         const displays=Array.from(document.getElementsByClassName("displayFilter"));
-
+        const year =document.getElementById("yearinput").value;
+ 
         displays.forEach(element=>{
-            element.textContent= selectedProvinces.length>0 ?"רשויות: "+selectedProvinces.join(", ") :"" ;
+            element.textContent= selectedProvinces.length>0 ?"  שנה:"+year+" "+" "+"רשויות: "+selectedProvinces.join(", ") :"" ;
         });
         console.log("slected names",selectedProvinces.join(","));
 
@@ -59,6 +68,7 @@
     }
     function createCheckboxes(names,group,func) {
         const checkboxContainer = document.getElementById('checkbox-container');
+        checkboxContainer.innerHTML="";
         checkboxContainer.classList.add(group);
         console.log("names",names);
         for (let i=0;i<names.length;i++){
@@ -91,28 +101,47 @@
 <script>
     
     const graphicsContainer=document.getElementById("graphicsContainer");
-    // Your client-side JavaScript code here
-    fetch('/api/getData/2021')
-    .then(response => response.json())
-    .then(data => {
-        jd=covertTableToJson(data);
-        let provinces_names=jd[0].res_profline.provinces_names;
-        createCheckboxes(provinces_names,"provinces",()=>{
-            const slectedIDs= updateSelectedCheckboxes("provinces");
-            const newData= sortedIDs.map(ID=>data[ID]);
-            // if(newData.length>2){
+    function reselect(){
+        fetchYear(document.getElementById("yearinput").value);
+    }
+    function fetchYear(year){
+        if(!isFinite(year)){
+            alert("שנה לא תקינה")
+            return;
+        }
+        fetch('/api/getData/'+year)
+        .then(response => response.json())
+        .then(data => {
+            jd=covertTableToJson(data);
+            let provinces_names=jd[0].res_profline.provinces_names;
+            createCheckboxes(provinces_names,"provinces",()=>{
+                const slectedIDs= updateSelectedCheckboxes("provinces");
+                const newData= sortedIDs.map(ID=>data[ID]);
                 generateGraphicsFor(graphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces"));
-                
-            // }
-            // else{
-            //     loadingPopup('פחות מדי נבחרו ',1500);
-
-            // }
+                    
+            
 
 
-        });
-        generateGraphicsFor(graphicsContainer,jd,0,()=>updateFilterDisplays("provinces"));
-    })
-    .catch(error => console.error('Error fetching data:', error));
+            });
+            generateGraphicsFor(graphicsContainer,jd,0,()=>updateFilterDisplays("provinces"));
+        })
+        .catch(error => console.error("קרתה שגיאה"));
+    }
+    // function populateYearSelect(){
+    //     console.log("pop years");
+    //     selectElm=document.getElementById("yearinput");
+    //     fetch("api/allyears").then(response=>response.json).then(data=>
+    //     {
 
+    //         console.log(data[0]);
+    //         data.forEach(row=>{
+    //             option=document.createElement("option");
+    //             option.value=row;
+    //             option.innerHTML=row;
+    //             selectElm.appendChild(option);
+    //         });
+    //     });
+    // }
+    // populateYearSelect();
+    fetchYear(2021);
 </script>
