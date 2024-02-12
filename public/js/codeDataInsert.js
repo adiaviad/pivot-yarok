@@ -15,7 +15,12 @@ function validateCSV(csvData){
 function previewData(csvData){
     const csvRow=csvData;
     const newTableRow={};
-    fetch('/api/getData/2021')
+    const year=document.getElementById("yearInput").value;
+    if(year==""){
+        alert("צריך לבחור שנה");
+        return;
+    }
+    fetch('/api/getData/'+year)
     .then(response => response.json())
     .then(data => {
         const columnKeys=Object.keys(data[0]);

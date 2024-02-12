@@ -25,6 +25,7 @@ router.get("/allyears",(req,res)=>{
     res.json(results);
   })
 });
+
 router.get('/getColumnNames/:year', (req, res) => {
 
   if(!isFinite(req.params.year)){
@@ -68,7 +69,8 @@ function validateInsertData(year,columns,pass,errFunc,successFunc){
       console.log("user columns",inputColumnsNumber);
       if ( inputColumnsNumber==DBcolumnNumber){
         console.log("was successful ")
-        successFunc();
+        createNewTable(year,()=>successFunc());
+        
       }
       else{
         console.log("there was an error")
@@ -129,7 +131,7 @@ router.post('/insertData/:year', (req, res) => {
   )
    
 });
-function createNewTable(year){
+function createNewTable(year,onFinish){
 const originalTableName = 'table2021';
 // New table name
 const newTableName = 'table'+year;//todo: validate year is a nunmber
@@ -145,6 +147,7 @@ db.query(`SHOW COLUMNS FROM ${originalTableName}`,(error,rows) => {
       if (error){
         console.log(error);
       }
+      onFinish();
     }
     );
   });
