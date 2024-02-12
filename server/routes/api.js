@@ -14,9 +14,23 @@ router.get('/getData/:year', (req, res) => {
     
   });
 });
-
+router.get("/allyears",(req,res)=>{
+  const query  = `SELECT * FROM years;`
+  db.query(query,(error,results)=>{
+    if(error){
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.json(results);
+  })
+});
 router.get('/getColumnNames/:year', (req, res) => {
 
+  if(!isFinite(req.params.year)){
+    res.send(422);
+    return;
+  }
   // Query to get column names for the specified table
   const query = `SELECT * FROM ` +tableName+req.params.year+ ` LIMIT 1;`;
 
@@ -101,6 +115,14 @@ router.post('/insertData/:year', (req, res) => {
           return;
         }
         console.log("Data inserted successfully:", results);
+        db.query(`INSERT INTO years (year) VALUES (${year});`, (error, results) =>{
+          if(error){
+            console.log("error years",error);
+          }
+          else{
+            console.log("results years",year);
+          }
+        });
         res.status(200).send('Data inserted successfully.');
       });
     }
