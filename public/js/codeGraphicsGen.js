@@ -1,4 +1,12 @@
-
+function replaceSpace(string){
+    let result=""
+    for( let i=0; i<string.length;i++){
+        if(string[i]!=" "){
+            result=result+string[i];
+        }
+    }
+    return result;
+}
 function createColorArray(numbers) {
     // Sort the array to find percentiles
     let sortedNumbers = [...numbers].sort((a, b) => a - b);
@@ -274,7 +282,7 @@ function generatePlots(jsonData,containerGraph, containerBench,selected_region) 
 }
 
 
-function generateSuperMeasureSubTable(superMeasure,container,selected_region) {
+function generateSuperMeasureSubTable(superMeasure,container,selected_region,resName) {
     const superMeasureName=superMeasure.super_measure_name;
     const columnHeadersArray = superMeasure.measurements_names;
     const rowHeadersArray = superMeasure.provinces_names;
@@ -326,21 +334,25 @@ function generateSuperMeasureSubTable(superMeasure,container,selected_region) {
     title.textContent=superMeasureName;
     const displayFilter= document.createElement("div");
     displayFilter.classList.add("displayFilter");
-
     container.appendChild(title);
     container.appendChild(displayFilter);
     container.appendChild(table);
     container.appendChild(document.createElement("br"));
+    container.id=superMeasureName+"_"+resName;
+    // container.classList.add(replaceSpace(resName));
     // const new_row =document.getElementById(tableID).insertRow();
     // new_row.appendChild(table);
     // new_row.classList.add("mamad_tables_holder");
     
 }
 
-function generateSuperMeasureTables(superMeasureData,container,selected_region){
+function generateSuperMeasureTables(superMeasureData,container,selected_region,resName){
     container.innerHTML="";
     for(let i =0; i<superMeasureData.length;i++){
-        generateSuperMeasureSubTable(superMeasureData[i],container,selected_region);
+        const supermeasureContainer= document.createElement("div");
+        supermeasureContainer.classList.add(replaceSpace(resName));
+        generateSuperMeasureSubTable(superMeasureData[i],supermeasureContainer,selected_region,resName);
+        container.appendChild(supermeasureContainer);
     }
 }
 //עבור משאב הון יחיד
@@ -365,9 +377,9 @@ function generateGraphicsForHon(honData,container,selected_region,updateFilters)
     container.appendChild(containerMadad);
     const resJson=honData.res_profline;
     const superMeasureData=honData.super_measurements;
-
+    const resName=resJson.resource_name;
     generatePlots(resJson,honResGraphContainer,honResBenchContainer,selected_region);
-    generateSuperMeasureTables(superMeasureData,containerMadad,selected_region);
+    generateSuperMeasureTables(superMeasureData,containerMadad,selected_region,resName);
     updateFilters();
 }
 

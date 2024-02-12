@@ -134,7 +134,7 @@ function covertTableToJson(table){
 
     const provinces_names=table.map(row=>row[firstKey]);
     const honProfiles=[]
-    //the third sheet is the one with "משאב הון"
+  
     const resourceSlices=
     [ 
         {
