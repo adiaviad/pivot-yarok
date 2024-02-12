@@ -282,6 +282,7 @@ function generateSuperMeasureSubTable(superMeasure,container,selected_region) {
     const table = document.createElement("table");
     table.classList.add("madad");
     table.style.maxWidth=(columnHeadersArray.length*150)+"px";
+   
 
     const collumnColorsArray=[];
     for(let i =0;i<measureCollumns.length;i++){
@@ -316,14 +317,18 @@ function generateSuperMeasureSubTable(superMeasure,container,selected_region) {
         if(rowIndex==selected_region){
             rowheaderCell.style.backgroundColor="rgb(4, 113, 214)";
         }
+        
 
     }
     
     const title=document.createElement("p");
     title.classList.add("super_measure_title");
     title.textContent=superMeasureName;
+    const displayFilter= document.createElement("div");
+    displayFilter.classList.add("displayFilter");
 
     container.appendChild(title);
+    container.appendChild(displayFilter);
     container.appendChild(table);
     container.appendChild(document.createElement("br"));
     // const new_row =document.getElementById(tableID).insertRow();

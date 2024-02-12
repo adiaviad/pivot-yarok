@@ -15,7 +15,7 @@
         
         <table class="right">
             <tr class="right">
-                <td class="right"><input type="number" id="yearinput"></input></td>
+                <td class="right"><input type="number" id="yearinput" value="2021"></input></td>
                 <td class="right"><button onclick="reselect()">בחר שנה</button></td>
 
             </tr>
@@ -43,9 +43,10 @@
         checkboxes.forEach(checkbox => selectedProvinces.push(checkbox.id));
         
         const displays=Array.from(document.getElementsByClassName("displayFilter"));
-
+        const year =document.getElementById("yearinput").value;
+ 
         displays.forEach(element=>{
-            element.textContent= selectedProvinces.length>0 ?"רשויות: "+selectedProvinces.join(", ") :"" ;
+            element.textContent= selectedProvinces.length>0 ?"  שנה:"+year+" "+" "+"רשויות: "+selectedProvinces.join(", ") :"" ;
         });
         console.log("slected names",selectedProvinces.join(","));
 
