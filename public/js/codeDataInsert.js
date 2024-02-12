@@ -39,11 +39,22 @@ function previewData(csvData){
 }
 
 function processData(csvData) {
+    const year=document.getElementById("yearInput").value;
+    if( !isFinite(year)){
+        alert("השנה שהוזנה לא תקינה");
+        console.log("invalid year",year);
+        return;
+    }
     const userPassword=document.getElementById("passwordInput").value;
     console.log("password",userPassword);
+    if(userPassword==null){
+        alert("הכנס סיסמה");
+        return;
+    }
     csvRow=csvData;
     console.log("csv first row", csvRow);
     let allCollumns={};
+    
     fetch('api/getColumnNames/2021').then(response => response.json()).then(data=>{
         const Keys=Object.keys(data[0]);
         if(csvRow.length!=Keys.length){
@@ -63,7 +74,7 @@ function processData(csvData) {
         const d =JSON.stringify(dataAndUserinfo); 
         console.log("stringfy",d);
         
-        fetch('api/insertData/2021', {
+        fetch('api/insertData/'+year, {
             method: 'POST',
             body: d,
             headers: {
