@@ -159,7 +159,6 @@ db.query(`SHOW COLUMNS FROM ${originalTableName}`,(error,rows) => {
     );
   });
 }
-createNewTable(2025, ()=>{});
 
 
 
