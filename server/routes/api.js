@@ -29,7 +29,7 @@ router.get("/allyears",(req,res)=>{
 router.get('/getColumnNames/:year', (req, res) => {
 
   if(!isFinite(req.params.year)){
-    res.send(422);
+    res.send(423);
     return;
   }
   // Query to get column names for the specified table
@@ -46,6 +46,11 @@ router.get('/getColumnNames/:year', (req, res) => {
 });
 
 function validateInsertData(year,columns,pass,errFunc,successFunc){
+  if(!isFinite(year)){
+    console.log("invalid year",year);
+    errFunc({ok:false,error:"year is invalid",code:423});
+    return false;
+  }
   if (pass !=="iamapassword"){
     console.log("recieved password",pass);
     errFunc({ok:false,error:"password doesn't match",code:401});
@@ -86,7 +91,9 @@ function validateInsertData(year,columns,pass,errFunc,successFunc){
 router.post('/insertData/:year', (req, res) => {
   const { ...columns } = req.body.data;
   const password=req.body.userInfo.pass;
+
   const year=req.params.year;
+ 
 
   // Check if all required fields are provided
  validateInsertData(year,columns,password,
@@ -140,9 +147,9 @@ const newTableName = 'table'+year;//todo: validate year is a nunmber
 db.query(`SHOW COLUMNS FROM ${originalTableName}`,(error,rows) => {
     // Extract column names and types
     const columns = rows.map(row => `${row.Field} ${row.Type}`).join(', ');
-
+    const firstColumnName= rows[0].Field;
     // Create a new table with the same structure
-    return db.execute(`CREATE TABLE ${newTableName} (${columns})`,(error)=>
+    return db.execute(`CREATE TABLE ${newTableName} (${columns},  PRIMARY KEY (${firstColumnName}))`,(error)=>
     {
       if (error){
         console.log(error);
@@ -152,6 +159,7 @@ db.query(`SHOW COLUMNS FROM ${originalTableName}`,(error,rows) => {
     );
   });
 }
+createNewTable(2025, ()=>{});
 
 
 

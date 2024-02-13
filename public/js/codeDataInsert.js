@@ -96,6 +96,8 @@ function processData(csvData) {
                         throw new Error("הסיסמא לא נכונה");
                     case 422:
                         throw new Error("הוכנס מספר לא צפוי של נתונים");
+                    case 423:
+                        throw new Error("לא נבחרה שנה");
                     case 409:
                         throw new Error("נתונים עבור הרשות כבר הוזנו השנה")
                     default:
@@ -148,6 +150,9 @@ function readCSV(funcProcess) {
     }
 }
 
+/**
+ * modify this for calculations how super measures
+ */
 function calculateSuperMeasures(csvData){
     const blueprints=[
         {

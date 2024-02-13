@@ -134,7 +134,10 @@ function covertTableToJson(table){
 
     const provinces_names=table.map(row=>row[firstKey]);
     const honProfiles=[]
-  
+    /**
+     * modify this to create more hon resources
+     */
+
     const resourceSlices=
     [ 
         {
