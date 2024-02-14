@@ -45,7 +45,6 @@ function createResProfile(resDataRowsValues, name,provinces_names,XLabels){
         "x": XLabels.map(name =>fixName(name)),
         "data_sets": []
     }
-    //start with the second line bc the first line is the names of recources
 
     for(let i =0;i<resDataRowsValues.length;i++){
         result.data_sets.push({
