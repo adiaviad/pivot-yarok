@@ -338,7 +338,7 @@ function generateSuperMeasureSubTable(superMeasure,container,selected_region,res
     container.appendChild(displayFilter);
     container.appendChild(table);
     container.appendChild(document.createElement("br"));
-    container.id=superMeasureName+"_"+resName;
+    container.id=superMeasureName;
     // container.classList.add(replaceSpace(resName));
     // const new_row =document.getElementById(tableID).insertRow();
     // new_row.appendChild(table);
@@ -350,7 +350,7 @@ function generateSuperMeasureTables(superMeasureData,container,selected_region,r
     container.innerHTML="";
     for(let i =0; i<superMeasureData.length;i++){
         const supermeasureContainer= document.createElement("div");
-        supermeasureContainer.classList.add(replaceSpace(resName));
+        supermeasureContainer.classList.add("superMeasureGraphic");
         generateSuperMeasureSubTable(superMeasureData[i],supermeasureContainer,selected_region,resName);
         container.appendChild(supermeasureContainer);
     }

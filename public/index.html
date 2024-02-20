@@ -20,7 +20,9 @@
 
             </tr>
         </table>
-        <div id='checkbox-container' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
+        <div id='checkbox-container-provinces' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
+        <div id='checkbox-container-superMeasures' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
+
         <div id="graphicsContainer" class="centered"></div>
 
     </body>
@@ -40,7 +42,7 @@
         const selectedProvinces = [];
         const checkboxes = document.querySelectorAll(`.${from_group} input[type="checkbox"]:checked`);
 
-        checkboxes.forEach(checkbox => selectedProvinces.push(checkbox.id));
+        checkboxes.forEach(checkbox => selectedProvinces.push(checkbox.name));
         
         const displays=Array.from(document.getElementsByClassName("displayFilter"));
         const year =document.getElementById("yearinput").value;
@@ -51,7 +53,7 @@
         console.log("slected names",selectedProvinces.join(","));
 
     }
-    function updateSelectedCheckboxes(group) {
+    function getSelectedCheckboxesGroup(group) {
         const selectedCheckboxes = [];
         const checkboxes = document.querySelectorAll(`.${group} input[type="checkbox"]:checked`);
 
@@ -66,8 +68,37 @@
         return sortedIDs;
 
     }
+    function createCheckBoxForSuperMeasure(){
+//superMeasures
+        const elems= document.getElementsByClassName("superMeasureGraphic");
+        let names=[];
+        for (let i = 0; i < elems.length; i++) {
+            names.push(elems[i].id);
+            
+        }
+        console.log("super measure names",names);
+        createCheckboxes(names,"superMeasures",()=>updateSuperMeasureDisplay());
+    }
+
+    function updateSuperMeasureDisplay(){
+        const group="superMeasures";
+        const checkedBoxes = document.querySelectorAll(`.${group} input[type="checkbox"]`);
+        const arr=[];
+        for (let i = 0; i < checkedBoxes.length; i++) {
+            const element = checkedBoxes[i];
+            const sm=document.getElementById(element.name);
+            if(element.checked){
+                sm.style.display="";
+            }else{
+                sm.style.display="none";
+            }
+        }      
+
+    }
+
+
     function createCheckboxes(names,group,func) {
-        const checkboxContainer = document.getElementById('checkbox-container');
+        const checkboxContainer = document.getElementById("checkbox-container-"+group);
         checkboxContainer.innerHTML="";
         checkboxContainer.classList.add(group);
         console.log("names",names);
@@ -76,7 +107,7 @@
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.value = i;
-            checkbox.id = name;
+            checkbox.name = name;
             checkbox.checked=true;
             checkbox.classList.add("checkbox");
             
@@ -115,15 +146,15 @@
             jd=covertTableToJson(data);
             let provinces_names=jd[0].res_profline.provinces_names;
             createCheckboxes(provinces_names,"provinces",()=>{
-                const slectedIDs= updateSelectedCheckboxes("provinces");
+                const slectedIDs= getSelectedCheckboxesGroup("provinces");
                 const newData= sortedIDs.map(ID=>data[ID]);
                 generateGraphicsFor(graphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces"));
-                    
-            
-
-
+                createCheckBoxForSuperMeasure();
             });
+            
             generateGraphicsFor(graphicsContainer,jd,0,()=>updateFilterDisplays("provinces"));
+            createCheckBoxForSuperMeasure();
+            
         })
         .catch(error => console.error("קרתה שגיאה"));
     }
