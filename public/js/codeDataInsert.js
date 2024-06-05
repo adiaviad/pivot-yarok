@@ -44,20 +44,20 @@ function previewData(csvData){
     .catch(error => console.error('Error fetching data:', error));
 }
 
-function processData(csvData) {
+function processData(csvData,rowId,maxRowID) {
     const year=document.getElementById("yearInput").value;
     if( !isFinite(year)){
         alert("השנה שהוזנה לא תקינה");
         console.log("invalid year",year);
         return;
     }
-    // const userPassword=document.getElementById("passwordInput").value;
-    // console.log("password",userPassword);
-    // if(userPassword==null){
-    //     alert("הכנס סיסמה");
-    //     return;
-    // }
-    csvRow=csvData;
+    const userPassword=document.getElementById("passwordInput").value;
+    console.log("password",userPassword);
+    if(userPassword==null){
+        alert("הכנס סיסמה");
+        return;
+    }
+    csvRow=calculateSuperMeasures(csvData[rowId]);
     console.log("csv first row", csvRow);
     let allCollumns={};
     
@@ -71,10 +71,10 @@ function processData(csvData) {
             const columnName = Keys[i];
             let value =csvRow[i];
             allCollumns[columnName]=value;
-            console.log(columnName,value);
+            // console.log(columnName,value);
         }
 
-        console.log("all columns",allCollumns);
+        // console.log("all columns",allCollumns);
        
         const dataAndUserinfo={"data":allCollumns,"userInfo":{"pass":userPassword}};
         const d =JSON.stringify(dataAndUserinfo); 
@@ -100,19 +100,30 @@ function processData(csvData) {
                     case 423:
                         throw new Error("לא נבחרה שנה");
                     case 409:
-                        throw new Error("נתונים עבור הרשות כבר הוזנו השנה")
+                        throw new Error(csvData[0]+"נתונים עבור הרשות כבר הוזנו השנה")
                     default:
                         throw new Error("בעית שרת לא ידועה");
                 }
             }
         })
         .then(data => {
-            console.log('Success:', data);
-            alert("נתונים הוזנו בהצלחה")
+            console.log('Success:', data,rowId,maxRowID);
+            if(rowId<maxRowID){
+                processData(csvData,rowId+1,maxRowID);
+            }
+            else{
+                alert("נתונים הוזנו בהצלחה");
+            }
         })
         .catch(error => {
             console.error('Error:', error);
             alert(error)
+            if(rowId+1<maxRowID){
+                processData(csvData,rowId+1,maxRowID);
+            }
+            else{
+                alert("נתונים הוזנו בהצלחה");
+            }
         });
     });
 
@@ -144,6 +155,7 @@ function excelToArray(file,id,func) {
 
                 // Convert sheet to JSON
                 const json = XLSX.utils.sheet_to_json(worksheet, { headers: 0 });
+                console.log("xlsx json",json);
 
                 for (let i = 0; i < number_of_rows; i++) {
                     xlsxArray.push(Object.values(json[i + 2]).slice(start_slice, end_of_data_col));
@@ -182,7 +194,7 @@ function concatArrays(ar1,ar2){
 function readCSV(funcProcess) {
     const fileInput1 = document.getElementById('csvFileInput_develop_2020');
     const fileInput2 = document.getElementById('csvFileInput_planning_2020');
-
+    const nor = document.getElementById("number_of_rows").value;
     const file1 = fileInput1.files[0];
     const file2 = fileInput1.files[0];
 
@@ -196,10 +208,8 @@ function readCSV(funcProcess) {
                 array3.push(concatArrays(xlsxArray1[index],xlsxArray2[index]));
             }
             console.log("concanted xlsxs",array3);
-            array3.forEach(element => {
-                console.log("elememnt array3",element)
-                funcProcess(calculateSuperMeasures(element));
-            });
+            funcProcess(array3,0,nor);
+            
             
         });
     });
@@ -211,7 +221,6 @@ function readCSV(funcProcess) {
  * modify this for calculations how super measures
  */
 function calculateSuperMeasures(Data){
-    console.log("calculateSuperMeasures(csvData)",Data);
     const blueprints=[
         {
             name:"planning",
@@ -249,13 +258,9 @@ function calculateSuperMeasures(Data){
     let newRow=[all_measures[0]];
     blueprints.forEach(bp=>{
         measures=all_measures.slice(bp.range.start,bp.range.end+1)
-        console.log("measures",measures);
         newRow =newRow.concat(measures);
-        console.log("newRow",newRow);
         newRow=newRow.concat(bp.calculation(measures));
-        console.log("newRow after clacs",newRow);
 
     });
-    console.log("after blue prints", newRow);
     return newRow;
 }

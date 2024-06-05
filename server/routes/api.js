@@ -51,7 +51,7 @@ function validateInsertData(year,columns,pass,errFunc,successFunc){
     errFunc({ok:false,error:"year is invalid",code:423});
     return false;
   }
-  if (pass !=="iamapassword"){
+  if (pass !=="pass"){
     console.log("recieved password",pass);
     errFunc({ok:false,error:"password doesn't match",code:401});
     return false;
