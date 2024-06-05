@@ -1,3 +1,4 @@
+//<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
 function validateCSV(csvData){
     if (csvData.length>1){
         alert('the file cannot have more than 1 line');
@@ -50,12 +51,12 @@ function processData(csvData) {
         console.log("invalid year",year);
         return;
     }
-    const userPassword=document.getElementById("passwordInput").value;
-    console.log("password",userPassword);
-    if(userPassword==null){
-        alert("הכנס סיסמה");
-        return;
-    }
+    // const userPassword=document.getElementById("passwordInput").value;
+    // console.log("password",userPassword);
+    // if(userPassword==null){
+    //     alert("הכנס סיסמה");
+    //     return;
+    // }
     csvRow=csvData;
     console.log("csv first row", csvRow);
     let allCollumns={};
@@ -119,41 +120,98 @@ function processData(csvData) {
 
 
 }
-function readCSV(funcProcess) {
-    const fileInput = document.getElementById('csvFileInput');
-    const file = fileInput.files[0];
+function excelToArray(file,id,func) {
+        const number_of_rows = document.getElementById("number_of_rows").value;
+        const xlsxArray = [];
+        let end_of_data_col,start_slice;
+        if(id==0){
+            end_of_data_col=11;//K
+            start_slice=0;
+        }else if(id==1){
+            end_of_data_col=19;//S
+            start_slice=1;
+        }
+        if (file) {
+            const reader = new FileReader();
 
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const csvContent = e.target.result;
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
 
-            // Parse the CSV content using Papa Parse
-            Papa.parse(csvContent, {
-                complete: function (result) {
-                    // Result.data is an array of arrays containing the CSV values
-                    console.log("reading csv",result.data);
-                    if(!validateCSV(result.data)){
-                        return;
-                    }
-                    // Process the CSV data as needed
-                    funcProcess(calculateSuperMeasures(result.data));
-                },
-                header: false, // Set to true if the first row contains column headers
-                dynamicTyping: true, // Automatically convert strings to numbers or booleans
-            });
-        };
+                // Assume the first sheet
+                const firstSheetName = workbook.SheetNames[id];
+                const worksheet = workbook.Sheets[firstSheetName];
 
-        reader.readAsText(file);
-    } else {
-        alert('Please select a CSV file.');
-    }
+                // Convert sheet to JSON
+                const json = XLSX.utils.sheet_to_json(worksheet, { headers: 0 });
+
+                for (let i = 0; i < number_of_rows; i++) {
+                    xlsxArray.push(Object.values(json[i + 2]).slice(start_slice, end_of_data_col));
+                }
+
+                // Resolve the outer promise with the populated array
+                console.log("func xlx array", xlsxArray);
+                func(xlsxArray);
+            };
+
+          
+
+            reader.readAsArrayBuffer(file);
+        } else {
+            alert('Please select an Excel file.');
+        }
+    
 }
+
+
+function concatArrays(ar1,ar2){
+    console.log("array 1 func",ar1);
+    console.log("array 2 func",ar2);
+    let array3=[];
+    for (let index = 0; index < ar1.length; index++) {
+        array3.push(ar1[index])
+    }
+    for (let index = 0; index < ar2.length; index++) {
+        array3.push(ar2[index])
+    }
+    console.log("array3",array3);
+    return array3;
+
+}
+
+function readCSV(funcProcess) {
+    const fileInput1 = document.getElementById('csvFileInput_develop_2020');
+    const fileInput2 = document.getElementById('csvFileInput_planning_2020');
+
+    const file1 = fileInput1.files[0];
+    const file2 = fileInput1.files[0];
+
+    excelToArray(file1,0, xlsxArray1 => {
+        console.log("sdsa");
+        excelToArray(file2,1,xlsxArray2 => {
+            console.log("affdsfd");
+            // You can use the xlsxArray here
+            let array3=[];
+            for (let index = 0; index < xlsxArray1.length; index++) {
+                array3.push(concatArrays(xlsxArray1[index],xlsxArray2[index]));
+            }
+            console.log("concanted xlsxs",array3);
+            array3.forEach(element => {
+                console.log("elememnt array3",element)
+                funcProcess(calculateSuperMeasures(element));
+            });
+            
+        });
+    });
+
+}
+//funcProcess(calculateSuperMeasures(result.data)); /// this is the important function
 
 /**
  * modify this for calculations how super measures
  */
-function calculateSuperMeasures(csvData){
+function calculateSuperMeasures(Data){
+    console.log("calculateSuperMeasures(csvData)",Data);
     const blueprints=[
         {
             name:"planning",
@@ -187,12 +245,17 @@ function calculateSuperMeasures(csvData){
             }
         }
     ];
-    const all_measures=csvData[0];
+    const all_measures=Data;
     let newRow=[all_measures[0]];
     blueprints.forEach(bp=>{
         measures=all_measures.slice(bp.range.start,bp.range.end+1)
+        console.log("measures",measures);
         newRow =newRow.concat(measures);
+        console.log("newRow",newRow);
         newRow=newRow.concat(bp.calculation(measures));
+        console.log("newRow after clacs",newRow);
+
     });
+    console.log("after blue prints", newRow);
     return newRow;
 }
