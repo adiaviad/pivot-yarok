@@ -20,7 +20,7 @@ function createColorArray(numbers) {
     // Function to interpolate color based on percentile
     function interpolateColor(percentile) { 
         const minColor = [0, 91, 69]; // Red from excel 0, 91, 69
-        const maxColor = [136,41 , 57]; // Green from excel 136,41 , 57
+        const maxColor = [120,41 , 57]; // Green from excel 136,41 , 57
 
         const h = Math.round(minColor[0] + (maxColor[0] - minColor[0]) * percentile);
         const s = Math.round(minColor[1] + (maxColor[1] - minColor[1]) * percentile);
