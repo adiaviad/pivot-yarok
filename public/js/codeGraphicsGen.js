@@ -18,20 +18,20 @@ function createColorArray(numbers) {
         diffMaxMin=1;
     }
     // Function to interpolate color based on percentile
-    function interpolateColor(percentile) {
-        const minColor = [247, 74, 77]; // Red
-        const maxColor = [57, 191, 93]; // Green
+    function interpolateColor(percentile) { 
+        const minColor = [0, 91, 69]; // Red from excel 0, 91, 69
+        const maxColor = [120,41 , 57]; // Green from excel 136,41 , 57
 
-        const r = Math.round(minColor[0] + (maxColor[0] - minColor[0]) * percentile);
-        const g = Math.round(minColor[1] + (maxColor[1] - minColor[1]) * percentile);
-        const b = Math.round(minColor[2] + (maxColor[2] - minColor[2]) * percentile);
+        const h = Math.round(minColor[0] + (maxColor[0] - minColor[0]) * percentile);
+        const s = Math.round(minColor[1] + (maxColor[1] - minColor[1]) * percentile);
+        const l = Math.round(minColor[2] + (maxColor[2] - minColor[2]) * percentile);
 
-        return `rgb(${r}, ${g}, ${b})`;
+        return `hsl(${h}, ${s}%, ${l}%)`;
     }
 
     // Map each number to its corresponding color
     const colorArray = numbers.map((num) => {
-        const percentile = (sortedNumbers.indexOf(num) + 1) / sortedNumbers.length;
+        const percentile = (num-minNumber)/diffMaxMin;
         return interpolateColor(percentile);
     });
 
@@ -279,6 +279,7 @@ function generatePlots(jsonData,containerGraph, containerBench,selected_region) 
     Plotly.newPlot(containerGraph, resData.slice(0,3), resLayout);
     Plotly.newPlot(containerBench, resData.slice(3,4), diffLayout);
     // console.log("resdata[3]",[resData[3]]);
+    return statsData;
 }
 
 
@@ -346,21 +347,32 @@ function generateSuperMeasureSubTable(superMeasure,container,selected_region,res
     
 }
 
-function generateSuperMeasureTables(superMeasureData,container,selected_region,resName){
+function generateSuperMeasureTables(year,superMeasureData,container,selected_region,resName){
     container.innerHTML="";
     for(let i =0; i<superMeasureData.length;i++){
         const supermeasureContainer= document.createElement("div");
-        supermeasureContainer.classList.add("superMeasureGraphic");
+        supermeasureContainer.classList.add("superMeasureGraphic"+year);
         generateSuperMeasureSubTable(superMeasureData[i],supermeasureContainer,selected_region,resName);
         container.appendChild(supermeasureContainer);
     }
 }
+
+
 //עבור משאב הון יחיד
-function generateGraphicsForHon(honData,container,selected_region,updateFilters){
-    container.innerHTML=""
+function generateGraphicsForHon(year,honData,container,selected_region,updateFilters){
+    const resJson=honData.res_profline;
+    const superMeasureData=honData.super_measurements;
+    const resName=resJson.resource_name;
+  
+    container.innerHTML=""; 
+    const honContainer=document.createElement("div");
+    honContainer.classList.add("honContainer"+year);
+    honContainer.id=resName;
+    container.appendChild(honContainer);
+    
     const displayFilter= document.createElement("div");
     displayFilter.classList.add("displayFilter");
-    container.appendChild(displayFilter);
+    honContainer.appendChild(displayFilter);
 
     const honTable =document.createElement("table");
     const honRow=honTable.insertRow();
@@ -369,25 +381,22 @@ function generateGraphicsForHon(honData,container,selected_region,updateFilters)
     honResBenchContainer.classList.add("hon_graphic");
     honResGraphContainer.classList.add("hon_graphic");
     honTable.classList.add("hon_table");
-    container.appendChild(honTable);
-
+    honContainer.appendChild(honTable);
+    
     const containerMadad= document.createElement("div");
-    containerMadad.classList.add("centered")
-
+    containerMadad.classList.add("centered") 
     container.appendChild(containerMadad);
-    const resJson=honData.res_profline;
-    const superMeasureData=honData.super_measurements;
-    const resName=resJson.resource_name;
+
     generatePlots(resJson,honResGraphContainer,honResBenchContainer,selected_region);
-    generateSuperMeasureTables(superMeasureData,containerMadad,selected_region,resName);
+    generateSuperMeasureTables(year,superMeasureData,containerMadad,selected_region,resName);
     updateFilters();
 }
 
-function generateGraphicsFor(container,jd,firstSelection,updateFilters){
+function generateGraphicsFor(year,container,jd,firstSelection,updateFilters){
     container.innerHTML="";
     let selected_region=firstSelection;
     let provinces_names=jd[0].res_profline.provinces_names;
-
+    console.log("here1");
     const dropdown=document.createElement("select");
     dropdown.classList.add("selector");
     
@@ -395,25 +404,43 @@ function generateGraphicsFor(container,jd,firstSelection,updateFilters){
     graphicContainer.classList.add("centered");
     graphicContainer.classList.add("graphicContainer");
 
+    const honSelectContainer=document.createElement("div");
+    honSelectContainer.classList.add("honSelectContainer"+year);
+    honSelectContainer.id="honSelectContainer"+year;
+
+    const SuperMadamSelectContainer=document.createElement("div");
+    SuperMadamSelectContainer.classList.add("SuperMadamSelectContainer"+year);
+    SuperMadamSelectContainer.id="SuperMadamSelectContainer"+year;
+    console.log("here2");
+    
+    container.appendChild(honSelectContainer);
+    container.appendChild(SuperMadamSelectContainer);
+   
     container.appendChild(dropdown);
     container.appendChild(graphicContainer);
 
 
-
+    console.log("here3");
 
     console.log("promise from code.js",jd);
     
     populateDropdownSelect(dropdown,provinces_names);
    
-    jd.forEach(honProfile=>generateGraphicsForHon(honProfile,graphicContainer,selected_region,updateFilters));
+    jd.forEach(honProfile=>generateGraphicsForHon(year,honProfile,graphicContainer,selected_region,updateFilters));
     dropdown.selectedIndex=selected_region;
-    
     dropdown.addEventListener("change", function() {
         const selectedIndex = this.value;
         selected_region=selectedIndex;
-        jd.forEach(honProfile=>generateGraphicsForHon(honProfile,graphicContainer,selected_region,updateFilters));
-        
+        jd.forEach(honProfile=>generateGraphicsForHon(year,honProfile,graphicContainer,selected_region,updateFilters));
+        createDropdownWithClassElements("honContainer"+year,"honSelectContainer"+year);
+        createDropdownWithClassElements("superMeasureGraphic"+year,"SuperMadamSelectContainer"+year);
+     
     });
+    console.log("here4");
 
+    createDropdownWithClassElements("honContainer"+year,"honSelectContainer"+year);
+    createDropdownWithClassElements("superMeasureGraphic"+year,"SuperMadamSelectContainer"+year);
+    console.log("here5");
+   
 
 }

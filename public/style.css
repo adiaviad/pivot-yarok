@@ -103,10 +103,11 @@ trh{
     border-top:10px solid black;
 }
 .checkbox_container{
-    padding-bottom: 20px;
+    padding-bottom: 5px;
     display: flex;
     flex-direction: row-reverse; /* Reverse the direction to make it right-aligned */
     align-items: center;
+    /* margin-bottom: 2%; */
 }
 .checkbox{
     margin-left: 10px;
@@ -121,5 +122,6 @@ trh{
     height: auto;
     text-align: center;
     margin-bottom: 10px;
+    display: none;
 }
 

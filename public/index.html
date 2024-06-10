@@ -13,17 +13,16 @@
         <h2 id="loading" class="loading" style="display: none; align-self: center;"></h2>
         <button onclick="redirectToSubmit()" class="selector">לעומד הכנסת מידע</button>
         
-        <table class="right">
-            <tr class="right">
-                <td class="right"><input type="number" id="yearinput" value="2021"></input></td>
-                <td class="right"><button onclick="reselect()">בחר שנה</button></td>
+      
+        <div id='checkbox-container-provinces' class="checkbox_container centered" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
+        <div id="SelectContainer" class="centered">
+            <div id="yearSelectContainer"></div>
+            <!-- the two below are added with JS -->
+            <!-- <div id="honSelectContainer"></div> 
+            <div id="SuperMadamSelectContainer" class="centered"></div> -->
+        </div>
+        <div id="honGraphicsContainer" class="centered"></div>
 
-            </tr>
-        </table>
-        <div id='checkbox-container-provinces' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
-        <div id='checkbox-container-superMeasures' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
-
-        <div id="graphicsContainer" class="centered"></div>
 
     </body>
 </html>
@@ -38,14 +37,14 @@
       // Replace 'target.html' with the actual file name or path of the HTML page you want to redirect to
       window.location.href = 'dataSubmmition.html';
     }
-    function updateFilterDisplays(from_group){
+    function updateFilterDisplays(from_group,year){
         const selectedProvinces = [];
         const checkboxes = document.querySelectorAll(`.${from_group} input[type="checkbox"]:checked`);
 
         checkboxes.forEach(checkbox => selectedProvinces.push(checkbox.name));
         
         const displays=Array.from(document.getElementsByClassName("displayFilter"));
-        const year =document.getElementById("yearinput").value;
+        
  
         displays.forEach(element=>{
             element.textContent= selectedProvinces.length>0 ?"  שנה:"+year+" "+" "+"רשויות: "+selectedProvinces.join(", ") :"" ;
@@ -98,9 +97,13 @@
 
 
     function createCheckboxes(names,group,func) {
-        const checkboxContainer = document.getElementById("checkbox-container-"+group);
-        checkboxContainer.innerHTML="";
-        checkboxContainer.classList.add(group);
+        const checkboxContainer=document.getElementById("checkbox-container-provinces");
+        const yearCheckboxContainer = document.createElement("div");
+        yearCheckboxContainer.innerHTML="";
+        yearCheckboxContainer.classList.add(group);
+        yearCheckboxContainer.classList.add("checkbox_container");
+        yearCheckboxContainer.classList.add("inner_checkbox_container_provinces")
+        checkboxContainer.appendChild(yearCheckboxContainer);
         console.log("names",names);
         for (let i=0;i<names.length;i++){
             const name =names[i];
@@ -118,7 +121,7 @@
             const inputContainter=document.createElement('c');
             inputContainter.appendChild(checkbox);
             inputContainter.appendChild(label);
-            checkboxContainer.appendChild(inputContainter);
+            yearCheckboxContainer.appendChild(inputContainter);
             
 
             // Attach change event listener to each checkbox
@@ -126,16 +129,81 @@
         }
     }
 
+    function createDropdownWithClassElements(className, containerDiv) {
+        console.log(className,containerDiv);
+       
+        // Get all elements with the specified class name
+        const elements = document.querySelectorAll(`.${className}`);
+        
+        // Create a select element
+        const dropdown = document.createElement('select');
+        dropdown.classList.add("selector");
+        
+        // Iterate over the elements and create an option for each one
+        elements.forEach((element, index) => {
+            const option = document.createElement('option');
+            option.value = index; // Set a value for the option
+            option.text = element.id.trim(); // Set the text of the option to the text content of the element
+            dropdown.appendChild(option); // Append the option to the dropdown
+        });
+        
+        dropdown.addEventListener('change', () => {
+            const selectedIndex = dropdown.value;
+            
+            // Iterate over elements and hide/show them
+            elements.forEach((element, index) => {
+                if (index == selectedIndex) {
+                    // Show the selected element
+                    element.style.display = '';
+                } else {
+                    // Hide all other elements
+                    element.style.display = 'none';
+                }
+            });
+        });
+        elements.forEach((element, index) => {
+                if (index == 0) {
+                    // Show the selected element
+                    element.style.display = '';
+                } else {
+                    // Hide all other elements
+                    element.style.display = 'none';
+                }
+            });
+        console.log("dafdskjaf");
+        // Append the dropdown to the container div
+        const cont= document.getElementById(containerDiv);
+        cont.innerHTML="";
+        if(cont){
+           cont.appendChild(dropdown);
+            console.log("dafdskjaf");
+    
+        }
+        else{
+            console.log("cont bad");
+        }
+        return dropdown;
+    }
+
 </script>
 
 
 <script>
     
-    const graphicsContainer=document.getElementById("graphicsContainer");
-    function reselect(){
-        fetchYear(document.getElementById("yearinput").value);
-    }
-    function fetchYear(year){
+
+    //max is inclucive. if you want 2020 and 2021, then start with 2020 and max is 2021
+    const honGraphicsContainer=document.getElementById("honGraphicsContainer");
+    
+    function fetchYear(startYear,year,maxYear){
+        if(year==startYear){
+            document.getElementById("checkbox-container-provinces").innerHTML="";
+        }
+        const yearHonGraphicsContainer=document.createElement("div");
+        yearHonGraphicsContainer.classList.add("yearHonGraphicsContainer");
+        yearHonGraphicsContainer.id=year;
+        honGraphicsContainer.appendChild(yearHonGraphicsContainer);
+     
+
         if(!isFinite(year)){
             alert("שנה לא תקינה")
             return;
@@ -145,18 +213,48 @@
         .then(data => {
             jd=covertTableToJson(data);
             let provinces_names=jd[0].res_profline.provinces_names;
-            createCheckboxes(provinces_names,"provinces",()=>{
-                const slectedIDs= getSelectedCheckboxesGroup("provinces");
+            createCheckboxes(provinces_names,"provinces"+year,()=>{
+                const slectedIDs= getSelectedCheckboxesGroup("provinces"+year);
                 const newData= sortedIDs.map(ID=>data[ID]);
-                generateGraphicsFor(graphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces"));
-                createCheckBoxForSuperMeasure();
+                yearHonGraphicsContainer.innerHTML="";
+                generateGraphicsFor(year,yearHonGraphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces",year));
+               // createCheckBoxForSuperMeasure();
+          
             });
             
-            generateGraphicsFor(graphicsContainer,jd,0,()=>updateFilterDisplays("provinces"));
-            createCheckBoxForSuperMeasure();
+            generateGraphicsFor(year,yearHonGraphicsContainer,jd,0,()=>updateFilterDisplays("provinces",year));
+           // createCheckBoxForSuperMeasure();
+            
+
+            if(year<maxYear){
+                const next=year+1;
+                fetchYear(startYear,next,maxYear);
+            } else {
+                const dropdown= createDropdownWithClassElements("yearHonGraphicsContainer","yearSelectContainer");
+                dropdown.addEventListener("change",()=>{
+                    const selectedIndex = dropdown.value;
+                    const elements = document.querySelectorAll(".inner_checkbox_container_provinces");
+                    elements.forEach((element,index) => {
+                        if(index==selectedIndex){
+                            element.style.display="";
+                        }else{
+                            element.style.display="none";
+                        }
+                    });
+                });
+                document.querySelectorAll(".inner_checkbox_container_provinces").forEach((element,index) => {
+                        if(index==0){
+                            element.style.display="";
+                        }else{
+                            element.style.display="none";
+                        }
+                    });
+            
+            }
             
         })
         .catch(error => console.error("קרתה שגיאה"));
+        
     }
     // function populateYearSelect(){
     //     console.log("pop years");
@@ -174,5 +272,5 @@
     //     });
     // }
     // populateYearSelect();
-    fetchYear(2021);
+    fetchYear(2021,2021,2022);
 </script>
