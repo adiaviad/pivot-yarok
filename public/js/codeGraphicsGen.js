@@ -355,12 +355,25 @@ function generateSuperMeasureTables(superMeasureData,container,selected_region,r
         container.appendChild(supermeasureContainer);
     }
 }
+function generateGraphicsForHons(honData,container,selected_region,updateFilters){
+
+}
+
 //עבור משאב הון יחיד
 function generateGraphicsForHon(honData,container,selected_region,updateFilters){
-    container.innerHTML=""
+    const resJson=honData.res_profline;
+    const superMeasureData=honData.super_measurements;
+    const resName=resJson.resource_name;
+  
+    // container.innerHTML=""; i think this is not needed; it was not needed probbaly
+    const honContainer=document.createElement("div");
+    honContainer.classList.add("honContainer");
+    honContainer.id=resName;
+    container.appendChild(honContainer);
+    
     const displayFilter= document.createElement("div");
     displayFilter.classList.add("displayFilter");
-    container.appendChild(displayFilter);
+    honContainer.appendChild(displayFilter);
 
     const honTable =document.createElement("table");
     const honRow=honTable.insertRow();
@@ -369,15 +382,12 @@ function generateGraphicsForHon(honData,container,selected_region,updateFilters)
     honResBenchContainer.classList.add("hon_graphic");
     honResGraphContainer.classList.add("hon_graphic");
     honTable.classList.add("hon_table");
-    container.appendChild(honTable);
+    honContainer.appendChild(honTable);
+    
+    const containerMadad= document.getElementById("superMadam");
+    // containerMadad.classList.add("centered") all the madams are now in a seprate contianer so no need to append them
+    // container.appendChild(containerMadad);
 
-    const containerMadad= document.createElement("div");
-    containerMadad.classList.add("centered")
-
-    container.appendChild(containerMadad);
-    const resJson=honData.res_profline;
-    const superMeasureData=honData.super_measurements;
-    const resName=resJson.resource_name;
     generatePlots(resJson,honResGraphContainer,honResBenchContainer,selected_region);
     generateSuperMeasureTables(superMeasureData,containerMadad,selected_region,resName);
     updateFilters();

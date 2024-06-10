@@ -150,7 +150,7 @@ function excelToArray(file,id,func) {
                 const workbook = XLSX.read(data, { type: 'array' });
 
                 // Assume the first sheet
-                const firstSheetName = workbook.SheetNames[id];
+                const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
 
                 // Convert sheet to JSON

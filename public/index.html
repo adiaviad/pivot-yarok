@@ -22,8 +22,10 @@
         </table>
         <div id='checkbox-container-provinces' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
         <div id='checkbox-container-superMeasures' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
-
-        <div id="graphicsContainer" class="centered"></div>
+        <div id="honSelectContainer" class="centered"></div>
+        <div id="honGraphicsContainer" class="centered"></div>
+        <div id="SuperMadamSelectContainer" class="centered"></div>
+        <div id="superMadam" class="centered"></div>
 
     </body>
 </html>
@@ -126,12 +128,56 @@
         }
     }
 
+    function createDropdownWithClassElements(className, containerDiv) {
+        containerDiv.innerHTML="";
+        // Get all elements with the specified class name
+        const elements = document.querySelectorAll(`.${className}`);
+        
+        // Create a select element
+        const dropdown = document.createElement('select');
+        dropdown.classList.add("selector");
+        
+        // Iterate over the elements and create an option for each one
+        elements.forEach((element, index) => {
+            const option = document.createElement('option');
+            option.value = index; // Set a value for the option
+            option.text = element.id.trim(); // Set the text of the option to the text content of the element
+            dropdown.appendChild(option); // Append the option to the dropdown
+        });
+        
+        dropdown.addEventListener('change', () => {
+            const selectedIndex = dropdown.value;
+            
+            // Iterate over elements and hide/show them
+            elements.forEach((element, index) => {
+                if (index == selectedIndex) {
+                    // Show the selected element
+                    element.style.display = '';
+                } else {
+                    // Hide all other elements
+                    element.style.display = 'none';
+                }
+            });
+        });
+        elements.forEach((element, index) => {
+                if (index == 0) {
+                    // Show the selected element
+                    element.style.display = '';
+                } else {
+                    // Hide all other elements
+                    element.style.display = 'none';
+                }
+            });
+        // Append the dropdown to the container div
+        document.getElementById(containerDiv).appendChild(dropdown);
+    }
+
 </script>
 
 
 <script>
     
-    const graphicsContainer=document.getElementById("graphicsContainer");
+    const honGraphicsContainer=document.getElementById("honGraphicsContainer");
     function reselect(){
         fetchYear(document.getElementById("yearinput").value);
     }
@@ -148,12 +194,15 @@
             createCheckboxes(provinces_names,"provinces",()=>{
                 const slectedIDs= getSelectedCheckboxesGroup("provinces");
                 const newData= sortedIDs.map(ID=>data[ID]);
-                generateGraphicsFor(graphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces"));
+                generateGraphicsFor(honGraphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces"));
                 createCheckBoxForSuperMeasure();
             });
             
-            generateGraphicsFor(graphicsContainer,jd,0,()=>updateFilterDisplays("provinces"));
+            generateGraphicsFor(honGraphicsContainer,jd,0,()=>updateFilterDisplays("provinces"));
             createCheckBoxForSuperMeasure();
+
+            createDropdownWithClassElements("honContainer","honSelectContainer");
+            createDropdownWithClassElements("superMeasureGraphic","SuperMadamSelectContainer");
             
         })
         .catch(error => console.error("קרתה שגיאה"));
