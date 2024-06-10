@@ -133,7 +133,7 @@
 
     function createDropdownWithClassElements(className, containerDiv) {
         console.log(className,containerDiv);
-        containerDiv.innerHTML="";
+       
         // Get all elements with the specified class name
         const elements = document.querySelectorAll(`.${className}`);
         
@@ -175,6 +175,7 @@
         console.log("dafdskjaf");
         // Append the dropdown to the container div
         const cont= document.getElementById(containerDiv);
+        cont.innerHTML="";
         if(cont){
            cont.appendChild(dropdown);
             console.log("dafdskjaf");
