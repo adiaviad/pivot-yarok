@@ -346,28 +346,26 @@ function generateSuperMeasureSubTable(superMeasure,container,selected_region,res
     
 }
 
-function generateSuperMeasureTables(superMeasureData,container,selected_region,resName){
+function generateSuperMeasureTables(year,superMeasureData,container,selected_region,resName){
     container.innerHTML="";
     for(let i =0; i<superMeasureData.length;i++){
         const supermeasureContainer= document.createElement("div");
-        supermeasureContainer.classList.add("superMeasureGraphic");
+        supermeasureContainer.classList.add("superMeasureGraphic"+year);
         generateSuperMeasureSubTable(superMeasureData[i],supermeasureContainer,selected_region,resName);
         container.appendChild(supermeasureContainer);
     }
 }
-function generateGraphicsForHons(honData,container,selected_region,updateFilters){
 
-}
 
 //עבור משאב הון יחיד
-function generateGraphicsForHon(honData,container,selected_region,updateFilters){
+function generateGraphicsForHon(year,honData,container,selected_region,updateFilters){
     const resJson=honData.res_profline;
     const superMeasureData=honData.super_measurements;
     const resName=resJson.resource_name;
   
-    // container.innerHTML=""; i think this is not needed; it was not needed probbaly
+    container.innerHTML=""; //i think this is not needed; it was not needed probbaly
     const honContainer=document.createElement("div");
-    honContainer.classList.add("honContainer");
+    honContainer.classList.add("honContainer"+year);
     honContainer.id=resName;
     container.appendChild(honContainer);
     
@@ -384,19 +382,23 @@ function generateGraphicsForHon(honData,container,selected_region,updateFilters)
     honTable.classList.add("hon_table");
     honContainer.appendChild(honTable);
     
-    const containerMadad= document.getElementById("superMadam");
-    // containerMadad.classList.add("centered") all the madams are now in a seprate contianer so no need to append them
-    // container.appendChild(containerMadad);
+    const containerMadad= document.createElement("div");
+    containerMadad.classList.add("centered") 
+    container.appendChild(containerMadad);
 
     generatePlots(resJson,honResGraphContainer,honResBenchContainer,selected_region);
-    generateSuperMeasureTables(superMeasureData,containerMadad,selected_region,resName);
+    generateSuperMeasureTables(year,superMeasureData,containerMadad,selected_region,resName);
     updateFilters();
 }
 
-function generateGraphicsFor(container,jd,firstSelection,updateFilters){
+function generateGraphicsFor(year,container,jd,firstSelection,updateFilters){
     container.innerHTML="";
     let selected_region=firstSelection;
     let provinces_names=jd[0].res_profline.provinces_names;
+    console.log("here1");
+    // const checkboxContainer=document.createElement("div");
+    // checkboxContainer.classList.add("checkbox_container");
+    // checkboxContainer.id='checkbox-container-provinces';
 
     const dropdown=document.createElement("select");
     dropdown.classList.add("selector");
@@ -405,25 +407,45 @@ function generateGraphicsFor(container,jd,firstSelection,updateFilters){
     graphicContainer.classList.add("centered");
     graphicContainer.classList.add("graphicContainer");
 
+    const honSelectContainer=document.createElement("div");
+    honSelectContainer.classList.add("honSelectContainer"+year);
+    honSelectContainer.id="honSelectContainer"+year;
+
+    const SuperMadamSelectContainer=document.createElement("div");
+    SuperMadamSelectContainer.classList.add("SuperMadamSelectContainer"+year);
+    SuperMadamSelectContainer.id="SuperMadamSelectContainer"+year;
+    console.log("here2");
+    
+    // container.appendChild(checkboxContainer);
+    container.appendChild(honSelectContainer);
+    container.appendChild(SuperMadamSelectContainer);
+   
     container.appendChild(dropdown);
     container.appendChild(graphicContainer);
 
 
-
+    console.log("here3");
 
     console.log("promise from code.js",jd);
     
     populateDropdownSelect(dropdown,provinces_names);
    
-    jd.forEach(honProfile=>generateGraphicsForHon(honProfile,graphicContainer,selected_region,updateFilters));
+    jd.forEach(honProfile=>generateGraphicsForHon(year,honProfile,graphicContainer,selected_region,updateFilters));
     dropdown.selectedIndex=selected_region;
     
     dropdown.addEventListener("change", function() {
         const selectedIndex = this.value;
         selected_region=selectedIndex;
-        jd.forEach(honProfile=>generateGraphicsForHon(honProfile,graphicContainer,selected_region,updateFilters));
-        
+        jd.forEach(honProfile=>generateGraphicsForHon(year,honProfile,graphicContainer,selected_region,updateFilters));
+        // createDropdownWithClassElements("honContainer"+year,"honSelectContainer"+year);
+        // createDropdownWithClassElements("superMeasureGraphic"+year,"SuperMadamSelectContainer"+year);
+       
     });
+    console.log("here4");
 
+    createDropdownWithClassElements("honContainer"+year,"honSelectContainer"+year);
+    createDropdownWithClassElements("superMeasureGraphic"+year,"SuperMadamSelectContainer"+year);
+    console.log("here5");
+   
 
 }

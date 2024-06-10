@@ -22,10 +22,13 @@
         </table>
         <div id='checkbox-container-provinces' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
         <div id='checkbox-container-superMeasures' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
-        <div id="honSelectContainer" class="centered"></div>
+        <div id="SelectContainer" class="centered">
+            <div id="yearSelectContainer"></div>
+            <!-- <div id="honSelectContainer"></div>
+            <div id="SuperMadamSelectContainer" class="centered"></div> -->
+        </div>
         <div id="honGraphicsContainer" class="centered"></div>
-        <div id="SuperMadamSelectContainer" class="centered"></div>
-        <div id="superMadam" class="centered"></div>
+
 
     </body>
 </html>
@@ -129,6 +132,7 @@
     }
 
     function createDropdownWithClassElements(className, containerDiv) {
+        console.log(className,containerDiv);
         containerDiv.innerHTML="";
         // Get all elements with the specified class name
         const elements = document.querySelectorAll(`.${className}`);
@@ -168,8 +172,17 @@
                     element.style.display = 'none';
                 }
             });
+        console.log("dafdskjaf");
         // Append the dropdown to the container div
-        document.getElementById(containerDiv).appendChild(dropdown);
+        const cont= document.getElementById(containerDiv);
+        if(cont){
+           cont.appendChild(dropdown);
+            console.log("dafdskjaf");
+    
+        }
+        else{
+            console.log("cont bad");
+        }
     }
 
 </script>
@@ -177,11 +190,20 @@
 
 <script>
     
-    const honGraphicsContainer=document.getElementById("honGraphicsContainer");
+    
     function reselect(){
         fetchYear(document.getElementById("yearinput").value);
     }
-    function fetchYear(year){
+    //max is inclucive. if you want 2020 and 2021, then start with 2020 and max is 2021
+    const honGraphicsContainer=document.getElementById("honGraphicsContainer");
+    
+    function fetchYear(year,maxYear){
+        const yearHonGraphicsContainer=document.createElement("div");
+        yearHonGraphicsContainer.classList.add("yearHonGraphicsContainer");
+        yearHonGraphicsContainer.id=year;
+        honGraphicsContainer.appendChild(yearHonGraphicsContainer);
+     
+
         if(!isFinite(year)){
             alert("שנה לא תקינה")
             return;
@@ -194,18 +216,25 @@
             createCheckboxes(provinces_names,"provinces",()=>{
                 const slectedIDs= getSelectedCheckboxesGroup("provinces");
                 const newData= sortedIDs.map(ID=>data[ID]);
-                generateGraphicsFor(honGraphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces"));
+                yearHonGraphicsContainer.innerHTML="";
+                generateGraphicsFor(year,yearHonGraphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces"));
                 createCheckBoxForSuperMeasure();
+          
             });
             
-            generateGraphicsFor(honGraphicsContainer,jd,0,()=>updateFilterDisplays("provinces"));
+            generateGraphicsFor(year,yearHonGraphicsContainer,jd,0,()=>updateFilterDisplays("provinces"));
             createCheckBoxForSuperMeasure();
-
-            createDropdownWithClassElements("honContainer","honSelectContainer");
-            createDropdownWithClassElements("superMeasureGraphic","SuperMadamSelectContainer");
+         
+            if(year<maxYear){
+                const next=year+1;
+                fetchYear(next,maxYear);
+            } else {
+                createDropdownWithClassElements("yearHonGraphicsContainer","yearSelectContainer");
+            }
             
         })
         .catch(error => console.error("קרתה שגיאה"));
+        
     }
     // function populateYearSelect(){
     //     console.log("pop years");
@@ -223,5 +252,5 @@
     //     });
     // }
     // populateYearSelect();
-    fetchYear(2021);
+    fetchYear(2021,2022);
 </script>

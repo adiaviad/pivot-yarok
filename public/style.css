@@ -107,6 +107,7 @@ trh{
     display: flex;
     flex-direction: row-reverse; /* Reverse the direction to make it right-aligned */
     align-items: center;
+    margin-bottom: 2%;
 }
 .checkbox{
     margin-left: 10px;
@@ -121,5 +122,8 @@ trh{
     height: auto;
     text-align: center;
     margin-bottom: 10px;
+    display: none;
 }
+.exist{
 
+}
