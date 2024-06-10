@@ -388,7 +388,10 @@ function generateGraphicsForHon(year,honData,container,selected_region,updateFil
 
     generatePlots(resJson,honResGraphContainer,honResBenchContainer,selected_region);
     generateSuperMeasureTables(year,superMeasureData,containerMadad,selected_region,resName);
+    console.log("here 11")
     updateFilters();
+    console.log("here 12")
+
 }
 
 function generateGraphicsFor(year,container,jd,firstSelection,updateFilters){
@@ -396,9 +399,9 @@ function generateGraphicsFor(year,container,jd,firstSelection,updateFilters){
     let selected_region=firstSelection;
     let provinces_names=jd[0].res_profline.provinces_names;
     console.log("here1");
-    // const checkboxContainer=document.createElement("div");
-    // checkboxContainer.classList.add("checkbox_container");
-    // checkboxContainer.id='checkbox-container-provinces';
+    const checkboxContainer=document.createElement("div");
+    checkboxContainer.classList.add("checkbox_container");
+    checkboxContainer.id='checkbox-container-provinces'+year;
 
     const dropdown=document.createElement("select");
     dropdown.classList.add("selector");
@@ -416,7 +419,7 @@ function generateGraphicsFor(year,container,jd,firstSelection,updateFilters){
     SuperMadamSelectContainer.id="SuperMadamSelectContainer"+year;
     console.log("here2");
     
-    // container.appendChild(checkboxContainer);
+    container.appendChild(checkboxContainer);
     container.appendChild(honSelectContainer);
     container.appendChild(SuperMadamSelectContainer);
    

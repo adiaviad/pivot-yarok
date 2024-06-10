@@ -20,7 +20,7 @@
 
             </tr>
         </table>
-        <div id='checkbox-container-provinces' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
+        <!-- <div id='checkbox-container-provinces' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div> -->
         <div id='checkbox-container-superMeasures' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
         <div id="SelectContainer" class="centered">
             <div id="yearSelectContainer"></div>
@@ -43,14 +43,15 @@
       // Replace 'target.html' with the actual file name or path of the HTML page you want to redirect to
       window.location.href = 'dataSubmmition.html';
     }
-    function updateFilterDisplays(from_group){
+    function updateFilterDisplays(from_group,year){
+        console.log("here 41");
         const selectedProvinces = [];
         const checkboxes = document.querySelectorAll(`.${from_group} input[type="checkbox"]:checked`);
 
         checkboxes.forEach(checkbox => selectedProvinces.push(checkbox.name));
         
         const displays=Array.from(document.getElementsByClassName("displayFilter"));
-        const year =document.getElementById("yearinput").value;
+        console.log("here 42");
  
         displays.forEach(element=>{
             element.textContent= selectedProvinces.length>0 ?"  שנה:"+year+" "+" "+"רשויות: "+selectedProvinces.join(", ") :"" ;
@@ -103,7 +104,10 @@
 
 
     function createCheckboxes(names,group,func) {
+        console.log(" here box 1")
         const checkboxContainer = document.getElementById("checkbox-container-"+group);
+        console.log(" here box 2")
+
         checkboxContainer.innerHTML="";
         checkboxContainer.classList.add(group);
         console.log("names",names);
@@ -212,20 +216,23 @@
         fetch('/api/getData/'+year)
         .then(response => response.json())
         .then(data => {
-            jd=covertTableToJson(data);
+            jd=covertTableToJson(data); 
+            const province_group="provinces"+year;
             let provinces_names=jd[0].res_profline.provinces_names;
-            createCheckboxes(provinces_names,"provinces",()=>{
-                const slectedIDs= getSelectedCheckboxesGroup("provinces");
+
+            generateGraphicsFor(year,yearHonGraphicsContainer,jd,0,()=>{console.log("not here 2"); updateFilterDisplays(province_group,year)});
+            createCheckBoxForSuperMeasure();
+            createCheckboxes(provinces_names,province_group,()=>{
+                console.log("here 21")
+                const slectedIDs= getSelectedCheckboxesGroup(province_group);
                 const newData= sortedIDs.map(ID=>data[ID]);
-                yearHonGraphicsContainer.innerHTML="";
-                generateGraphicsFor(year,yearHonGraphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces"));
+                generateGraphicsFor(year,yearHonGraphicsContainer,covertTableToJson(newData),0,()=>{console.log("not here 1"); updateFilterDisplays(province_group,year)});
                 createCheckBoxForSuperMeasure();
-          
+                
+                console.log("here 22")
             });
             
-            generateGraphicsFor(year,yearHonGraphicsContainer,jd,0,()=>updateFilterDisplays("provinces"));
-            createCheckBoxForSuperMeasure();
-         
+            
             if(year<maxYear){
                 const next=year+1;
                 fetchYear(next,maxYear);
