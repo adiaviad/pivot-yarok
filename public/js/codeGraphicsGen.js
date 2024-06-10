@@ -19,19 +19,19 @@ function createColorArray(numbers) {
     }
     // Function to interpolate color based on percentile
     function interpolateColor(percentile) {
-        const minColor = [247, 74, 77]; // Red
-        const maxColor = [57, 191, 93]; // Green
+        const minColor = [0, 91, 69]; // Red
+        const maxColor = [120,41 , 57]; // Green
 
-        const r = Math.round(minColor[0] + (maxColor[0] - minColor[0]) * percentile);
-        const g = Math.round(minColor[1] + (maxColor[1] - minColor[1]) * percentile);
-        const b = Math.round(minColor[2] + (maxColor[2] - minColor[2]) * percentile);
+        const h = Math.round(minColor[0] + (maxColor[0] - minColor[0]) * percentile);
+        const s = Math.round(minColor[1] + (maxColor[1] - minColor[1]) * percentile);
+        const l = Math.round(minColor[2] + (maxColor[2] - minColor[2]) * percentile);
 
-        return `rgb(${r}, ${g}, ${b})`;
+        return `hsl(${h}, ${s}%, ${l}%)`;
     }
 
     // Map each number to its corresponding color
     const colorArray = numbers.map((num) => {
-        const percentile = (sortedNumbers.indexOf(num) + 1) / sortedNumbers.length;
+        const percentile = (num-minNumber)/diffMaxMin;
         return interpolateColor(percentile);
     });
 
@@ -279,6 +279,7 @@ function generatePlots(jsonData,containerGraph, containerBench,selected_region) 
     Plotly.newPlot(containerGraph, resData.slice(0,3), resLayout);
     Plotly.newPlot(containerBench, resData.slice(3,4), diffLayout);
     // console.log("resdata[3]",[resData[3]]);
+    return statsData;
 }
 
 
@@ -432,7 +433,6 @@ function generateGraphicsFor(year,container,jd,firstSelection,updateFilters){
    
     jd.forEach(honProfile=>generateGraphicsForHon(year,honProfile,graphicContainer,selected_region,updateFilters));
     dropdown.selectedIndex=selected_region;
-    let lastProvinceSelected='';
     dropdown.addEventListener("change", function() {
         const selectedIndex = this.value;
         selected_region=selectedIndex;
