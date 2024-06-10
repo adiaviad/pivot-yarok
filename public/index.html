@@ -15,10 +15,10 @@
         
       
         <div id='checkbox-container-provinces' class="checkbox_container centered" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
-        <!-- <div id='checkbox-container-superMeasures' class="checkbox_container" style="margin-bottom: 2%;padding-bottom:20px ;"></div> -->
         <div id="SelectContainer" class="centered">
             <div id="yearSelectContainer"></div>
-            <!-- <div id="honSelectContainer"></div>
+            <!-- the two below are added with JS -->
+            <!-- <div id="honSelectContainer"></div> 
             <div id="SuperMadamSelectContainer" class="centered"></div> -->
         </div>
         <div id="honGraphicsContainer" class="centered"></div>
@@ -190,10 +190,7 @@
 
 <script>
     
-    
-    function reselect(){
-        fetchYear(document.getElementById("yearinput").value);
-    }
+
     //max is inclucive. if you want 2020 and 2021, then start with 2020 and max is 2021
     const honGraphicsContainer=document.getElementById("honGraphicsContainer");
     

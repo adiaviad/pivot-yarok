@@ -18,9 +18,9 @@ function createColorArray(numbers) {
         diffMaxMin=1;
     }
     // Function to interpolate color based on percentile
-    function interpolateColor(percentile) {
-        const minColor = [0, 91, 69]; // Red
-        const maxColor = [120,41 , 57]; // Green
+    function interpolateColor(percentile) { 
+        const minColor = [0, 91, 69]; // Red from excel 0, 91, 69
+        const maxColor = [136,41 , 57]; // Green from excel 136,41 , 57
 
         const h = Math.round(minColor[0] + (maxColor[0] - minColor[0]) * percentile);
         const s = Math.round(minColor[1] + (maxColor[1] - minColor[1]) * percentile);
@@ -364,7 +364,7 @@ function generateGraphicsForHon(year,honData,container,selected_region,updateFil
     const superMeasureData=honData.super_measurements;
     const resName=resJson.resource_name;
   
-    container.innerHTML=""; //i think this is not needed; it was not needed probbaly
+    container.innerHTML=""; 
     const honContainer=document.createElement("div");
     honContainer.classList.add("honContainer"+year);
     honContainer.id=resName;
@@ -397,10 +397,6 @@ function generateGraphicsFor(year,container,jd,firstSelection,updateFilters){
     let selected_region=firstSelection;
     let provinces_names=jd[0].res_profline.provinces_names;
     console.log("here1");
-    // const checkboxContainer=document.createElement("div");
-    // checkboxContainer.classList.add("checkbox_container");
-    // checkboxContainer.id='checkbox-container-provinces';
-
     const dropdown=document.createElement("select");
     dropdown.classList.add("selector");
     
@@ -417,7 +413,6 @@ function generateGraphicsFor(year,container,jd,firstSelection,updateFilters){
     SuperMadamSelectContainer.id="SuperMadamSelectContainer"+year;
     console.log("here2");
     
-    // container.appendChild(checkboxContainer);
     container.appendChild(honSelectContainer);
     container.appendChild(SuperMadamSelectContainer);
    
