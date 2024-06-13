@@ -21,7 +21,6 @@
 <body>
     <button style="font-size: larger;" onclick="toMainPage()">חזור להצגת נתונים </button>
     <br></br>
-    <input type="file" id="csvFileInput" accept=".xlsx">
     <!-- <button onclick="readCSV(processData)">Read CSV</button> -->
     <!-- <button onclick="readCSV(previewData)">preview CSV</button> -->
     <input type="text" id="passwordInput" placeholder="סיסמה" />
@@ -38,8 +37,7 @@
     <table style="border: 1px solid black;">
         <tr class="centered" style="border: 1px solid black;">
             <td style="border: 1px solid black;">
-                <label style="color: blue;" for="FileInput" class="btn">2021</label><input type="file"
-                    style="visibility:hidden; width: 1px;" id="FileInput" accept=".xlsx">
+                <input type="file"   width: 1px;" id="FileInput" accept=".xlsx">
             <td style="border: 1px solid black;"> <button onclick="readCSV(resourceNaming)">הכנסת מידע</button> משאב
                 תכנון ופיתוח</td>
         </tr>
@@ -57,22 +55,46 @@
         window.location.href = 'index.html';
     }
     function createProject() {
-        const startyear = document.getElementById("yearSelector").value;
-        const endyear = document.getElementById("passwordInput").value;
-        const projectname = document.getElementById("projectnameInput").value;
+        const startyear = document.getElementById("startyearInput").value;
+        const  project= document.getElementById("projectnameInput").value;
+        const endyear = document.getElementById("endyearInput").value;
         const password = document.getElementById("passwordInput").value;
-        fetch(`/api/createProject/project/${project}/startyear/${startyear}/endyear/${endyear}` ,{ method: 'POST', body: {"pass":password}, headers: { 'Content-Type': 'application/json', } })
+        console.log('create project',startyear,endyear,project,password);
+        if(password==''){
+            alert("לא הוכנסה סיסמה");
+            return ;
+        }
+        if(startyear==''){
+            alert("לא הוכנסה שנת תחילה");
+            return ;
+        } 
+        if(endyear==''){
+            alert("לא הוכנסה שנת סיום");
+            return ;
+        }
+        if(endyear<startyear){
+            alert("שנת סיום לפני שנת התחלה");
+            return;
+        }
+        fetch(`/api/createProject/project/${project}/startyear/${startyear}/endyear/${endyear}` ,{ "method": 'POST', "body": JSON.stringify({"pass":password}), "headers": { 'Content-Type': 'application/json', } })
         .then(response => {
-            console.log(response);
-            if(response.ok){
-                alert("פרוייקט נוצר בהצלחה");
+            console.log("resposnse",response);
+            if(!response.ok){
+                console.log(response.status);
+                if(response.status==409){
+                    alert("פרוייקט בעל שם זה כבר קיים. ניתן לבחור שם אחר\n"+"אם שם אחר לא מתאים מומלץ להוסיף את שנת ההתחלה לשם");
+                }else{
+                    alert("שגיאה\n"+response.status+"\n"+response.statusText);
+                }
             }
             else{
-                console.log(response.status);
-                alert("שגיאה\n"+response.status+"\n"+response.statusText);
+                alert("פרוייקט נוצר בהצלחה");
             }
+        }).catch(err=>{
+            console.log(err)
         });
     }
+    
 </script>
 
 

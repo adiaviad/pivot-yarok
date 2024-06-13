@@ -54,6 +54,18 @@ const smColumnNames = [
 ]
 
 
+router.get("/getProjectsMetaData",(req,res)=>{
+  db.query('SELECT * FROM allprojects', (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.json(results);
+
+  });
+});
+
 router.get('/getData/project/:projectname/:year', (req, res) => {
   db.query('SELECT * FROM ' + req.params.projectname + "_table" + req.params.year, (error, results) => {
     if (error) {
@@ -65,17 +77,7 @@ router.get('/getData/project/:projectname/:year', (req, res) => {
 
   });
 });
-router.get("projectinfo/:projectname/years", (req, res) => {
-  const query = `SELECT * FROM years;`
-  db.query(query, (error, results) => {
-    if (error) {
-      console.error('Error executing query:', error);
-      res.status(500).send('Internal Server Error');
-      return;
-    }
-    res.json(results);
-  })
-});
+
 
 router.get('/getColumnNames/:project', (req, res) => {
 
@@ -93,7 +95,7 @@ router.get('/getColumnNames/:project', (req, res) => {
 });
 
 function tableName(projectName,year){
-  return  projectname + '_table' + year;
+  return  projectName + '_table' + year;
 }
 
 function createNewTable(projectname, year, onFinish) {
@@ -190,7 +192,7 @@ router.post('/createProject/project/:projectname/startyear/:syear/endyear/:eyear
   }
 
   insertProjectYears(projectname, startyear, endyear, () => {
-    for (let year = startyear; year < endyear; year++) {
+    for (let year = startyear; year <= endyear; year++) {
       createNewTable(projectname, year, (err) => {
         console.log("create new table err, year, project", err, year, projectname);
         if (year == endyear) {
