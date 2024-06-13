@@ -238,7 +238,7 @@ function calculateSuperMeasures(Data){
             }
         },
         {
-            name:"planning",
+            name:"dev",
             range:{
                 start:11,
                 end:28
