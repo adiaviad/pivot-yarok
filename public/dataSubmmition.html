@@ -23,22 +23,26 @@
     <br></br>
     <!-- <button onclick="readCSV(processData)">Read CSV</button> -->
     <!-- <button onclick="readCSV(previewData)">preview CSV</button> -->
-    
+
     <table class="right">
-        <tr><td>
-        <input type="text" id="passwordInput" placeholder="סיסמה" />
-        <td style="width: 80px;">סיסמה</td>
-        </td></tr>
+        <tr>
+            <td>
+                <input type="text" id="passwordInput" placeholder="סיסמה" />
+            <td style="width: 80px;">סיסמה</td>
+            </td>
+        </tr>
     </table>
     <br>
     <table class="right">
-        <tr><td>
-        <button onclick="createProject()">צור פרויייקט</button>
-        <input type="text" id="projectnameInput" placeholder="בחר שם לפרוייקט חדש" />
-        <input type="number" id="startyearInput" placeholder="שנת התחלה" />
-        <input type="number" id="endyearInput" placeholder="שנת סיום" />
-        <td style="width: 80px;">יצירת פרוייקט</td>
-        </td></tr>
+        <tr>
+            <td>
+                <button onclick="createProject()">צור פרויייקט</button>
+                <input type="text" id="projectnameInput" placeholder="בחר שם לפרוייקט חדש" />
+                <input type="number" id="startyearInput" placeholder="שנת התחלה" />
+                <input type="number" id="endyearInput" placeholder="שנת סיום" />
+            <td style="width: 80px;">יצירת פרוייקט</td>
+            </td>
+        </tr>
     </table>
     <!-- <input type="text" id="projectnameSelector" placeholder="שם פרוייקט" />
     <input type="text" id="supermeasureSelector" placeholder="שם מדד" />
@@ -55,33 +59,33 @@
             <td style="width: 80px;">בחירת קובץ</td>
         </tr>
     </table>
-    
+
     <table class="right">
         <tr>
             <td>
-                <button onclick="readCSV(resourceNaming)">שליחת הקובץ</button>
+                <button onclick="readCSV(measureNaming)">שליחת הקובץ</button>
             </td>
             <td>
                 <button onclick="(resourceNaming)">הצגת הקובץ</button>
             </td>
-            
+
             <td>
-                <select  id="supermeasureSelector">
+                <select id="supermeasureSelector">
                     <option value="0">בחר מדד על</option>
                 </select>
             </td>
             <td>
-                <select  id="honSelector">
+                <select id="honSelector">
                     <option value="0">בחר מאשב הון</option>
                 </select>
             </td>
             <td>
-                <select  id="yearSelector">
+                <select id="yearSelector">
                     <option value="0">בחר שנה</option>
                 </select>
             </td>
             <td>
-                <select  id="projectnameSelector">
+                <select id="projectnameSelector">
                     <option value="0">בחר פרוייקט</option>
                 </select>
             </td>
@@ -145,14 +149,55 @@
 </script>
 <!-- script for project and measure selection -->
 <script>
-    function createSelection() {
+    function createHonSelection() {
+        const honDropdownValues = resHierarchy.resources;
+
+        const honSelector = document.getElementById("honSelector")
+        const supermeasureSelector = document.getElementById("supermeasureSelector");
+
+        honSelector.innerHTML = "";
+        honSelector.options.add(new Option("בחר משאב הון", -1));
+        supermeasureSelector.innerHTML = "";
+        supermeasureSelector.options.add(new Option("בחר משאב הון קודם", -1))
+
+        for (let i = 0; i < honDropdownValues.length; i++) {
+            const element = honDropdownValues[i]
+            honSelector.options.add(new Option(element.name, i))
+        }
+        honSelector.onchange = () => {
+            const selectedValue = honSelector.value;
+            console.log(selectedValue)
+            console.log(honDropdownValues)
+
+            console.log(honDropdownValues[selectedValue])
+
+            supermeasureSelector.innerHTML = "";
+            if (selectedValue > -1) {
+                supermeasureSelector.options.add(new Option("בחר מדד על", ""));
+                for (let i = 0; i < honDropdownValues[selectedValue].supermeasures.length; i++) {
+                    const element = honDropdownValues[selectedValue].supermeasures[i];
+                    supermeasureSelector.options.add(new Option(element.name, element.value));
+                }
+            }
+            else{
+                supermeasureSelector.options.add(new Option("בחר משאב הון קודם", -1));
+            }
+
+        }
+
+
+    }
+
+
+    function createProjectSelection() {
         fetch('/api/getProjectsMetaData')
             .then(response => response.json())
             .then(data => {
                 console.log(data);
             });
     }
-    createSelection();
+    createProjectSelection();
+    createHonSelection();
 </script>
 
 </html>
