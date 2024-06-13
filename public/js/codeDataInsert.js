@@ -11,7 +11,7 @@ function validateInputData(xlsxArrayTable, number_of_rows, measure, password) {
         alert('מספר העמודות במסמך לא תואם לצפוי');
         return false;
     }
-    if (password == null) {
+    if (password == "") {
         alert('לא הוכנסה סיסמה');
         return false;
     }

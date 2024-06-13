@@ -23,23 +23,69 @@
     <br></br>
     <!-- <button onclick="readCSV(processData)">Read CSV</button> -->
     <!-- <button onclick="readCSV(previewData)">preview CSV</button> -->
-    <input type="text" id="passwordInput" placeholder="סיסמה" />
+    
+    <table class="right">
+        <tr><td>
+        <input type="text" id="passwordInput" placeholder="סיסמה" />
+        <td style="width: 80px;">סיסמה</td>
+        </td></tr>
+    </table>
     <br>
-    <button onclick="createProject()">צור פרויייקט</button>
-    <input type="text" id="projectnameInput" placeholder="בחר שם לפרוייקט חדש" />
-    <input type="number" id="startyearInput" placeholder="שנת התחלה" />
-    <input type="number" id="endyearInput" placeholder="שנת סיום" />
-    <br>
-    <input type="text" id="projectnameSelector" placeholder="שם פרוייקט" />
+    <table class="right">
+        <tr><td>
+        <button onclick="createProject()">צור פרויייקט</button>
+        <input type="text" id="projectnameInput" placeholder="בחר שם לפרוייקט חדש" />
+        <input type="number" id="startyearInput" placeholder="שנת התחלה" />
+        <input type="number" id="endyearInput" placeholder="שנת סיום" />
+        <td style="width: 80px;">יצירת פרוייקט</td>
+        </td></tr>
+    </table>
+    <!-- <input type="text" id="projectnameSelector" placeholder="שם פרוייקט" />
     <input type="text" id="supermeasureSelector" placeholder="שם מדד" />
     <input type="number" id="yearSelector" placeholder="שנה"></input>
-    <input type="number" id="number_of_rowsInput" placeholder="כמה שורות לקרוא?" />
-    <table style="border: 1px solid black;">
-        <tr class="centered" style="border: 1px solid black;">
-            <td style="border: 1px solid black;">
-                <input type="file"   width: 1px;" id="FileInput" accept=".xlsx">
-            <td style="border: 1px solid black;"> <button onclick="readCSV(resourceNaming)">הכנסת מידע</button> משאב
-                תכנון ופיתוח</td>
+     -->
+    <table style="border: none;" class="right">
+        <tr>
+            <td>
+                <input type="file" id="FileInput" accept=".xlsx">
+            </td>
+            <td>
+                <input type="number" id="number_of_rowsInput" placeholder="כמה שורות לקרוא?" />
+            </td>
+            <td style="width: 80px;">בחירת קובץ</td>
+        </tr>
+    </table>
+    
+    <table class="right">
+        <tr>
+            <td>
+                <button onclick="readCSV(resourceNaming)">שליחת הקובץ</button>
+            </td>
+            <td>
+                <button onclick="(resourceNaming)">הצגת הקובץ</button>
+            </td>
+            
+            <td>
+                <select  id="supermeasureSelector">
+                    <option value="0">בחר מדד על</option>
+                </select>
+            </td>
+            <td>
+                <select  id="honSelector">
+                    <option value="0">בחר מאשב הון</option>
+                </select>
+            </td>
+            <td>
+                <select  id="yearSelector">
+                    <option value="0">בחר שנה</option>
+                </select>
+            </td>
+            <td>
+                <select  id="projectnameSelector">
+                    <option value="0">בחר פרוייקט</option>
+                </select>
+            </td>
+            <td style="width: 80px;">הגדרות קובץ</td>
         </tr>
 
     </table>
@@ -47,6 +93,7 @@
     <div id="previewGraphicsContainer"></div>
 
 </body>
+<!-- script for crreating a project -->
 <script>
     var selected_region = 0;
 
@@ -56,46 +103,56 @@
     }
     function createProject() {
         const startyear = document.getElementById("startyearInput").value;
-        const  project= document.getElementById("projectnameInput").value;
+        const project = document.getElementById("projectnameInput").value;
         const endyear = document.getElementById("endyearInput").value;
         const password = document.getElementById("passwordInput").value;
-        console.log('create project',startyear,endyear,project,password);
-        if(password==''){
+        console.log('create project', startyear, endyear, project, password);
+        if (password == '') {
             alert("לא הוכנסה סיסמה");
-            return ;
+            return;
         }
-        if(startyear==''){
+        if (startyear == '') {
             alert("לא הוכנסה שנת תחילה");
-            return ;
-        } 
-        if(endyear==''){
-            alert("לא הוכנסה שנת סיום");
-            return ;
+            return;
         }
-        if(endyear<startyear){
+        if (endyear == '') {
+            alert("לא הוכנסה שנת סיום");
+            return;
+        }
+        if (endyear < startyear) {
             alert("שנת סיום לפני שנת התחלה");
             return;
         }
-        fetch(`/api/createProject/project/${project}/startyear/${startyear}/endyear/${endyear}` ,{ "method": 'POST', "body": JSON.stringify({"pass":password}), "headers": { 'Content-Type': 'application/json', } })
-        .then(response => {
-            console.log("resposnse",response);
-            if(!response.ok){
-                console.log(response.status);
-                if(response.status==409){
-                    alert("פרוייקט בעל שם זה כבר קיים. ניתן לבחור שם אחר\n"+"אם שם אחר לא מתאים מומלץ להוסיף את שנת ההתחלה לשם");
-                }else{
-                    alert("שגיאה\n"+response.status+"\n"+response.statusText);
+        fetch(`/api/createProject/project/${project}/startyear/${startyear}/endyear/${endyear}`, { "method": 'POST', "body": JSON.stringify({ "pass": password }), "headers": { 'Content-Type': 'application/json', } })
+            .then(response => {
+                console.log("resposnse", response);
+                if (!response.ok) {
+                    console.log(response.status);
+                    if (response.status == 409) {
+                        alert("פרוייקט בעל שם זה כבר קיים. ניתן לבחור שם אחר\n" + "אם שם אחר לא מתאים מומלץ להוסיף את שנת ההתחלה לשם");
+                    } else {
+                        alert("שגיאה\n" + response.status + "\n" + response.statusText);
+                    }
                 }
-            }
-            else{
-                alert("פרוייקט נוצר בהצלחה");
-            }
-        }).catch(err=>{
-            console.log(err)
-        });
+                else {
+                    alert("פרוייקט נוצר בהצלחה");
+                }
+            }).catch(err => {
+                console.log(err)
+            });
     }
-    
-</script>
 
+</script>
+<!-- script for project and measure selection -->
+<script>
+    function createSelection() {
+        fetch('/api/getProjectsMetaData')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            });
+    }
+    createSelection();
+</script>
 
 </html>
