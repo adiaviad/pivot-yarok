@@ -221,7 +221,7 @@ function createNewTable(projectname,year, onFinish) {
     // Extract column names and types
     const columns = rows.map(row => `${row.Field} ${row.Type}`).join(', ');
     const firstColumnName = rows[0].Field;
-    console.log(columns);
+    // console.log(columns);
     // Create a new table with the same structure
     return db.execute(`CREATE TABLE ${newTableName} (${columns},  PRIMARY KEY (${firstColumnName}))`, (error) => {
       if (error) {
