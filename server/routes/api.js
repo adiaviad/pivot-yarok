@@ -233,16 +233,16 @@ function createNewTable(projectname,year, onFinish) {
   });
 }
 
-insertProjectYears("t",0,4,(err)=>{
-  const projectname="t"
-  if(err){
-    console.log("test insert years:",err);
-  }else{
-  for (let year = 0; year <4; year++) 
-    createNewTable(projectname,year,(err)=>{console.log("create new table err, year, project",err,year,projectname);});
-  }
+// insertProjectYears("t",0,4,(err)=>{
+//   const projectname="t"
+//   if(err){
+//     console.log("test insert years:",err);
+//   }else{
+//   for (let year = 0; year <4; year++) 
+//     createNewTable(projectname,year,(err)=>{console.log("create new table err, year, project",err,year,projectname);});
+//   }
   
-});
+// });
 // insertProjectYears("asds",0,3);
 // db.query(`SELECT * FROM sampletable LIMIT 1;`, (error, results) => {
 //   if (error) {
