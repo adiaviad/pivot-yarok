@@ -136,10 +136,28 @@ function validateInsertData(year, columns, pass, errFunc, successFunc) {
 
 }
 router.post('/createProject/project/:projectname/startyear/:syear/endyear/:eyear',(req,res)=>{
+  const startyear=req.params.syear;
+  const endyear=req.params.eyear;
+  const projectname=req.params.projectname;
+
+  insertProjectYears(projectname,startyear,endyear,()=>{
+    for (let year = startyear; year <endyear; year++) 
+      createNewTable(projectname,year,(err)=>{console.log("create new table err, year, project",err,year,projectname);});
+    
+    
+  });
+  
 });
-function insertProjectYears(name,start,end){
+function insertProjectYears(name,start,end,callback){
   const query=`INSERT INTO allprojects (projectName, startYear, endYear) VALUES (?, ?, ?);`
-  db.query(query,[name,start,end],(err)=>{console.log("insert project year error:",err)});
+  db.query(query,[name,start,end],(err)=>{
+    if(err){
+      console.log("insert project year error:",err)
+    } else{
+      callback();
+    }
+  });
+  
 }
 
 router.post('/insertData/project/:projectname/year/:year', (req, res) => {
@@ -215,6 +233,16 @@ function createNewTable(projectname,year, onFinish) {
   });
 }
 
+insertProjectYears("t",0,4,(err)=>{
+  const projectname="t"
+  if(err){
+    console.log("test insert years:",err);
+  }else{
+  for (let year = 0; year <4; year++) 
+    createNewTable(projectname,year,(err)=>{console.log("create new table err, year, project",err,year,projectname);});
+  }
+  
+});
 // insertProjectYears("asds",0,3);
 // db.query(`SELECT * FROM sampletable LIMIT 1;`, (error, results) => {
 //   if (error) {
