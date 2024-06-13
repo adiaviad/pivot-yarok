@@ -37,9 +37,9 @@
         <tr>
             <td>
                 <button onclick="createProject()">צור פרויייקט</button>
-                <input type="text" id="projectnameInput" placeholder="בחר שם לפרוייקט חדש" />
-                <input type="number" id="startyearInput" placeholder="שנת התחלה" />
                 <input type="number" id="endyearInput" placeholder="שנת סיום" />
+                <input type="number" id="startyearInput" placeholder="שנת התחלה" />
+                <input type="text" id="projectnameInput" placeholder="בחר שם לפרוייקט חדש" />
             <td style="width: 80px;">יצירת פרוייקט</td>
             </td>
         </tr>
@@ -63,7 +63,7 @@
     <table class="right">
         <tr>
             <td>
-                <button onclick="readCSV(measureNaming)">שליחת הקובץ</button>
+                <button onclick="readInput(measureNaming)">שליחת הקובץ</button>
             </td>
             <td>
                 <button onclick="(resourceNaming)">הצגת הקובץ</button>
@@ -81,7 +81,7 @@
             </td>
             <td>
                 <select id="yearSelector">
-                    <option value="0">בחר שנה</option>
+                    <option value="0">בחר פרוייקט קודם</option>
                 </select>
             </td>
             <td>
@@ -141,6 +141,7 @@
                 else {
                     alert("פרוייקט נוצר בהצלחה");
                 }
+                createProjectSelection();
             }).catch(err => {
                 console.log(err)
             });
@@ -179,7 +180,7 @@
                     supermeasureSelector.options.add(new Option(element.name, element.value));
                 }
             }
-            else{
+            else {
                 supermeasureSelector.options.add(new Option("בחר משאב הון קודם", -1));
             }
 
@@ -188,14 +189,58 @@
 
     }
 
-
+    //[
+    // {
+    //         "projectName": "pre",
+    //         "startYear": 2021,
+    //         "endYear": 2022
+    //     },
+    //     {
+    //         "projectName": "או",
+    //         "startYear": 0,
+    //         "endYear": 3
+    //     }
+    // ]
     function createProjectSelection() {
         fetch('/api/getProjectsMetaData')
             .then(response => response.json())
             .then(data => {
-                console.log(data);
+                const dropdownValues = data;
+
+                const projSelector = document.getElementById("projectnameSelector")
+                const yearSelector = document.getElementById("yearSelector");
+
+                projSelector.innerHTML = "";
+                projSelector.options.add(new Option("בחר פרוקייט", -1));
+                yearSelector.innerHTML = "";
+                yearSelector.options.add(new Option("בחר משאב פרוייקט קודם", ""))
+
+                for (let i = 0; i < dropdownValues.length; i++) {
+                    const element = dropdownValues[i]
+                    projSelector.options.add(new Option(element.projectName, i))
+                }
+                projSelector.onchange = () => {
+                    const selectedValue = projSelector.value;
+                    console.log(selectedValue)
+                    console.log(dropdownValues)
+
+                    console.log(dropdownValues[selectedValue])
+
+                    yearSelector.innerHTML = "";
+                    if (selectedValue != -1) {
+                        yearSelector.options.add(new Option("בחר שנה", ""));
+                        for (let i = dropdownValues[selectedValue].startYear; i <= dropdownValues[selectedValue].endYear; i++) {
+                            yearSelector.options.add(new Option(i, i));
+                        }
+                    }
+                    else {
+                        yearSelector.options.add(new Option("בחר פרוייקט קודם", ""));
+                    }
+
+                }
             });
     }
+
     createProjectSelection();
     createHonSelection();
 </script>

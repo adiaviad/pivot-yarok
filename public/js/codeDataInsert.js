@@ -1,4 +1,61 @@
-function validateInputData(xlsxArrayTable, number_of_rows, measure, password) {
+const { json } = require("express");
+
+const sm_blueprints = [
+    {
+        name: "plan",
+        range: {
+            start: 1,
+            end: 10
+        },
+        calculation: m => {
+            const superm = [];
+            superm.push(m[0]);
+            superm.push(10 * m[1]);
+            superm.push(m[3] * 10000 / m[6]);
+            superm.push(1000 * (m[7] / m[4] + m[8] / m[5] + m[9] / m[6]) / 3);
+            return superm;
+        }
+    },
+    {
+        name: "dev",
+        range: {
+            start: 11,
+            end: 28
+        },
+        calculation: m => {
+            const superm = [];
+            superm.push((m[3] / m[0] + m[7] / m[1] + m[11] / m[2]) / 3 * 1000000);
+            superm.push(((m[4] / m[0] + m[8] / m[1] + m[12] / m[2]) / 3) * 1000);
+            superm.push(((m[5] / m[0] + m[9] / m[1] + m[13] / m[2]) / 3) * 1000000);
+            superm.push(((m[6] / m[0] + m[10] / m[1] + m[14] / m[2]) / 3) * 1000);
+            superm.push(((m[17] / m[2] + m[16] / m[1] + m[15] / m[0]) / 3) * 1000);
+            return superm;
+        }
+    }
+];
+const measuresRangesInExcel = {
+    "plan": {
+        start: 0,
+        end: 11
+    },
+    "dev": {
+        start: 0,
+        end: 19
+    }
+}
+function validateInputData(xlsxArrayTable, number_of_rows, measure,projectname, year,password) {
+    if(measure==-1){
+        alert("מדד על לא נבחר");
+        return false;
+    }
+    if(projectname.split(" ").length>1){
+        alert("פרוייקט לא נבחר");
+        return false;
+    }
+    if(year==""){
+        alert("פרוייקט לא נבחר");
+        return false;
+    }
     if (number_of_rows < 1) {
         alert('מספר שורות לא נבחר');
         return false;
@@ -20,8 +77,8 @@ function validateInputData(xlsxArrayTable, number_of_rows, measure, password) {
 }
 
 
-function inputSMdata(resourceNaming,xlsxArrayTable, measure, number_of_rows, project, year,password) {
-    if (!validateInputData(xlsxArrayTable, number_of_rows, measure, password)) {
+function inputSMdata(measureNaming,xlsxArrayTable, measure, number_of_rows, project, year,password) {
+    if (!validateInputData(xlsxArrayTable, number_of_rows, measure,project,year, password)) {
         console.log("input not valid ,number_of_rows,measure,password,xlsxArrayTable", number_of_rows, measure, password, xlsxArrayTable);
         return;
     }
@@ -36,8 +93,8 @@ function inputSMdata(resourceNaming,xlsxArrayTable, measure, number_of_rows, pro
         
     }
     console.log("inpustSMdata measure, data",measure,data);
-    const stringData=JSON.stringify(data);
-    fetch(`/api/insertSuperMeasure/project/${project}/year/${year}/measure/${measure}`, { method: 'POST', body: {"data":stringData,"pass":password}, headers: { 'Content-Type': 'application/json', } })
+    const b={"data":data,"pass":password};
+    fetch(`/api/insertSuperMeasure/project/${project}/year/${year}/measure/${measure}`, { method: 'POST', body: JSON.stringify(b), headers: { 'Content-Type': 'application/json', } })
         .then(response => {
             console.log(response);
             if (!response.ok) {
@@ -55,7 +112,7 @@ function inputSMdata(resourceNaming,xlsxArrayTable, measure, number_of_rows, pro
                         throw new Error("בעית שרת לא ידועה");
                 }
             } else {
-                alert('נתונים עודכנו בהצלחה עבור\n' + `${project} ${year} ${resourceNaming[measure].name}`);
+                alert('נתונים עודכנו בהצלחה עבור\n' + `${project} ${year} ${measureNaming[measure].name}`);
             }
         })
         .catch(error => console.error('Error fetching data:', error));
@@ -185,16 +242,6 @@ function inputSMdata(resourceNaming,xlsxArrayTable, measure, number_of_rows, pro
 // }
 
 
-const measuresRangesInExcel = {
-    "plan": {
-        start: 0,
-        end: 11
-    },
-    "dev": {
-        start: 0,
-        end: 19
-    }
-}
 
 
 function excelToArray(file, measure, rows_to_read, func) {
@@ -238,22 +285,26 @@ function excelToArray(file, measure, rows_to_read, func) {
 
 
 
-function readInput(resourceNaming) {
+function readInput(measureNaming) {
     const year = document.getElementById("yearSelector").value;
     const password = document.getElementById("passwordInput").value;
-    const projectname = document.getElementById("projectnameSelector").value;
-    const fileInput1 = document.getElementById('csvFileInput');
+    const projectname = document.getElementById("projectnameSelector").name;
+    const fileInput1 = document.getElementById('FileInput');
     const nor = document.getElementById("number_of_rowsInput").value;
     const measure = document.getElementById("supermeasureSelector").value;
-    const file1 = fileInput1.files[0];
+    console.log("year",year);
+    console.log("measure",measure);
+    console.log("project name",projectname);
+    
 
+    const file1 = fileInput1.files[0];
     if (nor < 1) {
         alert('צריך לבחור את כמות השורות שיוכנסו');
         return;
     }
     excelToArray(file1, measure, nor, xlsxArray1 => {
         console.log("xlsxArray1", xlsxArray1);
-        inputSMdata(resourceNaming,xlsxArray1,measure,nor,projectname,year,password);
+        inputSMdata(measureNaming,xlsxArray1,measure,nor,projectname,year,password);
     });
 
 
@@ -265,39 +316,6 @@ function readInput(resourceNaming) {
  * the range is for when the whole data is concant into one row. ignore the range if you calculate one sm at a time
  */
 
-const sm_blueprints = [
-    {
-        name: "plan",
-        range: {
-            start: 1,
-            end: 10
-        },
-        calculation: m => {
-            const superm = [];
-            superm.push(m[0]);
-            superm.push(10 * m[1]);
-            superm.push(m[3] * 10000 / m[6]);
-            superm.push(1000 * (m[7] / m[4] + m[8] / m[5] + m[9] / m[6]) / 3);
-            return superm;
-        }
-    },
-    {
-        name: "dev",
-        range: {
-            start: 11,
-            end: 28
-        },
-        calculation: m => {
-            const superm = [];
-            superm.push((m[3] / m[0] + m[7] / m[1] + m[11] / m[2]) / 3 * 1000000);
-            superm.push(((m[4] / m[0] + m[8] / m[1] + m[12] / m[2]) / 3) * 1000);
-            superm.push(((m[5] / m[0] + m[9] / m[1] + m[13] / m[2]) / 3) * 1000000);
-            superm.push(((m[6] / m[0] + m[10] / m[1] + m[14] / m[2]) / 3) * 1000);
-            superm.push(((m[17] / m[2] + m[16] / m[1] + m[15] / m[0]) / 3) * 1000);
-            return superm;
-        }
-    }
-];
 function calculateSuperMeasures(Data) {
 
     const all_measures = Data;
