@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
@@ -10,57 +11,69 @@
     <script type="text/javascript" src="js/codeDataInsert.js"></script>
     <script type="text/javascript" src="js/codeGraphicsGen.js"></script>
     <script type="text/javascript" src="js/codeDataLoad.js"></script>
+    <script type="text/javascript" src="js/jsonNames.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 </head>
 </head>
+
 <body>
     <button style="font-size: larger;" onclick="toMainPage()">חזור להצגת נתונים </button>
     <br></br>
     <input type="file" id="csvFileInput" accept=".xlsx">
-    <button onclick="readCSV(processData)">Read CSV</button>
-    <button onclick="readCSV(previewData)">preview CSV</button>
-    <button onclick="test()">test</button>
-    <input type="text" id="passwordInput" placeholder ="סיסמה"/>
-    <input type="number" id="yearInput" placeholder ="שנה"></input>
-    <input type="number" id="number_of_rows" placeholder="כמה שורות לקרוא?"/>
+    <!-- <button onclick="readCSV(processData)">Read CSV</button> -->
+    <!-- <button onclick="readCSV(previewData)">preview CSV</button> -->
+    <input type="text" id="passwordInput" placeholder="סיסמה" />
+    <br>
+    <button onclick="createProject()">צור פרויייקט</button>
+    <input type="text" id="projectnameInput" placeholder="בחר שם לפרוייקט חדש" />
+    <input type="number" id="startyearInput" placeholder="שנת התחלה" />
+    <input type="number" id="endyearInput" placeholder="שנת סיום" />
+    <br>
+    <input type="text" id="projectnameSelector" placeholder="שם פרוייקט" />
+    <input type="text" id="supermeasureSelector" placeholder="שם מדד" />
+    <input type="number" id="yearSelector" placeholder="שנה"></input>
+    <input type="number" id="number_of_rowsInput" placeholder="כמה שורות לקרוא?" />
     <table style="border: 1px solid black;">
-        <tr  style="border: 1px solid black;">
-            <td  style="border: 1px solid black;">
-                <label style="color: blue;" for="csvFileInput_develop_2021" class="btn">2021</label><input type="file" style="visibility:hidden; width: 1px;"  id="csvFileInput_develop_2021" accept=".xlsx">
-                <label style="color: blue;" for="csvFileInput_develop_2020" class="btn">2020</label><input type="file" style="visibility:hidden;width: 1px;"  id="csvFileInput_develop_2020" accept=".xlsx">
-                מדד פיתוח: 
-            </td  style="border: 1px solid black;">
+        <tr class="centered" style="border: 1px solid black;">
             <td style="border: 1px solid black;">
-                <label style="color: blue;" for="csvFileInput_planning_2021" class="btn">2021</label><input type="file" style="visibility:hidden;width: 1px;" id="csvFileInput_planning_2021" accept=".xlsx">
-                <label style="color: blue;" for="csvFileInput_planning_2020" class="btn">2020</label><input type="file" style="visibility:hidden;width: 1px;" id="csvFileInput_planning_2020" accept=".xlsx">
-                מדד תכנון:
-            <td style="border: 1px solid black;"> <button onclick="readCSV(processData)">הכנסת מידע</button> משאב תכנון ופיתוח</td>
+                <label style="color: blue;" for="FileInput" class="btn">2021</label><input type="file"
+                    style="visibility:hidden; width: 1px;" id="FileInput" accept=".xlsx">
+            <td style="border: 1px solid black;"> <button onclick="readCSV(resourceNaming)">הכנסת מידע</button> משאב
+                תכנון ופיתוח</td>
         </tr>
-        
+
     </table>
     <br></br>
     <div id="previewGraphicsContainer"></div>
-    
+
 </body>
 <script>
-    var selected_region=0;
+    var selected_region = 0;
 
     function toMainPage() {
-    // Replace 'target.html' with the actual file name or path of the HTML page you want to redirect to
+        // Replace 'target.html' with the actual file name or path of the HTML page you want to redirect to
         window.location.href = 'index.html';
     }
-    function test(){
-        console.log("arr");
-        let arr=[];
-        for (let index = 0; index < 10; ) {
-            let s=[10,2,"8"];
-            arr.push(s);
-        }
-        console.log(arr);
+    function createProject() {
+        const startyear = document.getElementById("yearSelector").value;
+        const endyear = document.getElementById("passwordInput").value;
+        const projectname = document.getElementById("projectnameInput").value;
+        const password = document.getElementById("passwordInput").value;
+        fetch(`/api/createProject/project/${project}/startyear/${startyear}/endyear/${endyear}` ,{ method: 'POST', body: {"pass":password}, headers: { 'Content-Type': 'application/json', } })
+        .then(response => {
+            console.log(response);
+            if(response.ok){
+                alert("פרוייקט נוצר בהצלחה");
+            }
+            else{
+                console.log(response.status);
+                alert("שגיאה\n"+response.status+"\n"+response.statusText);
+            }
+        });
     }
 </script>
-
 
 
 </html>

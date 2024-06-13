@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db/db');
-const tableName = 'table';
-
+const superSecretGoodPassword = "pass";
+const dataPrimaryKey='שם_רשות';
 const smColumnNames = [
   {
     name: "plan",
     columnNames: [
-      'שם_רשות',
       'קיום_תכנית_מתאר_כוללת_לרשות_המקומית_מדד',
       'יחידה_לתכנון_אסטרטגי_מדד',
       'מספר_העובדים_בתכנון_ובנייה_תקן',
@@ -56,7 +55,7 @@ const smColumnNames = [
 
 
 router.get('/getData/project/:projectname/:year', (req, res) => {
-  db.query('SELECT * FROM '+ req.params.projectname + "_table" + req.params.year, (error, results) => {
+  db.query('SELECT * FROM ' + req.params.projectname + "_table" + req.params.year, (error, results) => {
     if (error) {
       console.error('Error executing query:', error);
       res.status(500).send('Internal Server Error');
@@ -93,6 +92,32 @@ router.get('/getColumnNames/:project', (req, res) => {
   });
 });
 
+function tableName(projectName,year){
+  return  projectname + '_table' + year;
+}
+
+function createNewTable(projectname, year, onFinish) {
+  const originalTableName = 'sampletable';
+  // New table name
+  const newTableName =tableName(projectname,year);//todo: validate year is a nunmber
+
+  // Retrieve column names and types from the original table
+  db.query(`SHOW COLUMNS FROM ${originalTableName}`, (error, rows) => {
+    // Extract column names and types
+    const columns = rows.map(row => `${row.Field} ${row.Type}`).join(', ');
+    const firstColumnName = rows[0].Field;
+    // console.log(columns);
+    // Create a new table with the same structure
+    return db.execute(`CREATE TABLE ${newTableName} (${columns},  PRIMARY KEY (${firstColumnName}))`, (error) => {
+      if (error) {
+        console.log(error);
+      }
+      onFinish(error);
+    }
+    );
+  });
+}
+
 
 function validateInsertData(year, columns, pass, errFunc, successFunc) {
   if (!isFinite(year)) {
@@ -100,14 +125,13 @@ function validateInsertData(year, columns, pass, errFunc, successFunc) {
     errFunc({ ok: false, error: "year is invalid", code: 423 });
     return false;
   }
-  if (pass !== "pass") {
+  if (pass !== superSecretGoodPassword) {
     console.log("recieved password", pass);
     errFunc({ ok: false, error: "password doesn't match", code: 401 });
     return false;
   }
   else {
-    //2021 is the first table in the db is i know it has data. the rest might not have
-    const query = `SELECT * FROM ` + tableName + 2021 + ` LIMIT 1;`;
+    const query = `SELECT * FROM sampletable LIMIT 1;`;
     console.log("quary", query);
     db.query(query, (error, results) => {
       if (error) {
@@ -135,37 +159,110 @@ function validateInsertData(year, columns, pass, errFunc, successFunc) {
   }
 
 }
-router.post('/createProject/project/:projectname/startyear/:syear/endyear/:eyear',(req,res)=>{
-  const startyear=req.params.syear;
-  const endyear=req.params.eyear;
-  const projectname=req.params.projectname;
-
-  insertProjectYears(projectname,startyear,endyear,()=>{
-    for (let year = startyear; year <endyear; year++) 
-      createNewTable(projectname,year,(err)=>{console.log("create new table err, year, project",err,year,projectname);});
-    
-    
-  });
-  
-});
-function insertProjectYears(name,start,end,callback){
-  const query=`INSERT INTO allprojects (projectName, startYear, endYear) VALUES (?, ?, ?);`
-  db.query(query,[name,start,end],(err)=>{
-    if(err){
-      console.log("insert project year error:",err)
-    } else{
+function insertProjectYears(name, start, end, callback,errFunc) {
+  const query = `INSERT INTO allprojects (projectName, startYear, endYear) VALUES (?, ?, ?);`
+  db.query(query, [name, start, end], (err) => {
+    if (err) {
+      console.log("insert project year error:", err)
+      errFunc(err);
+    } else {
       callback();
     }
   });
-  
+
 }
+//maybe later i want to do more so i'm making this a function
+function isPassCorrect(pass){
+  return pass==superSecretGoodPassword; 
+}
+
+
+
+router.post('/createProject/project/:projectname/startyear/:syear/endyear/:eyear', (req, res) => {
+  const startyear = req.params.syear;
+  const endyear = req.params.eyear;
+  const projectname = req.params.projectname;
+  const pass = req.body.pass;
+
+  if (!isPassCorrect(pass)) {
+    res.status(401).send("password does not match");
+    return;
+  }
+
+  insertProjectYears(projectname, startyear, endyear, () => {
+    for (let year = startyear; year < endyear; year++) {
+      createNewTable(projectname, year, (err) => {
+        console.log("create new table err, year, project", err, year, projectname);
+        if (year == endyear) {
+          res.status(200).send("project created successfully");
+        }
+      });
+    }
+  },(err)=>{
+    if(err.code =="ER_DUP_ENTRY"){
+      res.status(409).send("project name already exist");
+    }else{
+      res.status(500).send("server error");
+    }
+  });
+
+});
+
+router.post('insertSuperMeasure/project/:projectname/year/:year/measure/:measure', (req, res) => {
+  if(req.body.data==null){
+    res.status(400).send("no data provided, invalid request");
+    return;
+  }
+
+  const { ...rows } = req.body.data;
+  const password = req.body.pass;
+  const year = req.params.year;
+  const measure = req.params.measure;
+  const projectname = req.params.projectname;
+  console.log("insertSuperMeasure rows",rows);
+
+  if(!isPassCorrect(password)){
+    res.status(401).send("password does not match");
+    return;
+  }
+  let sm=null;
+  smColumnNames.forEach(element => {
+    if(element.name==measure){
+      sm=measure;
+    }
+  });
+  if(sm==null){
+    res.status(422).send("measure name don't not exist");
+    return;
+  }
+  const column_names= [dataPrimaryKey].concat(sm.columnNames);
+
+  if(column_names.length!=rows[0].length){
+    res.status(406).send("data length does not match DB ");
+    console.log("err data length does not match DB",column_names.length,rows[0].length);
+    return;
+  }
+
+
+  const column_names_string = column_names.join(', ');
+  const placeholders= rows.map(row=>`(${column_names.map(n=>"?").join(", ")})`).join(",");
+  const updateStatement=column_names.map(n=>`${n} = values(${n})`).join(", "); 
+  let values=[];
+  for (let i = 0; i < rows.length; i++) {
+    values.push(...rows[i]);
+  }
+
+  const quary=`INSERT INTO ${tableName(projectname,year)} (${column_names}) VALUES ${placeholders} on duplicate key update ${updateStatement};`;
+  console.log("insertSuperMeasure query",quary);
+});
+
 
 router.post('/insertData/project/:projectname/year/:year', (req, res) => {
   const { ...columns } = req.body.data;
   const password = req.body.userInfo.pass;
 
   const year = req.params.year;
-  const projectname=req.params.projectname;
+  const projectname = req.params.projectname;
 
 
   // Check if all required fields are provided
@@ -179,7 +276,7 @@ router.post('/insertData/project/:projectname/year/:year', (req, res) => {
       const placeholders = Object.keys(columns).fill('?').join(', ');
 
       const query = `
-        INSERT INTO ${tableName + year} (${columnsList})
+        INSERT INTO ${tableName(projectname,year)} (${columnsList})
         VALUES (${placeholders})
       `;
 
@@ -211,27 +308,7 @@ router.post('/insertData/project/:projectname/year/:year', (req, res) => {
   )
 
 });
-function createNewTable(projectname,year, onFinish) {
-  const originalTableName = 'sampletable';
-  // New table name
-  const newTableName = projectname+'_table' + year;//todo: validate year is a nunmber
 
-  // Retrieve column names and types from the original table
-  db.query(`SHOW COLUMNS FROM ${originalTableName}`, (error, rows) => {
-    // Extract column names and types
-    const columns = rows.map(row => `${row.Field} ${row.Type}`).join(', ');
-    const firstColumnName = rows[0].Field;
-    // console.log(columns);
-    // Create a new table with the same structure
-    return db.execute(`CREATE TABLE ${newTableName} (${columns},  PRIMARY KEY (${firstColumnName}))`, (error) => {
-      if (error) {
-        console.log(error);
-      }
-      onFinish(error);
-    }
-    );
-  });
-}
 
 // insertProjectYears("t",0,4,(err)=>{
 //   const projectname="t"
@@ -241,7 +318,7 @@ function createNewTable(projectname,year, onFinish) {
 //   for (let year = 0; year <4; year++) 
 //     createNewTable(projectname,year,(err)=>{console.log("create new table err, year, project",err,year,projectname);});
 //   }
-  
+
 // });
 // insertProjectYears("asds",0,3);
 // db.query(`SELECT * FROM sampletable LIMIT 1;`, (error, results) => {
