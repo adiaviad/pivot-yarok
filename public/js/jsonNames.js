@@ -5,7 +5,7 @@ const resHierarchy = {
             "name": "משאב על פיתוח ותכנון",
             "supermeasures": [
                 {
-                    name: "מדד על תיכנון",
+                    name: "מדד על תכנון",
                     value: "plan"
                 },
                 {
@@ -21,7 +21,7 @@ const resourceNaming = {
         name: "משאב על פיתוח ותכנון",
         value: "PlanAndDev",
         plan: {
-            name: "מדד על תיכנון",
+            name: "מדד על תכנון",
             value: "plan"
         },
         dev: {
@@ -32,7 +32,7 @@ const resourceNaming = {
 }
 const measureNaming = {
     plan: {
-        name: "מדד על תיכנון",
+        name: "מדד על תכנון",
         value: "plan"
     },
     dev: {

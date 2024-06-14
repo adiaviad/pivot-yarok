@@ -55,6 +55,8 @@ const smColumnNames = [
 
 
 router.get("/getProjectsMetaData",(req,res)=>{
+  console.log("getProjectsMeta", req.body);
+
   db.query('SELECT * FROM allprojects', (error, results) => {
     if (error) {
       console.error('Error executing query:', error);
@@ -67,6 +69,8 @@ router.get("/getProjectsMetaData",(req,res)=>{
 });
 
 router.get('/getData/project/:projectname/:year', (req, res) => {
+  console.log("getData", req.params);
+
   db.query('SELECT * FROM ' + req.params.projectname + "_table" + req.params.year, (error, results) => {
     if (error) {
       console.error('Error executing query:', error);
@@ -80,6 +84,7 @@ router.get('/getData/project/:projectname/:year', (req, res) => {
 
 
 router.get('/getColumnNames/:project', (req, res) => {
+  console.log("get columns", req.body);
 
   // Query to get column names for the specified table
   const query = `SELECT * FROM sampletable LIMIT 1;`;
@@ -181,6 +186,7 @@ function isPassCorrect(pass){
 
 
 router.post('/createProject/project/:projectname/startyear/:syear/endyear/:eyear', (req, res) => {
+  console.log("create project", req.params);
   const startyear = req.params.syear;
   const endyear = req.params.eyear;
   const projectname = req.params.projectname;
@@ -210,19 +216,20 @@ router.post('/createProject/project/:projectname/startyear/:syear/endyear/:eyear
 
 });
 
-router.post('insertSuperMeasure/project/:projectname/year/:year/measure/:measure', (req, res) => {
+router.post('/insertSuperMeasure/project/:projectname/year/:year/measure/:measure', (req, res) => {
+  console.log("insertSuperMeasure/project",req.params)
   if(req.body.data==null){
     res.status(400).send("no data provided, invalid request");
     return;
   }
 
-  const { ...rows } = req.body.data;
+  const rows  = req.body.data;
   const password = req.body.pass;
   const year = req.params.year;
   const measure = req.params.measure;
   const projectname = req.params.projectname;
   console.log("insertSuperMeasure rows",rows);
-
+  console.log("params",req.params);
   if(!isPassCorrect(password)){
     res.status(401).send("password does not match");
     return;
@@ -230,21 +237,23 @@ router.post('insertSuperMeasure/project/:projectname/year/:year/measure/:measure
   let sm=null;
   smColumnNames.forEach(element => {
     if(element.name==measure){
-      sm=measure;
+      sm=element;
     }
   });
+  
   if(sm==null){
     res.status(422).send("measure name don't not exist");
     return;
   }
   const column_names= [dataPrimaryKey].concat(sm.columnNames);
+  console.log("column_names",column_names);
+  console.log("DB data len, new data len",column_names.length,rows[0].length);
 
   if(column_names.length!=rows[0].length){
     res.status(406).send("data length does not match DB ");
     console.log("err data length does not match DB",column_names.length,rows[0].length);
     return;
   }
-
 
   const column_names_string = column_names.join(', ');
   const placeholders= rows.map(row=>`(${column_names.map(n=>"?").join(", ")})`).join(",");
@@ -253,13 +262,32 @@ router.post('insertSuperMeasure/project/:projectname/year/:year/measure/:measure
   for (let i = 0; i < rows.length; i++) {
     values.push(...rows[i]);
   }
+  values=values.map((val,index)=>{
+    if((typeof val )==='number'){
 
+      return val.toFixed(2)
+    }else{
+      return val;
+    }
+  });
+  console.log(values);
+  
   const quary=`INSERT INTO ${tableName(projectname,year)} (${column_names}) VALUES ${placeholders} on duplicate key update ${updateStatement};`;
   console.log("insertSuperMeasure query",quary);
+  db.query(quary,values,(error,results)=>{
+    console.log("error",error);
+    if(error==null){
+      res.status(200).send("data inserted");
+    }
+    else{
+      res.status(400).send(error.message);
+    }
+  });
 });
 
 
 router.post('/insertData/project/:projectname/year/:year', (req, res) => {
+  console.log("insertData/project/:projectname/year/:year",req.params);
   const { ...columns } = req.body.data;
   const password = req.body.userInfo.pass;
 
@@ -307,7 +335,7 @@ router.post('/insertData/project/:projectname/year/:year', (req, res) => {
         res.status(200).send('Data inserted successfully.');
       });
     }
-  )
+  );
 
 });
 
