@@ -283,7 +283,8 @@ function generatePlots(jsonData,containerGraph, containerBench,selected_region) 
 }
 
 
-function generateSuperMeasureSubTable(superMeasure,container,selected_region,resName) {
+function generateSuperMeasureSubTable(superMeasure,container,selected_region) {
+    console.log("generateSuperMeasureSubTable",superMeasure);
     const superMeasureName=superMeasure.super_measure_name;
     const columnHeadersArray = superMeasure.measurements_names;
     const rowHeadersArray = superMeasure.provinces_names;
@@ -340,10 +341,7 @@ function generateSuperMeasureSubTable(superMeasure,container,selected_region,res
     container.appendChild(table);
     container.appendChild(document.createElement("br"));
     container.id=superMeasureName;
-    // container.classList.add(replaceSpace(resName));
-    // const new_row =document.getElementById(tableID).insertRow();
-    // new_row.appendChild(table);
-    // new_row.classList.add("mamad_tables_holder");
+
     
 }
 
@@ -432,8 +430,7 @@ function generateGraphicsFor(year,container,jd,firstSelection,updateFilters){
         const selectedIndex = this.value;
         selected_region=selectedIndex;
         jd.forEach(honProfile=>generateGraphicsForHon(year,honProfile,graphicContainer,selected_region,updateFilters));
-        // createDropdownWithClassElements("honContainer"+year,"honSelectContainer"+year);
-        // createDropdownWithClassElements("superMeasureGraphic"+year,"SuperMadamSelectContainer"+year);
+       
      
     });
     console.log("here4");

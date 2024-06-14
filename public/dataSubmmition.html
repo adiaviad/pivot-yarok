@@ -63,10 +63,10 @@
     <table class="right">
         <tr>
             <td>
-                <button onclick="readInput(measureNaming)">שליחת הקובץ</button>
+                <button onclick="readInput(measureNaming,`insert`,()=>{})">שליחת הקובץ</button>
             </td>
             <td>
-                <button onclick="(measureNaming)">הצגת הקובץ</button>
+                <button onclick="readInput(measureNaming,`preview`,generateSuperMeasureSubTable)">הצגת הקובץ</button>
             </td>
 
             <td>

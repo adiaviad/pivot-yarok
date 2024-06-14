@@ -41,21 +41,21 @@ const measuresRangesInExcel = {
         end: 19
     }
 }
-function validateInputData(measureNaming,xlsxArrayTable, number_of_rows, measure,projectname, year,filename,password) {
-    if(measure==-1){
+function validateInputData(measureNaming, xlsxArrayTable, number_of_rows, measure, projectname, year, filename, password) {
+    if (measure == -1) {
         alert("מדד על לא נבחר");
         return false;
     }
-    const measureName=measureNaming[measure].name;
-    if(!filename.includes(measureName)){
-        alert(`הקובץ שנחבר לא תואם את המדד על שנבחר`+`\nהמדד שנבחר:${measureName}`+`\nהקובץ שחבר:${filename}`);
+    const measureName = measureNaming[measure].name;
+    if (!filename.includes(measureName)) {
+        alert(`הקובץ שנחבר לא תואם את המדד על שנבחר` + `\nהמדד שנבחר:${measureName}` + `\nהקובץ שחבר:${filename}`);
         return false;
     }
-    if(projectname.split(" ").length>1 || projectname==""){
+    if (projectname.split(" ").length > 1 || projectname == "") {
         alert("פרוייקט לא נבחר");
         return false;
     }
-    if(year==""){
+    if (year == "") {
         alert("שנה לא נבחרה");
         return false;
     }
@@ -80,23 +80,20 @@ function validateInputData(measureNaming,xlsxArrayTable, number_of_rows, measure
 }
 
 
-function inputSMdata(measureNaming,xlsxArrayTable, measure, number_of_rows, project, year,filename,password) {
-    if (!validateInputData(measureNaming,xlsxArrayTable, number_of_rows, measure,project,year, filename,password)) {
-        console.log("input not valid ,number_of_rows,measure,password,xlsxArrayTable", number_of_rows, measure, password, xlsxArrayTable);
-        return;
-    }
+function inputSMdata(measureNaming, xlsxArrayTable, measure, project, year, password) {
+
     console.log("xlsx Array table", xlsxArrayTable);
-    let data=[];
+    let data = [];
     for (let i = 0; i < xlsxArrayTable.length; i++) {
-        const row=xlsxArrayTable[i];
-        const rowData=row.slice(1);
-        console.log("row data, i",i,rowData);
-        const superMeasureData=calculateSuperMeasure(rowData,measure);
+        const row = xlsxArrayTable[i];
+        const rowData = row.slice(1);
+        console.log("row data, i", i, rowData);
+        const superMeasureData = calculateSuperMeasure(rowData, measure);
         data.push(row.concat(superMeasureData));
-        
+
     }
-    console.log("inpustSMdata measure, data",measure,data);
-    const b={"data":data,"pass":password};
+    console.log("inpustSMdata measure, data", measure, data);
+    const b = { "data": data, "pass": password };
     fetch(`/api/insertSuperMeasure/project/${project}/year/${year}/measure/${measure}`, { "method": 'POST', "body": JSON.stringify(b), "headers": { 'Content-Type': 'application/json', } })
         .then(response => {
             console.log(response);
@@ -120,12 +117,38 @@ function inputSMdata(measureNaming,xlsxArrayTable, measure, number_of_rows, proj
         })
         .catch(error => {
             console.error('Error fetching data:', error);
-            alert("קרתה שגיאה\n",error);
+            alert("קרתה שגיאה\n", error);
         });
 
 }
+//function generateSuperMeasureSubTable(superMeasure,container,selected_region)
+function previewSuperMeasure(xlsxArrayTable, measureJson,genFunc) {
+    const smJson={
+        "super_measure_name":"",
+        "provinces_names":[],   
+        "measurements_names":[],
+        "measurements":[],// array of collumns (collumn is an array)
+           
+    }
+    smTable = [];
+    xlsxArrayTable.forEach(element => {
+        smTable.push(calculateSuperMeasure(element.slice(1),measureJson.value));
+        smJson.provinces_names.push(element[0]);
+    });
 
+    for (let col = 0; col < smTable[0].length; col++) {
+        smJson.measurements.push(smTable.map(arr=>arr[col].toFixed(2)));
+    }
 
+    smJson.measurements_names=measureJson.columns_names;
+    smJson.super_measure_name=measureJson.name;
+
+    const containter=document.getElementById("previewGraphicsContainer");
+    containter.innerHTML="";
+    const subContainter=document.createElement("div");
+    containter.appendChild(subContainter);
+    genFunc(smJson,subContainter,-1);
+}
 
 
 // function previewData(csvData) {
@@ -270,11 +293,11 @@ function excelToArray(file, measure, rows_to_read, func) {
             // Convert sheet to JSON
             const json = XLSX.utils.sheet_to_json(worksheet, { headers: 0 });
             console.log("xlsx json", json);
-            let flag="ok";
+            let flag = "ok";
             for (let i = 0; i < number_of_rows; i++) {
                 console.log(json[i + 2]);
-                if(json[i + 2]==null ||Object.values(json[i + 2])==null||Object.values(json[i + 2])[0]==null){
-                    flag='no';
+                if (json[i + 2] == null || Object.values(json[i + 2]) == null || Object.values(json[i + 2])[0] == null) {
+                    flag = 'no';
                     alert(`בעיה בקריאה הקובץ, בעיה אחרי קריאה של ${i} שורות`);
                     break;
                 }
@@ -283,7 +306,7 @@ function excelToArray(file, measure, rows_to_read, func) {
 
             // Resolve the outer promise with the populated array
             console.log("func xlx array", xlsxArray);
-            if(flag=="ok"){
+            if (flag == "ok") {
                 func(xlsxArray);
             }
         };
@@ -299,7 +322,7 @@ function excelToArray(file, measure, rows_to_read, func) {
 
 
 
-function readInput(measureNaming) {
+function readInput(measureNaming, nextop,genFunc) {
     const year = document.getElementById("yearSelector").value;
     const password = document.getElementById("passwordInput").value;
     const project = document.getElementById("projectnameSelector");
@@ -307,12 +330,12 @@ function readInput(measureNaming) {
     const nor = document.getElementById("number_of_rowsInput").value;
     const measure = document.getElementById("supermeasureSelector").value;
 
-    const projectname=project.options[project.value].text;
-    console.log("year",year);
-    console.log("measure",measure);
-    console.log("project name",projectname);
-    
-  
+    const projectname = project.options[project.value].text;
+    console.log("year", year);
+    console.log("measure", measure);
+    console.log("project name", projectname);
+
+
     const file1 = fileInput1.files[0];
     if (nor < 1) {
         alert('צריך לבחור את כמות השורות שיוכנסו');
@@ -320,7 +343,15 @@ function readInput(measureNaming) {
     }
     excelToArray(file1, measure, nor, xlsxArray1 => {
         console.log("xlsxArray1", xlsxArray1);
-        inputSMdata(measureNaming,xlsxArray1,measure,nor,projectname,year,file1.name,password);
+        if (!validateInputData(measureNaming, xlsxArray1, nor, measure, projectname, year, file1.name, password)) {
+            console.log("input not valid ,number_of_rows,measure,password,xlsxArray1", nor, measure, password, xlsxArray1);
+            return;
+        }
+        if (nextop == "insert") {
+            inputSMdata(measureNaming, xlsxArray1, measure, projectname, year, password);
+        } else {
+            previewSuperMeasure(xlsxArray1,measureNaming[measure],genFunc);
+        }
     });
 
 
@@ -344,11 +375,11 @@ function calculateSuperMeasures(Data) {
     });
     return newRow;
 }
-function calculateSuperMeasure(rowData,measure){
-    let result=null;
-    sm_blueprints.forEach(bp=>{
-        if(bp.name==measure){
-            result=bp.calculation(rowData);
+function calculateSuperMeasure(rowData, measure) {
+    let result = null;
+    sm_blueprints.forEach(bp => {
+        if (bp.name == measure) {
+            result = bp.calculation(rowData);
         }
     });
     return result;
