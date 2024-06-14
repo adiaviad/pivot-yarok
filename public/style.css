@@ -2,6 +2,25 @@
 body{
     background-color: rgb(195, 255, 190);
 } 
+
+.selecttable{
+    width: 100%;
+    border: 1px solid;
+    border-collapse: collapse;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+table.selecttable td{
+    text-align: center;
+    border: 1px solid;
+}
+table.selecttable tr{
+    border: 1px solid;
+
+}
 .madad{
     width: 100%;
     border: 1px solid;
@@ -94,7 +113,9 @@ trh{
     text-align: center;
     left: 50%;
     transform: translate(-50%, -50%);
-
+}
+.projectselector{
+    text-align: center;
 }
 .graphicContainer{
     margin-bottom: 10%;

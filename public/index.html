@@ -7,6 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script type="text/javascript" src="js/codeDataLoad.js"></script>
     <script type="text/javascript" src="js/codeGraphicsGen.js"></script>
+    <script type="text/javascript" src="js/jsonNames.js"></script>
 
     <body>
         <h2>WIP</h2>
@@ -208,7 +209,7 @@
             alert("שנה לא תקינה")
             return;
         }
-        fetch('/api/getData/'+year)
+        fetch('/api/getData/project/pre/'+year)
         .then(response => response.json())
         .then(data => {
             jd=covertTableToJson(data);

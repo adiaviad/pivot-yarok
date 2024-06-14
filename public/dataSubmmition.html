@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
@@ -10,57 +11,239 @@
     <script type="text/javascript" src="js/codeDataInsert.js"></script>
     <script type="text/javascript" src="js/codeGraphicsGen.js"></script>
     <script type="text/javascript" src="js/codeDataLoad.js"></script>
+    <script type="text/javascript" src="js/jsonNames.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 </head>
 </head>
+
 <body>
     <button style="font-size: larger;" onclick="toMainPage()">חזור להצגת נתונים </button>
     <br></br>
-    <input type="file" id="csvFileInput" accept=".xlsx">
-    <button onclick="readCSV(processData)">Read CSV</button>
-    <button onclick="readCSV(previewData)">preview CSV</button>
-    <button onclick="test()">test</button>
-    <input type="text" id="passwordInput" placeholder ="סיסמה"/>
-    <input type="number" id="yearInput" placeholder ="שנה"></input>
-    <input type="number" id="number_of_rows" placeholder="כמה שורות לקרוא?"/>
-    <table style="border: 1px solid black;">
-        <tr  style="border: 1px solid black;">
-            <td  style="border: 1px solid black;">
-                <label style="color: blue;" for="csvFileInput_develop_2021" class="btn">2021</label><input type="file" style="visibility:hidden; width: 1px;"  id="csvFileInput_develop_2021" accept=".xlsx">
-                <label style="color: blue;" for="csvFileInput_develop_2020" class="btn">2020</label><input type="file" style="visibility:hidden;width: 1px;"  id="csvFileInput_develop_2020" accept=".xlsx">
-                מדד פיתוח: 
-            </td  style="border: 1px solid black;">
-            <td style="border: 1px solid black;">
-                <label style="color: blue;" for="csvFileInput_planning_2021" class="btn">2021</label><input type="file" style="visibility:hidden;width: 1px;" id="csvFileInput_planning_2021" accept=".xlsx">
-                <label style="color: blue;" for="csvFileInput_planning_2020" class="btn">2020</label><input type="file" style="visibility:hidden;width: 1px;" id="csvFileInput_planning_2020" accept=".xlsx">
-                מדד תכנון:
-            <td style="border: 1px solid black;"> <button onclick="readCSV(processData)">הכנסת מידע</button> משאב תכנון ופיתוח</td>
+    <!-- <button onclick="readCSV(processData)">Read CSV</button> -->
+    <!-- <button onclick="readCSV(previewData)">preview CSV</button> -->
+
+    <table class="right">
+        <tr>
+            <td>
+                <input type="text" id="passwordInput" placeholder="סיסמה" />
+            <td style="width: 80px;">סיסמה</td>
+            </td>
         </tr>
-        
+    </table>
+    <br>
+    <table class="right">
+        <tr>
+            <td>
+                <button onclick="createProject()">צור פרויייקט</button>
+                <input type="number" id="endyearInput" placeholder="שנת סיום" />
+                <input type="number" id="startyearInput" placeholder="שנת התחלה" />
+                <input type="text" id="projectnameInput" placeholder="בחר שם לפרוייקט חדש" />
+            <td style="width: 80px;">יצירת פרוייקט</td>
+            </td>
+        </tr>
+    </table>
+    <!-- <input type="text" id="projectnameSelector" placeholder="שם פרוייקט" />
+    <input type="text" id="supermeasureSelector" placeholder="שם מדד" />
+    <input type="number" id="yearSelector" placeholder="שנה"></input>
+     -->
+    <table style="border: none;" class="right">
+        <tr>
+            <td>
+                <input type="file" id="FileInput" accept=".xlsx">
+            </td>
+            <td>
+                <input type="number" id="number_of_rowsInput" placeholder="?כמה מועצות/ערים לקרוא" />
+            </td>
+            <td style="width: 80px;">בחירת קובץ</td>
+        </tr>
+    </table>
+
+    <table class="right">
+        <tr>
+            <td>
+                <button onclick="readInput(measureNaming)">שליחת הקובץ</button>
+            </td>
+            <td>
+                <button onclick="(measureNaming)">הצגת הקובץ</button>
+            </td>
+
+            <td>
+                <select id="supermeasureSelector">
+                    <option value="0">בחר מדד על</option>
+                </select>
+            </td>
+            <td>
+                <select id="honSelector">
+                    <option value="0">בחר מאשב הון</option>
+                </select>
+            </td>
+            <td>
+                <select id="yearSelector">
+                    <option value="0">בחר פרוייקט קודם</option>
+                </select>
+            </td>
+            <td>
+                <select id="projectnameSelector">
+                    <option value="0">בחר פרוייקט</option>
+                </select>
+            </td>
+            <td style="width: 80px;">הגדרות קובץ</td>
+        </tr>
+
     </table>
     <br></br>
     <div id="previewGraphicsContainer"></div>
-    
+
 </body>
+<!-- script for crreating a project -->
 <script>
-    var selected_region=0;
+    var selected_region = 0;
 
     function toMainPage() {
-    // Replace 'target.html' with the actual file name or path of the HTML page you want to redirect to
+        // Replace 'target.html' with the actual file name or path of the HTML page you want to redirect to
         window.location.href = 'index.html';
     }
-    function test(){
-        console.log("arr");
-        let arr=[];
-        for (let index = 0; index < 10; ) {
-            let s=[10,2,"8"];
-            arr.push(s);
+    function createProject() {
+        const startyear = document.getElementById("startyearInput").value;
+        const project = document.getElementById("projectnameInput").value;
+        const endyear = document.getElementById("endyearInput").value;
+        const password = document.getElementById("passwordInput").value;
+        console.log('create project', startyear, endyear, project, password);
+        if (password == '') {
+            alert("לא הוכנסה סיסמה");
+            return;
         }
-        console.log(arr);
+        if (startyear == '') {
+            alert("לא הוכנסה שנת תחילה");
+            return;
+        }
+        if (endyear == '') {
+            alert("לא הוכנסה שנת סיום");
+            return;
+        }
+        if (endyear < startyear) {
+            alert("שנת סיום לפני שנת התחלה");
+            return;
+        }
+        fetch(`/api/createProject/project/${project}/startyear/${startyear}/endyear/${endyear}`, { "method": 'POST', "body": JSON.stringify({ "pass": password }), "headers": { 'Content-Type': 'application/json', } })
+            .then(response => {
+                console.log("resposnse", response);
+                if (!response.ok) {
+                    console.log(response.status);
+                    if (response.status == 409) {
+                        alert("פרוייקט בעל שם זה כבר קיים. ניתן לבחור שם אחר\n" + "אם שם אחר לא מתאים מומלץ להוסיף את שנת ההתחלה לשם");
+                    } else {
+                        alert("שגיאה\n" + response.status + "\n" + response.statusText);
+                    }
+                }
+                else {
+                    alert("פרוייקט נוצר בהצלחה");
+                }
+                createProjectSelection();
+            }).catch(err => {
+                console.log(err)
+            });
     }
+
 </script>
+<!-- script for project and measure selection -->
+<script>
+    function createHonSelection() {
+        const honDropdownValues = resHierarchy.resources;
+
+        const honSelector = document.getElementById("honSelector")
+        const supermeasureSelector = document.getElementById("supermeasureSelector");
+
+        honSelector.innerHTML = "";
+        honSelector.options.add(new Option("בחר משאב הון", -1));
+        supermeasureSelector.innerHTML = "";
+        supermeasureSelector.options.add(new Option("בחר משאב הון קודם", -1))
+
+        for (let i = 0; i < honDropdownValues.length; i++) {
+            const element = honDropdownValues[i]
+            honSelector.options.add(new Option(element.name, i))
+        }
+        honSelector.onchange = () => {
+            const selectedValue = honSelector.value;
+            console.log(selectedValue)
+            console.log(honDropdownValues)
+
+            console.log(honDropdownValues[selectedValue])
+
+            supermeasureSelector.innerHTML = "";
+            if (selectedValue > -1) {
+                supermeasureSelector.options.add(new Option("בחר מדד על", ""));
+                for (let i = 0; i < honDropdownValues[selectedValue].supermeasures.length; i++) {
+                    const element = honDropdownValues[selectedValue].supermeasures[i];
+                    supermeasureSelector.options.add(new Option(element.name, element.value));
+                }
+            }
+            else {
+                supermeasureSelector.options.add(new Option("בחר משאב הון קודם", -1));
+            }
+
+        }
 
 
+    }
+
+    //[
+    // {
+    //         "projectName": "pre",
+    //         "startYear": 2021,
+    //         "endYear": 2022
+    //     },
+    //     {
+    //         "projectName": "או",
+    //         "startYear": 0,
+    //         "endYear": 3
+    //     }
+    // ]
+    function createProjectSelection() {
+        fetch('/api/getProjectsMetaData')
+            .then(response => response.json())
+            .then(data => {
+                const dropdownValues = data;
+
+                const projSelector = document.getElementById("projectnameSelector")
+                const yearSelector = document.getElementById("yearSelector");
+
+                projSelector.innerHTML = "";
+                projSelector.options.add(new Option("בחר פרוקייט", 0));
+                yearSelector.innerHTML = "";
+                yearSelector.options.add(new Option("בחר משאב פרוייקט קודם", ""))
+
+                for (let i = 0; i < dropdownValues.length; i++) {
+                    const element = dropdownValues[i]
+                    projSelector.options.add(new Option(element.projectName, i+1))
+                }
+                projSelector.onchange = () => {
+                    let selectedValue = projSelector.value;
+                    console.log(selectedValue)
+                    console.log(dropdownValues)
+
+                    console.log(dropdownValues[selectedValue])
+
+                    yearSelector.innerHTML = "";
+                    if (selectedValue != 0) {
+                        selectedValue-=1;
+                        yearSelector.options.add(new Option("בחר שנה", ""));
+                        for (let i = dropdownValues[selectedValue].startYear; i <= dropdownValues[selectedValue].endYear; i++) {
+                            yearSelector.options.add(new Option(i, i));
+                        }
+                    }
+                    else {
+                        yearSelector.options.add(new Option("בחר פרוייקט קודם", ""));
+                    }
+
+                }
+            });
+    }
+
+    createProjectSelection();
+    createHonSelection();
+</script>
 
 </html>
