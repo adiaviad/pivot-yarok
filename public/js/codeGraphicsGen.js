@@ -432,8 +432,8 @@ function generateGraphicsFor(year,container,jd,firstSelection,updateFilters){
         const selectedIndex = this.value;
         selected_region=selectedIndex;
         jd.forEach(honProfile=>generateGraphicsForHon(year,honProfile,graphicContainer,selected_region,updateFilters));
-        createDropdownWithClassElements("honContainer"+year,"honSelectContainer"+year);
-        createDropdownWithClassElements("superMeasureGraphic"+year,"SuperMadamSelectContainer"+year);
+        // createDropdownWithClassElements("honContainer"+year,"honSelectContainer"+year);
+        // createDropdownWithClassElements("superMeasureGraphic"+year,"SuperMadamSelectContainer"+year);
      
     });
     console.log("here4");

@@ -14,7 +14,8 @@
         <h2 id="loading" class="loading" style="display: none; align-self: center;"></h2>
         <button onclick="redirectToSubmit()" class="selector">לעומד הכנסת מידע</button>
         
-      
+        <div><select class="selector"  id="projectnameSelector"></select></div>
+        
         <div id='checkbox-container-provinces' class="checkbox_container centered" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
         <div id="SelectContainer" class="centered">
             <div id="yearSelectContainer"></div>
@@ -132,7 +133,6 @@
 
     function createDropdownWithClassElements(className, containerDiv) {
         console.log(className,containerDiv);
-       
         // Get all elements with the specified class name
         const elements = document.querySelectorAll(`.${className}`);
         
@@ -195,9 +195,10 @@
     //max is inclucive. if you want 2020 and 2021, then start with 2020 and max is 2021
     const honGraphicsContainer=document.getElementById("honGraphicsContainer");
     
-    function fetchYear(startYear,year,maxYear){
+    function fetchYear(startYear,year,maxYear,projectname){
         if(year==startYear){
             document.getElementById("checkbox-container-provinces").innerHTML="";
+            honGraphicsContainer.innerHTML="";
         }
         const yearHonGraphicsContainer=document.createElement("div");
         yearHonGraphicsContainer.classList.add("yearHonGraphicsContainer");
@@ -209,7 +210,7 @@
             alert("שנה לא תקינה")
             return;
         }
-        fetch('/api/getData/project/pre/'+year)
+        fetch(`/api/getData/project/${projectname}/`+year)
         .then(response => response.json())
         .then(data => {
             jd=covertTableToJson(data);
@@ -218,7 +219,7 @@
                 const slectedIDs= getSelectedCheckboxesGroup("provinces"+year);
                 const newData= sortedIDs.map(ID=>data[ID]);
                 yearHonGraphicsContainer.innerHTML="";
-                generateGraphicsFor(year,yearHonGraphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces",year));
+                generateGraphicsFor( year,yearHonGraphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces",year));
                // createCheckBoxForSuperMeasure();
           
             });
@@ -229,7 +230,7 @@
 
             if(year<maxYear){
                 const next=year+1;
-                fetchYear(startYear,next,maxYear);
+                fetchYear(startYear,next,maxYear,projectname);
             } else {
                 const dropdown= createDropdownWithClassElements("yearHonGraphicsContainer","yearSelectContainer");
                 dropdown.addEventListener("change",()=>{
@@ -273,5 +274,39 @@
     //     });
     // }
     // populateYearSelect();
-    fetchYear(2021,2021,2022);
+    // fetchYear(2021,2021,2022);
+</script>
+<script>
+ function createProjectSelection() {
+        fetch('/api/getProjectsMetaData')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const dropdownValues = data;
+
+                const projSelector = document.getElementById("projectnameSelector")
+
+                projSelector.innerHTML = "";
+                projSelector.options.add(new Option("בחר פרוקייט", -1));
+
+                for (let i = 0; i < dropdownValues.length; i++) {
+                    const element = dropdownValues[i]
+                    projSelector.options.add(new Option(element.projectName, i))
+                }
+                projSelector.onchange = () => {
+                    let selectedValue = projSelector.value;
+                    if (selectedValue != -1) {
+                        const projectname=data[selectedValue].projectName;
+                        const start= dropdownValues[selectedValue].startYear;
+                        const end= dropdownValues[selectedValue].endYear;
+                        fetchYear(start,start,end,projectname);
+                    }
+                }
+            }).catch(err=>{
+                console.log("getProjectsMetaData err",err);
+                alert(`קרתה שגיאה \n${err}`);
+            });
+    }
+    createProjectSelection();
+
 </script>
