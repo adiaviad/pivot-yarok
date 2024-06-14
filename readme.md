@@ -4,3 +4,9 @@ codeDataInsert.js in the function calculateSuperMeasures(). which is at the bott
 הדגרת התחום נתונים שמהם המשאבי הון לקחים נמצא ב  
 codeDataLoad.js in the function covertTableToJson(). which is at the bottom of the file.  
 if you choose to use this please change the password or use a better way to auth
+
+כדי להתחיל את את השרת/אתר:
+cmd admin
+`sc start MySQL80`
+cmd in this project
+`node server/app.js`

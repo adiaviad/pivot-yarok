@@ -122,23 +122,32 @@ function inputSMdata(measureNaming, xlsxArrayTable, measure, project, year, pass
 
 }
 //function generateSuperMeasureSubTable(superMeasure,container,selected_region)
-function previewSuperMeasure(xlsxArrayTable, measure,measurename,genFunc) {
+function previewSuperMeasure(xlsxArrayTable, measureJson,genFunc) {
     const smJson={
         "super_measure_name":"",
         "provinces_names":[],   
         "measurements_names":[],
-        "measurements":[[]],// array of collumns (collumn is an array)
+        "measurements":[],// array of collumns (collumn is an array)
            
     }
     smTable = [];
     xlsxArrayTable.forEach(element => {
-        smTable.push(calculateSuperMeasure(element.slice(1),measure));
+        smTable.push(calculateSuperMeasure(element.slice(1),measureJson.value));
         smJson.provinces_names.push(element[0]);
     });
 
-    smJson.measurements_names=smTable[0].map((_,i)=>`מדד ${i+1}`);
-    smJson.super_measure_name=measurename;
-    genFunc()
+    for (let col = 0; col < smTable[0].length; col++) {
+        smJson.measurements.push(smTable.map(arr=>arr[col].toFixed(2)));
+    }
+
+    smJson.measurements_names=measureJson.columns_names;
+    smJson.super_measure_name=measureJson.name;
+
+    const containter=document.getElementById("previewGraphicsContainer");
+    containter.innerHTML="";
+    const subContainter=document.createElement("div");
+    containter.appendChild(subContainter);
+    genFunc(smJson,subContainter,-1);
 }
 
 
@@ -334,14 +343,14 @@ function readInput(measureNaming, nextop,genFunc) {
     }
     excelToArray(file1, measure, nor, xlsxArray1 => {
         console.log("xlsxArray1", xlsxArray1);
-        if (!validateInputData(measureNaming, xlsxArrayTable, number_of_rows, measure, projectname, year, file1.name, password)) {
-            console.log("input not valid ,number_of_rows,measure,password,xlsxArrayTable", number_of_rows, measure, password, xlsxArrayTable);
+        if (!validateInputData(measureNaming, xlsxArray1, nor, measure, projectname, year, file1.name, password)) {
+            console.log("input not valid ,number_of_rows,measure,password,xlsxArray1", nor, measure, password, xlsxArray1);
             return;
         }
-        if (nextop = "insert") {
+        if (nextop == "insert") {
             inputSMdata(measureNaming, xlsxArray1, measure, projectname, year, password);
         } else {
-            previewSuperMeasure(xlsxArray1,measure,measureNaming[measure].name,genFunc);
+            previewSuperMeasure(xlsxArray1,measureNaming[measure],genFunc);
         }
     });
 
