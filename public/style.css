@@ -149,4 +149,7 @@ trh{
     margin-bottom: 10px;
     /* display: none; */
 }
+.js-plotly-plot{
+    margin-bottom: 0%;
+}
 
