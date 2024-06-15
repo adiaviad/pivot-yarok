@@ -362,7 +362,6 @@ function generateGraphicsForHon(year,honData,container,selected_region,updateFil
     const superMeasureData=honData.super_measurements;
     const resName=resJson.resource_name;
   
-    container.innerHTML=""; 
     const honContainer=document.createElement("div");
     honContainer.classList.add("honContainer"+year);
     honContainer.id=resName;
@@ -429,8 +428,10 @@ function generateGraphicsFor(year,container,jd,firstSelection,updateFilters){
     dropdown.addEventListener("change", function() {
         const selectedIndex = this.value;
         selected_region=selectedIndex;
+        graphicContainer.innerHTML="";
         jd.forEach(honProfile=>generateGraphicsForHon(year,honProfile,graphicContainer,selected_region,updateFilters));
-       
+        createDropdownWithClassElements("honContainer"+year,"honSelectContainer"+year);
+        createDropdownWithClassElements("superMeasureGraphic"+year,"SuperMadamSelectContainer"+year);
      
     });
     console.log("here4");
