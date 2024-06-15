@@ -219,12 +219,12 @@
                 const slectedIDs= getSelectedCheckboxesGroup("provinces"+year);
                 const newData= sortedIDs.map(ID=>data[ID]);
                 yearHonGraphicsContainer.innerHTML="";
-                generateGraphicsFor( year,yearHonGraphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces",year));
+                setupContainersForGraphics( year,yearHonGraphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces",year));
                // createCheckBoxForSuperMeasure();
           
             });
             
-            generateGraphicsFor(year,yearHonGraphicsContainer,jd,0,()=>updateFilterDisplays("provinces",year));
+            setupContainersForGraphics(year,yearHonGraphicsContainer,jd,0,()=>updateFilterDisplays("provinces",year));
            // createCheckBoxForSuperMeasure();
             
 
@@ -255,7 +255,7 @@
             }
             
         })
-        .catch(error => console.error("קרתה שגיאה"));
+        .catch(error => console.error("קרתה שגיאה",error));
         
     }
     // function populateYearSelect(){
