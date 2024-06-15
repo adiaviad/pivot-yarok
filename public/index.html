@@ -51,9 +51,10 @@
         displays.forEach(element=>{
             element.textContent= selectedProvinces.length>0 ?"  שנה:"+year+" "+" "+"רשויות: "+selectedProvinces.join(", ") :"" ;
         });
-        console.log("slected names",selectedProvinces.join(","));
 
     }
+
+
     function getSelectedCheckboxesGroup(group) {
         const selectedCheckboxes = [];
         const checkboxes = document.querySelectorAll(`.${group} input[type="checkbox"]:checked`);
@@ -64,11 +65,12 @@
         
         sortedIDs=selectedCheckboxes.sort((a, b) => a - b);
         
-        console.log(sortedIDs);
         
         return sortedIDs;
 
     }
+
+
     function createCheckBoxForSuperMeasure(){
 //superMeasures
         const elems= document.getElementsByClassName("superMeasureGraphic");
@@ -77,7 +79,6 @@
             names.push(elems[i].id);
             
         }
-        console.log("super measure names",names);
         createCheckboxes(names,"superMeasures",()=>updateSuperMeasureDisplay());
     }
 
@@ -106,7 +107,6 @@
         yearCheckboxContainer.classList.add("checkbox_container");
         yearCheckboxContainer.classList.add("inner_checkbox_container_provinces")
         checkboxContainer.appendChild(yearCheckboxContainer);
-        console.log("names",names);
         for (let i=0;i<names.length;i++){
             const name =names[i];
             const checkbox = document.createElement('input');
@@ -132,7 +132,6 @@
     }
 
     function createDropdownWithClassElements(className, containerDiv) {
-        console.log(className,containerDiv);
         // Get all elements with the specified class name
         const elements = document.querySelectorAll(`.${className}`);
         
@@ -171,13 +170,11 @@
                     element.style.display = 'none';
                 }
             });
-        console.log("dafdskjaf");
         // Append the dropdown to the container div
         const cont= document.getElementById(containerDiv);
         cont.innerHTML="";
         if(cont){
            cont.appendChild(dropdown);
-            console.log("dafdskjaf");
     
         }
         else{
@@ -219,19 +216,19 @@
                 const slectedIDs= getSelectedCheckboxesGroup("provinces"+year);
                 const newData= sortedIDs.map(ID=>data[ID]);
                 yearHonGraphicsContainer.innerHTML="";
-                setupContainersForGraphics( year,yearHonGraphicsContainer,covertTableToJson(newData),0,()=>updateFilterDisplays("provinces",year));
-               // createCheckBoxForSuperMeasure();
-          
+                setupContainersForGraphics( year,yearHonGraphicsContainer,covertTableToJson(newData),0,()=>{updateFilterDisplays("provinces"+year,year)});
+                // createCheckBoxForSuperMeasure();
+                updateFilterDisplays("provinces"+year,year);
             });
             
-            setupContainersForGraphics(year,yearHonGraphicsContainer,jd,0,()=>updateFilterDisplays("provinces",year));
+            setupContainersForGraphics(year,yearHonGraphicsContainer,jd,0,()=>{updateFilterDisplays("provinces"+year,year)});
            // createCheckBoxForSuperMeasure();
-            
 
             if(year<maxYear){
                 const next=year+1;
                 fetchYear(startYear,next,maxYear,projectname);
             } else {
+                updateFilterDisplays("provinces"+startYear,startYear);
                 const dropdown= createDropdownWithClassElements("yearHonGraphicsContainer","yearSelectContainer");
                 dropdown.addEventListener("change",()=>{
                     const selectedIndex = dropdown.value;
@@ -243,6 +240,7 @@
                             element.style.display="none";
                         }
                     });
+                    updateFilterDisplays("provinces"+dropdown.options[selectedIndex].text,dropdown.options[selectedIndex].text);
                 });
                 document.querySelectorAll(".inner_checkbox_container_provinces").forEach((element,index) => {
                         if(index==0){
@@ -258,23 +256,7 @@
         .catch(error => console.error("קרתה שגיאה",error));
         
     }
-    // function populateYearSelect(){
-    //     console.log("pop years");
-    //     selectElm=document.getElementById("yearinput");
-    //     fetch("api/allyears").then(response=>response.json).then(data=>
-    //     {
 
-    //         console.log(data[0]);
-    //         data.forEach(row=>{
-    //             option=document.createElement("option");
-    //             option.value=row;
-    //             option.innerHTML=row;
-    //             selectElm.appendChild(option);
-    //         });
-    //     });
-    // }
-    // populateYearSelect();
-    // fetchYear(2021,2021,2022);
 </script>
 <script>
  function createProjectSelection() {

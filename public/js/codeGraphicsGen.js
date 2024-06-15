@@ -261,7 +261,6 @@ function generatePlots(jsonData,containerGraph, containerBench,selected_region) 
     }
     const bgcolor = 'rgba(220, 220, 220,1)';
     const bodycolor= 'rgb(195, 255, 190)';
-    console.log("bodycolor",bodycolor);
     const resLayout = {
         title: jsonData.resource_name,
         annotations:resAnnotations,
@@ -357,7 +356,7 @@ function generateSuperMeasureTables(year,superMeasureData,container,selected_reg
 
 
 //עבור משאב הון יחיד
-function generateGraphicsForHon(year,honData,container,selected_region,updateFilters){
+function generateGraphicsForHon(year,honData,container,selected_region){
     console.log("hon data",honData);
     const resJson=honData.res_profline;
     const superMeasureData=honData.super_measurements;
@@ -387,21 +386,18 @@ function generateGraphicsForHon(year,honData,container,selected_region,updateFil
 
     const stats =generatePlots(resJson,honResGraphContainer,honResBenchContainer,selected_region);
     generateSuperMeasureTables(year,superMeasureData,containerMadad,selected_region,resName);
-    updateFilters();
     return stats;
 }
 
-function generateGraphicsForYear(year,container,overviewContainer,jd,selected_region,updateFilters){
+function generateGraphicsForYear(year,container,overviewContainer,jd,selected_region){
     const allPlotStats=[]
     jd.forEach(honProfile=>{
-        const stats=generateGraphicsForHon(year,honProfile,container,selected_region,updateFilters);
+        const stats=generateGraphicsForHon(year,honProfile,container,selected_region);
         allPlotStats.push({"stats":stats,"name":honProfile.res_profline.resource_name});
-        console.log("honprofile",honProfile);
     });
     createDropdownWithClassElements("honContainer"+year,"honSelectContainer"+year);
     createDropdownWithClassElements("superMeasureGraphic"+year,"SuperMadamSelectContainer"+year);
     const overviewStats={x:[],data_sets:[ allPlotStats[0].stats.data_sets[0], allPlotStats[0].stats.data_sets[1], allPlotStats[0].stats.data_sets[2]]};
-    console.log("all plot stats",allPlotStats);
 
     overviewStats.data_sets.forEach((set)=>{
         set.y=[set.y[set.y.length-1]];//the avrage is the last value
@@ -415,9 +411,6 @@ function generateGraphicsForYear(year,container,overviewContainer,jd,selected_re
         });   
     }
     
-    console.log("overviewstats",overviewStats);
-    console.log("all plot stats",allPlotStats);
-
     const resData = [];
     const datasets=overviewStats.data_sets;
     const xValues = overviewStats.x;
@@ -482,7 +475,6 @@ function generateGraphicsForYear(year,container,overviewContainer,jd,selected_re
     }
     const bgcolor = 'rgba(220, 220, 220,1)';
     const bodycolor= 'rgb(195, 255, 190)';
-    console.log("bodycolor",bodycolor);
     const resLayout = {
         title: "מבט על "+year,
         annotations:resAnnotations,
@@ -501,7 +493,6 @@ function setupContainersForGraphics(year, container,jd,firstSelection,updateFilt
     container.innerHTML="";
     let selected_region=firstSelection;
     let provinces_names=jd[0].res_profline.provinces_names;
-    console.log("here1");
     const provinceSelector=document.createElement("select");
     provinceSelector.classList.add("selector");
     
@@ -521,7 +512,6 @@ function setupContainersForGraphics(year, container,jd,firstSelection,updateFilt
     const SuperMadamSelectContainer=document.createElement("div");
     SuperMadamSelectContainer.classList.add("SuperMadamSelectContainer"+year);
     SuperMadamSelectContainer.id="SuperMadamSelectContainer"+year;
-    console.log("here2");
     
     container.appendChild(provinceSelector);
     container.appendChild(overviewContainer);
@@ -530,20 +520,16 @@ function setupContainersForGraphics(year, container,jd,firstSelection,updateFilt
     container.appendChild(graphicContainer);
 
 
-    console.log("here3");
-
-    console.log("promise from code.js",jd);
     
     populateDropdownSelect(provinceSelector,provinces_names);
-    generateGraphicsForYear(year,graphicContainer,overviewContainer,jd,selected_region,updateFilters);
+    generateGraphicsForYear(year,graphicContainer,overviewContainer,jd,selected_region);
     
     provinceSelector.selectedIndex=selected_region;
     provinceSelector.addEventListener("change", function() {
         const selectedIndex = this.value;
         selected_region=selectedIndex;
         graphicContainer.innerHTML="";
-        generateGraphicsForYear(year,graphicContainer,overviewContainer,jd,selected_region,updateFilters);
-     
+        generateGraphicsForYear(year,graphicContainer,overviewContainer,jd,selected_region);
+        updateFilters();
     });
-    console.log("here5");
 }
