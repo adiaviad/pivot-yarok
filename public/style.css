@@ -156,4 +156,11 @@ trh{
 table.logos img{
     width: 150px;
     height:150px;
+    
+}
+.seperator{
+    width: 100%;
+    height: 10px;
+    margin-bottom: 1em;
+    background-color: black;
 }
