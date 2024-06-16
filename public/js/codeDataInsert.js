@@ -31,16 +31,18 @@ const sm_blueprints = [
         }
     }
 ];
+//the end number is based on the letter of the last relevant column in the excel
 const measuresRangesInExcel = {
     "plan": {
         start: 0,
-        end: 11
+        end: 11 // k 
     },
     "dev": {
         start: 0,
-        end: 19
+        end: 19 
     }
 }
+
 function validateInputData(measureNaming, xlsxArrayTable, number_of_rows, measure, projectname, year, filename, password) {
     if (measure == -1) {
         alert("מדד על לא נבחר");
