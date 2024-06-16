@@ -3,6 +3,25 @@ top of codeDataInsert.js
   
 הדגרת התחום נתונים שמהם המשאבי הון לקחים נמצא ב  
 top of codeDataLoad.js 
+you can use python script in python_scripts/excelEquationsConversion.py to covert excel equations you paste in equations.txt to how they need to be in code. the converted equations are used in the json called "sm_blueprints" in the "calculation" key vlaue for each מדד על  
+```javascript
+const sm_blueprints = [
+    {
+        name: "plan",
+        range: {
+            start: 1,
+            end: 10
+        },
+        calculation: m => {
+            const superm = []; 
+            superm.push(/* the output of the python script*/);
+            superm.push(m[0]); //example
+            superm.push(10 * m[1]); //example
+            return superm;
+        }
+    },
+]
+    ```
 
 הגדרה של המשאבים, המדדים בהם והשמות שלהם ב
 jsonNames.js
