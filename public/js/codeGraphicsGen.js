@@ -388,29 +388,7 @@ function generateGraphicsForHon(year,honData,container,selected_region){
     generateSuperMeasureTables(year,superMeasureData,containerMadad,selected_region,resName);
     return stats;
 }
-
-function generateGraphicsForYear(year,container,overviewContainer,jd,selected_region){
-    const allPlotStats=[]
-    jd.forEach(honProfile=>{
-        const stats=generateGraphicsForHon(year,honProfile,container,selected_region);
-        allPlotStats.push({"stats":stats,"name":honProfile.res_profline.resource_name});
-    });
-    createDropdownWithClassElements("honContainer"+year,"honSelectContainer"+year);
-    createDropdownWithClassElements("superMeasureGraphic"+year,"SuperMadamSelectContainer"+year);
-    const overviewStats={x:[],data_sets:[ allPlotStats[0].stats.data_sets[0], allPlotStats[0].stats.data_sets[1], allPlotStats[0].stats.data_sets[2]]};
-
-    overviewStats.data_sets.forEach((set)=>{
-        set.y=[set.y[set.y.length-1]];//the avrage is the last value
-    });
-    overviewStats.x=allPlotStats.map(plot=>plot.name);
-    //starting with i=1
-    for (let i = 1; i < allPlotStats.length; i++) {
-        const sets = allPlotStats[i].stats.data_sets;
-        overviewStats.data_sets.forEach((set,i) => {
-            set.y.push(sets[i].y[sets[i].length-1]);
-        });   
-    }
-    
+function generateOverviewGraphics(overviewContainer,overviewStats,year){
     const resData = [];
     const datasets=overviewStats.data_sets;
     const xValues = overviewStats.x;
@@ -485,6 +463,41 @@ function generateGraphicsForYear(year,container,overviewContainer,jd,selected_re
    
     Plotly.newPlot(overviewContainer, resData, resLayout);
 
+}
+function generateOverviewTable(){}
+
+
+function generateGraphicsForYear(year,container,overviewContainer,jd,selected_region){
+    const allPlotStats=[]
+    jd.forEach(honProfile=>{
+        const stats=generateGraphicsForHon(year,honProfile,container,selected_region);
+        allPlotStats.push({"stats":stats,"name":honProfile.res_profline.resource_name});
+    });
+    createDropdownWithClassElements("honContainer"+year,"honSelectContainer"+year);
+    createDropdownWithClassElements("superMeasureGraphic"+year,"SuperMadamSelectContainer"+year);
+    const overviewStats={x:[],data_sets:[ allPlotStats[0].stats.data_sets[0], allPlotStats[0].stats.data_sets[1], allPlotStats[0].stats.data_sets[2]]};
+
+    overviewStats.data_sets.forEach((set)=>{
+        set.y=[set.y[set.y.length-1]];//the avrage is the last value
+    });
+    overviewStats.x=allPlotStats.map(plot=>plot.name);
+    //starting with i=1
+    for (let i = 1; i < allPlotStats.length; i++) {
+        const sets = allPlotStats[i].stats.data_sets;
+        overviewStats.data_sets.forEach((set,i) => {
+            set.y.push(sets[i].y[sets[i].length-1]);
+        });   
+    }
+    const overviewGraphContainer=document.createElement("div");
+    const overviewTableContainer=document.createElement("div");
+ 
+
+    overviewContainer.appendChild(overviewGraphContainer);
+
+    generateOverviewGraphics(overviewGraphContainer,overviewStats,year);
+    
+
+    
 }
 
 

@@ -216,7 +216,9 @@
         fetch(`/api/getData/project/${projectname}/`+year)
         .then(response => response.json())
         .then(data => {
+            console.log("data from db",data);
             jd=covertTableToJson(data);
+            console.log("jd ",jd);
             let provinces_names=jd[0].res_profline.provinces_names;
             createCheckboxes(provinces_names,"provinces"+year,()=>{
                 const slectedIDs= getSelectedCheckboxesGroup("provinces"+year);
