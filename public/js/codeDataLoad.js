@@ -1,3 +1,31 @@
+
+const resourceSlices=
+[ 
+    {
+        name:"משאב פיתוח ותכנון",
+        
+        super_measures:[
+            {
+                name:"מדד על תכנון",
+                slice:{
+                    start:11,
+                    end:14
+                }
+            },
+            {
+                name:"מדד על פיתוח",
+                slice:{
+                    start:33,
+                    end:37
+                }
+            },
+        
+        ]
+    },
+];
+
+
+
 function averageOf(numbers) {
     if (numbers.length === 0) {
         return 0; // Avoid division by zero for an empty array
@@ -137,30 +165,6 @@ function covertTableToJson(table){
      * modify this to create more hon resources
      */
 
-    const resourceSlices=
-    [ 
-        {
-            name:"משאב פיתוח ותכנון",
-            
-            super_measures:[
-                {
-                    name:"מדד על תכנון",
-                    slice:{
-                        start:11,
-                        end:14
-                    }
-                },
-                {
-                    name:"מדד על פיתוח",
-                    slice:{
-                        start:33,
-                        end:37
-                    }
-                },
-            
-            ]
-        },
-    ];
     resourceSlices.forEach(slice=>{
         honProfiles.push(createHonProfile(slice,table,provinces_names));
     });
