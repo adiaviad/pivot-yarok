@@ -328,6 +328,9 @@ function generateSuperMeasureSubTable(superMeasure,container,selected_region) {
             const selectedColor="rgb(4, 113, 214)";
             rowheaderCell.style.backgroundColor=selectedColor;
             row.style.borderColor=selectedColor;
+            row.style.borderTopWidth="2px";
+            row.style.borderBottomWidth="2px";
+
         }
         
 
