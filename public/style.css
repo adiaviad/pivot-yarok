@@ -34,12 +34,13 @@ table.selecttable tr{
 mamad_tables_holder tr{
     margin-bottom: 100px;
 }
-table.madad td{
-    text-align: center;
-    border: 1px solid;
-}
+
 table.madad tr{
     border: 1px solid;
+}
+table.madad td{
+    border-right: 1px solid;
+    border-left: 1px solid;
 
 }
 table.madad th{
@@ -122,10 +123,10 @@ trh{
     text-align: center;
 }
 .graphicContainer{
-    margin-bottom: 10%;
+    margin-bottom: 2em;
     padding: 0%;
-    
-    border-top:10px solid black;
+    border-bottom:7px solid black;
+    /* border-top:7px solid black; */
 }
 .checkbox_container{
     padding-bottom: 5px;
