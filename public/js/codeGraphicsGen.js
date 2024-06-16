@@ -317,6 +317,7 @@ function generateSuperMeasureSubTable(superMeasure,container,selected_region) {
             const cell = row.insertCell();
             cell.appendChild(document.createTextNode(measureCollumns[colIndex][rowIndex]));
             cell.style.backgroundColor=collumnColorsArray[colIndex][rowIndex];
+            
         }
         // Add row header cell
         const trh=document.createElement('trh');
@@ -324,7 +325,12 @@ function generateSuperMeasureSubTable(superMeasure,container,selected_region) {
         trh.appendChild(document.createTextNode(rowHeadersArray[rowIndex]));
         rowheaderCell.appendChild(trh);
         if(rowIndex==selected_region){
-            rowheaderCell.style.backgroundColor="rgb(4, 113, 214)";
+            const selectedColor="rgb(4, 113, 214)";
+            rowheaderCell.style.backgroundColor=selectedColor;
+            row.style.borderColor=selectedColor;
+            row.style.borderTopWidth="2px";
+            row.style.borderBottomWidth="2px";
+
         }
         
 
@@ -464,10 +470,24 @@ function generateOverviewGraphics(overviewContainer,overviewStats,year){
     Plotly.newPlot(overviewContainer, resData, resLayout);
 
 }
-function generateOverviewTable(){}
+function generateOverviewTable(overviewTableContainer,jd,year,selected_region){
+    const overviewJson={
+        "super_measure_name":`מבט על `+year,
+        "provinces_names":jd[0].res_profline.provinces_names,
+        "measurements_names":[], //this will be the resouces
+        "measurements":[],// array of collumns (collumn is an array)
+    }
+    jd.forEach(honProfile=>{
+        overviewJson.measurements_names.push(honProfile.res_profline.resource_name);
+        overviewJson.measurements.push(honProfile.res_profline.data_sets.map(set=>set.y[set.y.length-1].toFixed(2)));
+    });
+
+    generateSuperMeasureSubTable(overviewJson,overviewTableContainer,selected_region);
+}
 
 
 function generateGraphicsForYear(year,container,overviewContainer,jd,selected_region){
+    overviewContainer.innerHTML="";
     const allPlotStats=[]
     jd.forEach(honProfile=>{
         const stats=generateGraphicsForHon(year,honProfile,container,selected_region);
@@ -493,9 +513,11 @@ function generateGraphicsForYear(year,container,overviewContainer,jd,selected_re
  
 
     overviewContainer.appendChild(overviewGraphContainer);
+    overviewContainer.appendChild(overviewTableContainer);
+
 
     generateOverviewGraphics(overviewGraphContainer,overviewStats,year);
-    
+    generateOverviewTable(overviewTableContainer,jd,year,selected_region);
 
     
 }
