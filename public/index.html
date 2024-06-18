@@ -1,61 +1,63 @@
-
 <!DOCTYPE html>
 <html>
-    <meta charset="UTF-8">
-        <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-    <script type="text/javascript" src="js/codeDataLoad.js"></script>
-    <script type="text/javascript" src="js/codeGraphicsGen.js"></script>
-    <script type="text/javascript" src="js/jsonNames.js"></script>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<script type="text/javascript" src="js/codeDataLoad.js"></script>
+<script type="text/javascript" src="js/codeGraphicsGen.js"></script>
+<script type="text/javascript" src="js/jsonNames.js"></script>
 
-    <body>
-        
-        <table class="logos" >
-            <tr>
-                <td><img  src="https://upload.wikimedia.org/wikipedia/he/c/c6/Technion_new_logo_Hebrew.svg" alt="Technion - Israel Institute of Technology" /></td>
-            </tr>
-        </table>
-        <h2 id="loading" class="loading" style="display: none; align-self: center;"></h2>
-        <div class="seperator"></div>
-        <button onclick="redirectToSubmit()" class="selector">לעומד הכנסת מידע</button>
-        
-        <div><select class="selector"  id="projectnameSelector"></select></div>
-        
-        <div id='checkbox-container-provinces' class="checkbox_container centered" style="margin-bottom: 2%;padding-bottom:20px ;"></div>
-        <div id="SelectContainer" class="centered">
-            <div id="yearSelectContainer"></div>
-            <!-- the two below are added with JS -->
-            <!-- <div id="honSelectContainer"></div> 
+<body>
+
+    <table class="logos">
+        <tr>
+            <td><img src="https://upload.wikimedia.org/wikipedia/he/c/c6/Technion_new_logo_Hebrew.svg"
+                    alt="Technion - Israel Institute of Technology" /></td>
+        </tr>
+    </table>
+    <h2 id="loading" class="loading" style="display: none; align-self: center;"></h2>
+    <div class="seperator"></div>
+    <button onclick="redirectToSubmit()" class="selector">לעומד הכנסת מידע</button>
+
+    <div><select class="selector" id="projectnameSelector"></select></div>
+
+    <div id='checkbox-container-provinces' class="checkbox_container centered"
+        style="margin-bottom: 2%;padding-bottom:20px ;"></div>
+    <div id="SelectContainer" class="centered">
+        <div id="yearSelectContainer"></div>
+        <!-- the two below are added with JS -->
+        <!-- <div id="honSelectContainer"></div> 
             <div id="SuperMadamSelectContainer" class="centered"></div> -->
-        </div>
-        <div id="honGraphicsContainer" class="centered"></div>
+    </div>
+    <div id="honGraphicsContainer" class="centered"></div>
 
 
-    </body>
+</body>
+
 </html>
 <script>
-    function loadingPopup(txt,timeout_ms){
-        const l=document.getElementById("loading");
-        l.textContent=txt
-        l.style.display='flex';
-        setTimeout(()=> {l.style.display='none';},timeout_ms);
+    function loadingPopup(txt, timeout_ms) {
+        const l = document.getElementById("loading");
+        l.textContent = txt
+        l.style.display = 'flex';
+        setTimeout(() => { l.style.display = 'none'; }, timeout_ms);
     }
     function redirectToSubmit() {
-      // Replace 'target.html' with the actual file name or path of the HTML page you want to redirect to
-      window.location.href = 'dataSubmmition.html';
+        // Replace 'target.html' with the actual file name or path of the HTML page you want to redirect to
+        window.location.href = 'dataSubmmition.html';
     }
-    function updateFilterDisplays(from_group,year){
+    function updateFilterDisplays(from_group, year) {
         const selectedProvinces = [];
         const checkboxes = document.querySelectorAll(`.${from_group} input[type="checkbox"]:checked`);
 
         checkboxes.forEach(checkbox => selectedProvinces.push(checkbox.name));
-        
-        const displays=Array.from(document.getElementsByClassName("displayFilter"));
-        
- 
-        displays.forEach(element=>{
-            element.textContent= selectedProvinces.length>0 ?"  שנה:"+year+" "+" "+"רשויות: "+selectedProvinces.join(", ") :"" ;
+
+        const displays = Array.from(document.getElementsByClassName("displayFilter"));
+
+
+        displays.forEach(element => {
+            element.textContent = selectedProvinces.length > 0 ? "  שנה:" + year + " " + " " + "רשויות: " + selectedProvinces.join(", ") : "";
         });
 
     }
@@ -68,69 +70,69 @@
         checkboxes.forEach(checkbox => {
             selectedCheckboxes.push(checkbox.value);
         });
-        
-        sortedIDs=selectedCheckboxes.sort((a, b) => a - b);
-        
-        
+
+        sortedIDs = selectedCheckboxes.sort((a, b) => a - b);
+
+
         return sortedIDs;
 
     }
 
 
-    function createCheckBoxForSuperMeasure(){
-//superMeasures
-        const elems= document.getElementsByClassName("superMeasureGraphic");
-        let names=[];
+    function createCheckBoxForSuperMeasure() {
+        //superMeasures
+        const elems = document.getElementsByClassName("superMeasureGraphic");
+        let names = [];
         for (let i = 0; i < elems.length; i++) {
             names.push(elems[i].id);
-            
+
         }
-        createCheckboxes(names,"superMeasures",()=>updateSuperMeasureDisplay());
+        createCheckboxes(names, "superMeasures", () => updateSuperMeasureDisplay());
     }
 
-    function updateSuperMeasureDisplay(){
-        const group="superMeasures";
+    function updateSuperMeasureDisplay() {
+        const group = "superMeasures";
         const checkedBoxes = document.querySelectorAll(`.${group} input[type="checkbox"]`);
-        const arr=[];
+        const arr = [];
         for (let i = 0; i < checkedBoxes.length; i++) {
             const element = checkedBoxes[i];
-            const sm=document.getElementById(element.name);
-            if(element.checked){
-                sm.style.display="";
-            }else{
-                sm.style.display="none";
+            const sm = document.getElementById(element.name);
+            if (element.checked) {
+                sm.style.display = "";
+            } else {
+                sm.style.display = "none";
             }
-        }      
+        }
 
     }
 
 
-    function createCheckboxes(names,group,func) {
-        const checkboxContainer=document.getElementById("checkbox-container-provinces");
+    function createCheckboxes(names, group, func) {
+        const checkboxContainer = document.getElementById("checkbox-container-provinces");
         const yearCheckboxContainer = document.createElement("div");
-        yearCheckboxContainer.innerHTML="";
+        yearCheckboxContainer.innerHTML = "";
         yearCheckboxContainer.classList.add(group);
         yearCheckboxContainer.classList.add("checkbox_container");
         yearCheckboxContainer.classList.add("inner_checkbox_container_provinces")
         checkboxContainer.appendChild(yearCheckboxContainer);
-        for (let i=0;i<names.length;i++){
-            const name =names[i];
+        for (let i = 0; i < names.length; i++) {
+            const name = names[i];
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.value = i;
             checkbox.name = name;
-            checkbox.checked=true;
+            checkbox.checked = true;
             checkbox.classList.add("checkbox");
-            
+
 
             const label = document.createElement('label');
             label.htmlFor = name;
             label.appendChild(document.createTextNode(name));
-            const inputContainter=document.createElement('c');
+            const inputContainter = document.createElement('c');
             inputContainter.appendChild(checkbox);
             inputContainter.appendChild(label);
             yearCheckboxContainer.appendChild(inputContainter);
-            
+
 
             // Attach change event listener to each checkbox
             checkbox.addEventListener('change', func);
@@ -140,11 +142,11 @@
     function createDropdownWithClassElements(className, containerDiv) {
         // Get all elements with the specified class name
         const elements = document.querySelectorAll(`.${className}`);
-        
+
         // Create a select element
         const dropdown = document.createElement('select');
         dropdown.classList.add("selector");
-        
+
         // Iterate over the elements and create an option for each one
         elements.forEach((element, index) => {
             const option = document.createElement('option');
@@ -152,10 +154,10 @@
             option.text = element.id.trim(); // Set the text of the option to the text content of the element
             dropdown.appendChild(option); // Append the option to the dropdown
         });
-        
+
         dropdown.addEventListener('change', () => {
             const selectedIndex = dropdown.value;
-            
+
             // Iterate over elements and hide/show them
             elements.forEach((element, index) => {
                 if (index == selectedIndex) {
@@ -168,22 +170,22 @@
             });
         });
         elements.forEach((element, index) => {
-                if (index == 0) {
-                    // Show the selected element
-                    element.style.display = '';
-                } else {
-                    // Hide all other elements
-                    element.style.display = 'none';
-                }
-            });
+            if (index == 0) {
+                // Show the selected element
+                element.style.display = '';
+            } else {
+                // Hide all other elements
+                element.style.display = 'none';
+            }
+        });
         // Append the dropdown to the container div
-        const cont= document.getElementById(containerDiv);
-        cont.innerHTML="";
-        if(cont){
-           cont.appendChild(dropdown);
-    
+        const cont = document.getElementById(containerDiv);
+        cont.innerHTML = "";
+        if (cont) {
+            cont.appendChild(dropdown);
+
         }
-        else{
+        else {
             console.log("cont bad");
         }
         return dropdown;
@@ -193,81 +195,83 @@
 
 
 <script>
-    
+
 
     //max is inclucive. if you want 2020 and 2021, then start with 2020 and max is 2021
-    const honGraphicsContainer=document.getElementById("honGraphicsContainer");
-    
-    function fetchYear(startYear,year,maxYear,projectname){
-        if(year==startYear){
-            document.getElementById("checkbox-container-provinces").innerHTML="";
-            honGraphicsContainer.innerHTML="";
-        }
-        const yearHonGraphicsContainer=document.createElement("div");
-        yearHonGraphicsContainer.classList.add("yearHonGraphicsContainer");
-        yearHonGraphicsContainer.id=year;
-        honGraphicsContainer.appendChild(yearHonGraphicsContainer);
-     
+    const honGraphicsContainer = document.getElementById("honGraphicsContainer");
 
-        if(!isFinite(year)){
+    function fetchYear(startYear, year, maxYear, projectname) {
+        if (year == startYear) {
+            document.getElementById("checkbox-container-provinces").innerHTML = "";
+            honGraphicsContainer.innerHTML = "";
+        }
+        const yearHonGraphicsContainer = document.createElement("div");
+        yearHonGraphicsContainer.classList.add("yearHonGraphicsContainer");
+        yearHonGraphicsContainer.id = year;
+        honGraphicsContainer.appendChild(yearHonGraphicsContainer);
+
+
+        if (!isFinite(year)) {
             alert("שנה לא תקינה")
             return;
         }
-        fetch(`/api/getData/project/${projectname}/`+year)
-        .then(response => response.json())
-        .then(data => {
-            console.log("data from db",data);
-            jd=covertTableToJson(data);
-            console.log("jd ",jd);
-            let provinces_names=jd[0].res_profline.provinces_names;
-            createCheckboxes(provinces_names,"provinces"+year,()=>{
-                const slectedIDs= getSelectedCheckboxesGroup("provinces"+year);
-                const newData= sortedIDs.map(ID=>data[ID]);
-                yearHonGraphicsContainer.innerHTML="";
-                setupContainersForGraphics( year,yearHonGraphicsContainer,covertTableToJson(newData),0,()=>{updateFilterDisplays("provinces"+year,year)});
-                // createCheckBoxForSuperMeasure();
-                updateFilterDisplays("provinces"+year,year);
-            });
-            
-            setupContainersForGraphics(year,yearHonGraphicsContainer,jd,0,()=>{updateFilterDisplays("provinces"+year,year)});
-           // createCheckBoxForSuperMeasure();
+        fetch(`/api/getData/project/${projectname}/` + year)
+            .then(response => response.json())
+            .then(data => {
 
-            if(year<maxYear){
-                const next=year+1;
-                fetchYear(startYear,next,maxYear,projectname);
-            } else {
-                updateFilterDisplays("provinces"+startYear,startYear);
-                const dropdown= createDropdownWithClassElements("yearHonGraphicsContainer","yearSelectContainer");
-                dropdown.addEventListener("change",()=>{
-                    const selectedIndex = dropdown.value;
-                    const elements = document.querySelectorAll(".inner_checkbox_container_provinces");
-                    elements.forEach((element,index) => {
-                        if(index==selectedIndex){
-                            element.style.display="";
-                        }else{
-                            element.style.display="none";
+                console.log("data from db", data);
+                if (data[0] != null) {
+                    jd = covertTableToJson(data);
+                    console.log("jd ", jd);
+                    let provinces_names = jd[0].res_profline.provinces_names;
+                    createCheckboxes(provinces_names, "provinces" + year, () => {
+                        const slectedIDs = getSelectedCheckboxesGroup("provinces" + year);
+                        const newData = sortedIDs.map(ID => data[ID]);
+                        yearHonGraphicsContainer.innerHTML = "";
+                        setupContainersForGraphics(year, yearHonGraphicsContainer, covertTableToJson(newData), 0, () => { updateFilterDisplays("provinces" + year, year) });
+                        // createCheckBoxForSuperMeasure();
+                        updateFilterDisplays("provinces" + year, year);
+                    });
+
+                    setupContainersForGraphics(year, yearHonGraphicsContainer, jd, 0, () => { updateFilterDisplays("provinces" + year, year) });
+                    // createCheckBoxForSuperMeasure();
+                }
+                if (year < maxYear) {
+                    const next = year + 1;
+                    fetchYear(startYear, next, maxYear, projectname);
+                } else {
+                    updateFilterDisplays("provinces" + startYear, startYear);
+                    const dropdown = createDropdownWithClassElements("yearHonGraphicsContainer", "yearSelectContainer");
+                    dropdown.addEventListener("change", () => {
+                        const selectedIndex = dropdown.value;
+                        const elements = document.querySelectorAll(".inner_checkbox_container_provinces");
+                        elements.forEach((element, index) => {
+                            if (index == selectedIndex) {
+                                element.style.display = "";
+                            } else {
+                                element.style.display = "none";
+                            }
+                        });
+                        updateFilterDisplays("provinces" + dropdown.options[selectedIndex].text, dropdown.options[selectedIndex].text);
+                    });
+                    document.querySelectorAll(".inner_checkbox_container_provinces").forEach((element, index) => {
+                        if (index == 0) {
+                            element.style.display = "";
+                        } else {
+                            element.style.display = "none";
                         }
                     });
-                    updateFilterDisplays("provinces"+dropdown.options[selectedIndex].text,dropdown.options[selectedIndex].text);
-                });
-                document.querySelectorAll(".inner_checkbox_container_provinces").forEach((element,index) => {
-                        if(index==0){
-                            element.style.display="";
-                        }else{
-                            element.style.display="none";
-                        }
-                    });
-            
-            }
-            
-        })
-        .catch(error => console.error("קרתה שגיאה",error));
-        
+
+                }
+
+            })
+            .catch(error => console.error("קרתה שגיאה", error));
+
     }
 
 </script>
 <script>
- function createProjectSelection() {
+    function createProjectSelection() {
         fetch('/api/getProjectsMetaData')
             .then(response => response.json())
             .then(data => {
@@ -286,14 +290,14 @@
                 projSelector.onchange = () => {
                     let selectedValue = projSelector.value;
                     if (selectedValue != -1) {
-                        const projectname=data[selectedValue].projectName;
-                        const start= dropdownValues[selectedValue].startYear;
-                        const end= dropdownValues[selectedValue].endYear;
-                        fetchYear(start,start,end,projectname);
+                        const projectname = data[selectedValue].projectName;
+                        const start = dropdownValues[selectedValue].startYear;
+                        const end = dropdownValues[selectedValue].endYear;
+                        fetchYear(start, start, end, projectname);
                     }
                 }
-            }).catch(err=>{
-                console.log("getProjectsMetaData err",err);
+            }).catch(err => {
+                console.log("getProjectsMetaData err", err);
                 alert(`קרתה שגיאה \n${err}`);
             });
     }
