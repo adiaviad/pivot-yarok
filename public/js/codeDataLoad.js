@@ -105,7 +105,7 @@ function createSuperMeasurement(measureDataRowsValues,name,provinces_names,measu
     return result;
 }
 function fixName(name){
-    return name.replace("b", ' (').replace("b", ') ').replace("d","-").replace(/_/g, ' ');
+    return name.replace(/b/g, ' (').replace(/B/g, ') ').replace(/d/g,"-").replace(/_/g, ' ');
 }
 
 function getResourceLabels(superMeasures){
