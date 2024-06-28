@@ -4,8 +4,9 @@
 top of codeDataInsert.js  
   
 הדגרת התחום נתונים שמהם המשאבי הון לקחים נמצא ב  
+
 top of codeDataLoad.js  
-you can use python script in python_scripts/excelEquationsConversion.py to covert excel equations you paste in input_equations.txt to how they need to be in code. the converted equations are used in the json called "sm_blueprints" in the "calculation" key vlaue for each  
+you can use python script in python_scripts/excelEquationsConversion.py to covert excel equations you paste in input_equations.txt to how they need to be in code, the results of the script are in the terminal and in result.txt. the converted equations are used in the json called "sm_blueprints" in the "calculation" key vlaue for each.  
 דוגמה למדד על 
 ```javascript
 const sm_blueprints = [
@@ -32,7 +33,7 @@ jsonNames.js
 הגדרה של השמות של עמודות עמודים במאגר נתונים צריכים להיות במאגר נתונים ובלמעלה
  api.js  
 השמות של מדדי מוצגים אבל השמות של נתונים פשוטים לא מוצגים למשתמש. אם כתוב שנה כלשהו אז לכתוב "לפני שנה", "לפני שנתיים" וכן אלה   
-השמות של העמודות excel יכולות להיות מומרות לשמות שצריכים להיות במאגר נתונים של ידי הכנסת השמות הרגילים לfixName.py ולהריץ אותו אחרי שכתבתם את השמות במסמך input_names.txt
+השמות של העמודות excel יכולות להיות מומרות לשמות שצריכים להיות במאגר נתונים של ידי הכנסת השמות הרגילים לinput_names.txt ואז להריץאת fixName.py. השמות הממומרים נמצאים בטרמינל ובresult.txt
 
 קישור להורדה של התכונה של מאגר הנתונים   
 https://dev.mysql.com/downloads/workbench/  
